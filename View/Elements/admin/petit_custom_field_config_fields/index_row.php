@@ -10,7 +10,7 @@
 ?>
 <tr>
 	<td class="row-tools">
-	<?php $this->BcBaser->link($this->BcBaser->getImg('admin/icn_tool_edit.png', array('width' => 24, 'height' => 24, 'alt' => '編集', 'class' => 'btn')),
+	<?php $this->BcBaser->link($this->BcBaser->getImg('admin/icn_tool_edit.png', array('alt' => '編集', 'class' => 'btn')),
 			array('action' => 'edit', $data['PetitCustomFieldConfigField']['id']), array('title' => '編集')) ?>
 	</td>
 	<td style="width: 45px;"><?php echo $data['PetitCustomFieldConfigField']['id']; ?></td>

@@ -7,6 +7,10 @@
  * @package			PetitCustomField
  * @license			MIT
  */
+$this->BcBaser->css(array(
+	'//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css', 
+	'PetitCustomField.admin/petit_custom_field',
+));
 ?>
 <?php $this->BcBaser->element('pagination') ?>
 

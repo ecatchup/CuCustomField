@@ -1,15 +1,15 @@
-<?php 
+<?php
+
 class PetitCustomFieldConfigMetasSchema extends CakeSchema {
 
 	public $file = 'petit_custom_field_config_metas.php';
-
-	public $connection = 'plugin';
 
 	public function before($event = array()) {
 		return true;
 	}
 
 	public function after($event = array()) {
+		
 	}
 
 	public $petit_custom_field_config_metas = array(
@@ -22,7 +22,6 @@ class PetitCustomFieldConfigMetasSchema extends CakeSchema {
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1)
 		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 
 }
