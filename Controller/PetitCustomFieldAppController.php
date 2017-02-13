@@ -8,7 +8,7 @@
  * @package			PetitCustomField
  * @license			MIT
  */
-class PetitCustomFieldAppController extends BcPluginAppController
+class PetitCustomFieldAppController extends AppController
 {
 
 	/**
@@ -63,12 +63,28 @@ class PetitCustomFieldAppController extends BcPluginAppController
 	{
 		parent::beforeFilter();
 		// ブログ設定データを取得
-		if (ClassRegistry::isKeySet('Blog.BlogContent')) {
-			$BlogContentModel = ClassRegistry::getObject('Blog.BlogContent');
+		if (ClassRegistry::isKeySet('Content')) {
+			$ContentModel = ClassRegistry::getObject('Content');
 		} else {
-			$BlogContentModel = ClassRegistry::init('Blog.BlogContent');
+			$ContentModel = ClassRegistry::init('Content');
 		}
-		$this->blogContentDatas = $BlogContentModel->find('list', array('recursive' => -1));
+		$this->blogContentDatas = $ContentModel->find('list', array(
+			'fields' => array(
+				'entity_id',
+				'title',
+			),
+			'conditions' => array(
+				'plugin' => 'Blog',
+				'type' => 'BlogContent',
+			),
+			'recursive' => -1,
+		));
+//		if (ClassRegistry::isKeySet('Blog.BlogContent')) {
+//			$BlogContentModel = ClassRegistry::getObject('Blog.BlogContent');
+//		} else {
+//			$BlogContentModel = ClassRegistry::init('Blog.BlogContent');
+//		}
+//		$this->blogContentDatas = $BlogContentModel->find('list', array('recursive' => -1));
 		$this->set('customFieldConfig', Configure::read('petitCustomField'));
 	}
 

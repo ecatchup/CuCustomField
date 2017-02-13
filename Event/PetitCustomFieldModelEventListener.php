@@ -279,7 +279,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 
 			// 必須項目のバリデーションルールを設定する
 			if (!empty($fieldConfig['PetitCustomFieldConfigField']['required'])) {
-				$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('notEmpty'));
+				$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('notBlank'));
 				$validation[$fieldName]	 = $fieldRule;
 			}
 
@@ -338,7 +338,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 					case 'multiple':
 						foreach ($fieldConfig['PetitCustomFieldConfigField']['validate'] as $key => $rule) {
 							if ($rule == 'NONCHECK_CHECK') {
-								$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('notEmpty', array('not_empty' => 'multiple', 'not_empty_message' => '必ず1つ以上選択してください。')
+								$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('notBlank', array('not_empty' => 'multiple', 'not_empty_message' => '必ず1つ以上選択してください。')
 								));
 								$validation[$fieldName]	 = $fieldRule;
 							}
@@ -366,15 +366,15 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 	{
 		$_options	 = array(
 			'number'				 => '',
-			'not_empty'				 => 'notEmpty',
+			'not_empty'				 => 'notBlank',
 			'not_empty_message'		 => '必須項目です。',
 			'validate_regex_message' => '入力エラーが発生しました。',
 		);
 		$options	 = array_merge($_options, $options);
 
 		$validation = array(
-			'notEmpty'		 => array(
-				'notEmpty' => array(
+			'notBlank'		 => array(
+				'notBlank' => array(
 					'rule'		 => array($options['not_empty']),
 					'message'	 => $options['not_empty_message'],
 					'required'	 => true,

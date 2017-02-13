@@ -117,7 +117,7 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		<th class="col-head">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.required', '必須設定') ?>
 		</th>
-		<td class="col-input" id="Row<?php echo $currentModelName . Inflector::camelize('required'); ?>" colspan="3">
+		<td class="col-input" id="Row<?php echo $currentModelName . Inflector::camelize('required'); ?>">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.required', array('type' => 'checkbox', 'label' => '必須入力とする')) ?>
 			<?php echo $this->BcForm->error('PetitCustomFieldConfigField.required') ?>
 		</td>

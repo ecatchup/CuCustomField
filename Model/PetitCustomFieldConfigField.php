@@ -104,8 +104,8 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 	public $keyValueValidate = array(
 		'PetitCustomFieldConfigField' => array(
 			'name'		 => array(
-				'notEmpty'			 => array(
-					'rule'		 => array('notEmpty'),
+				'notBlank'			 => array(
+					'rule'		 => array('notBlank'),
 					'message'	 => 'カスタムフィールド名を入力してください。',
 					'required'	 => true,
 				),
@@ -119,8 +119,8 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 				),
 			),
 			'label_name' => array(
-				'notEmpty'	 => array(
-					'rule'		 => array('notEmpty'),
+				'notBlank'	 => array(
+					'rule'		 => array('notBlank'),
 					'message'	 => 'ラベル名を入力してください。',
 					'required'	 => true,
 				),
@@ -130,8 +130,8 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 				),
 			),
 			'field_name' => array(
-				'notEmpty'				 => array(
-					'rule'		 => array('notEmpty'),
+				'notBlank'				 => array(
+					'rule'		 => array('notBlank'),
 					'message'	 => 'フィールド名を入力してください。',
 					'required'	 => true,
 				),
@@ -158,8 +158,8 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 				),
 			),
 			'field_type' => array(
-				'notEmpty' => array(
-					'rule'		 => array('notEmpty'),
+				'notBlank' => array(
+					'rule'		 => array('notBlank'),
 					'message'	 => 'フィールドタイプを選択してください。',
 				),
 			),

@@ -8,7 +8,7 @@
  * @package			PetitCustomField
  * @license			MIT
  */
-class PetitCustomFieldAppModel extends BcPluginAppModel
+class PetitCustomFieldAppModel extends AppModel
 {
 
 	/**
