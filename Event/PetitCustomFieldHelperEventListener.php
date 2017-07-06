@@ -54,30 +54,30 @@ class PetitCustomFieldHelperEventListener extends BcHelperEventListener
 	public function formAfterCreate(CakeEvent $event)
 	{
 		if (!BcUtil::isAdminSystem()) {
-			return $event->data['out'];
+			return;
 		}
 
 		$View = $event->subject();
 
 		if (!in_array($View->request->params['controller'], $this->targetController)) {
-			return $event->data['out'];
+			return;
 		}
 
 		if (!in_array($View->request->params['action'], $this->targetAction)) {
-			return $event->data['out'];
+			return;
 		}
 
-		$targetId = array('BlogPostForm', 'BlogPostForm');
+		$targetId = array('BlogPostForm');
 		if (!in_array($event->data['id'], $targetId)) {
-			return $event->data['out'];
+			return;
 		}
 
 		if (!isset($View->request->data['PetitCustomFieldConfig']) || empty($View->request->data['PetitCustomFieldConfig'])) {
-			return $event->data['out'];
+			return;
 		}
 
 		if (!$View->request->data['PetitCustomFieldConfig']['status']) {
-			return $event->data['out'];
+			return;
 		}
 
 		if ($View->request->data['PetitCustomFieldConfig']['form_place'] === 'top') {
@@ -86,7 +86,7 @@ class PetitCustomFieldHelperEventListener extends BcHelperEventListener
 			$this->isDisplay	 = true;
 		}
 
-		return $event->data['out'];
+		return;
 	}
 
 	/**
@@ -109,6 +109,11 @@ class PetitCustomFieldHelperEventListener extends BcHelperEventListener
 		}
 
 		if (!in_array($View->request->params['action'], $this->targetAction)) {
+			return;
+		}
+
+		$targetId = array('BlogPostForm');
+		if (!in_array($event->data['id'], $targetId)) {
 			return;
 		}
 
