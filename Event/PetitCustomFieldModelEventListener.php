@@ -222,6 +222,18 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 	public function blogBlogPostBeforeValidate(CakeEvent $event)
 	{
 		$Model	 = $event->subject();
+
+		// カスタムフィールドの入力データがない場合は、そもそもカスタムフィールドに対する validate 処理を実施しない
+		if (!Hash::get($Model->data, 'PetitCustomField')) {
+			/**
+			 * 4系の記事複製動作仕様変更に対応
+			 * - これまで複製時のデータに、カスタムフィールドのデータは入って来なかったのが入るようになっているため
+			 * - validateSection 処理まで渡してしまうと、カスタムフィールドに対して、notBlank（入力必須）を設定している場合、
+			 *   Cake側の notBlank が走ることで save エラーとなってしまい、記事複製動作が完了できないため
+			 */
+			return true;
+		}
+
 		$this->setUpModel();
 		$data	 = $this->PetitCustomFieldConfigModel->find('first', array(
 			'conditions' => array(
