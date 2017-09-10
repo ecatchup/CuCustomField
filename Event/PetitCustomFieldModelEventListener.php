@@ -221,8 +221,16 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 	 */
 	public function blogBlogPostBeforeValidate(CakeEvent $event)
 	{
-		$Model	 = $event->subject();
+		$params = Router::getParams();
+		/**
+		 * 4系の記事複製動作仕様変更に対応
+		 * - これまで複製時のデータに、カスタムフィールドのデータは入って来なかったのが入るようになっているため
+		 */
+		if (!in_array($params['action'], array('admin_add', 'admin_edit'))) {
+			return true;
+		}
 
+		$Model = $event->subject();
 		// カスタムフィールドの入力データがない場合は、そもそもカスタムフィールドに対する validate 処理を実施しない
 		if (!Hash::get($Model->data, 'PetitCustomField')) {
 			/**
