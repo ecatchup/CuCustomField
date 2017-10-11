@@ -84,14 +84,7 @@ class PetitCustomFieldControllerEventListener extends BcControllerEventListener
 		// 設定値を送る
 		$Controller->viewVars['customFieldConfig'] = $this->settingsPetitCustomField;
 
-		// プレビュー判定の仕様が3系から4系で変わっている
-		if (version_compare($Controller->siteConfigs['version'], '4.0.0', '>=')) {
-			$isPreview = $Controller->BcContents->preview;
-		} else {
-			$isPreview = $Controller->preview;
-		}
-
-		if ($isPreview) {
+		if ($Controller->BcContents->preview) {
 			if (!empty($Controller->request->data['PetitCustomField'])) {
 				$Controller->viewVars['post']['PetitCustomField'] = $Controller->request->data['PetitCustomField'];
 
