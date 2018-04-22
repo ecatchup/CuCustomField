@@ -19,7 +19,6 @@ class PetitCustomFieldHelperEventListener extends BcHelperEventListener
 	public $events = array(
 		'Form.afterCreate',
 		'Form.afterForm',
-		'Form.afterEnd',
 	);
 
 	/**
@@ -54,30 +53,30 @@ class PetitCustomFieldHelperEventListener extends BcHelperEventListener
 	public function formAfterCreate(CakeEvent $event)
 	{
 		if (!BcUtil::isAdminSystem()) {
-			return $event->data['out'];
+			return;
 		}
 
 		$View = $event->subject();
 
 		if (!in_array($View->request->params['controller'], $this->targetController)) {
-			return $event->data['out'];
+			return;
 		}
 
 		if (!in_array($View->request->params['action'], $this->targetAction)) {
-			return $event->data['out'];
+			return;
 		}
 
-		$targetId = array('BlogPostForm', 'BlogPostForm');
+		$targetId = array('BlogPostForm');
 		if (!in_array($event->data['id'], $targetId)) {
-			return $event->data['out'];
+			return;
 		}
 
 		if (!isset($View->request->data['PetitCustomFieldConfig']) || empty($View->request->data['PetitCustomFieldConfig'])) {
-			return $event->data['out'];
+			return;
 		}
 
 		if (!$View->request->data['PetitCustomFieldConfig']['status']) {
-			return $event->data['out'];
+			return;
 		}
 
 		if ($View->request->data['PetitCustomFieldConfig']['form_place'] === 'top') {
@@ -86,7 +85,7 @@ class PetitCustomFieldHelperEventListener extends BcHelperEventListener
 			$this->isDisplay	 = true;
 		}
 
-		return $event->data['out'];
+		return;
 	}
 
 	/**
@@ -112,6 +111,11 @@ class PetitCustomFieldHelperEventListener extends BcHelperEventListener
 			return;
 		}
 
+		$targetId = array('BlogPostForm');
+		if (!in_array($event->data['id'], $targetId)) {
+			return;
+		}
+
 		if (!isset($View->request->data['PetitCustomFieldConfig']) || empty($View->request->data['PetitCustomFieldConfig'])) {
 			return;
 		}
@@ -128,52 +132,6 @@ class PetitCustomFieldHelperEventListener extends BcHelperEventListener
 			// ブログ記事追加画面にプチ・カスタムフィールド編集欄を追加する
 			echo $View->element('PetitCustomField.petit_custom_field_form');
 		}
-	}
-
-	/**
-	 * formAfterEnd
-	 * - ブログ設定編集画面にプチ・カスタムフィールド設定編集リンクを表示する
-	 * 
-	 * @param CakeEvent $event
-	 * @return array
-	 */
-	public function formAfterEnd(CakeEvent $event)
-	{
-		if (!BcUtil::isAdminSystem()) {
-			return $event->data['out'];
-		}
-
-		$View = $event->subject();
-
-		if ($View->request->params['controller'] != 'blog_contents') {
-			return $event->data['out'];
-		}
-
-		if ($View->request->params['action'] != 'admin_edit') {
-			return $event->data['out'];
-		}
-
-		if (!isset($View->request->data['PetitCustomFieldConfig']) || empty($View->request->data['PetitCustomFieldConfig'])) {
-			return $event->data['out'];
-		}
-
-		if (!$View->request->data['PetitCustomFieldConfig']['status']) {
-			return $event->data['out'];
-		}
-
-		// ブログ設定編集画面にプチ・カスタムフィールドメタ設定一覧リンクを表示する
-		if ($event->data['id'] == 'BlogContentAdminEditForm') {
-			$output				 = '<div id="PetitCustomFieldConfigBox">';
-			$output .= $View->BcBaser->getLink('≫プチ・カスタムフィールド設定', array(
-				'plugin'	 => 'petit_custom_field',
-				'controller' => 'petit_custom_field_config_metas',
-				'action'	 => 'index', $View->viewVars['blogContent']['PetitCustomFieldConfig']['id']
-			));
-			$output .= '</div>';
-			$event->data['out']	 = $event->data['out'] . $output;
-		}
-
-		return $event->data['out'];
 	}
 
 }

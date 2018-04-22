@@ -21,6 +21,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		'Blog.BlogPost.afterFind',
 		'Blog.BlogPost.afterSave',
 		'Blog.BlogPost.afterDelete',
+		'Blog.BlogPost.afterCopy',
 		'Blog.BlogPost.beforeValidate',
 		'Blog.BlogContent.beforeFind',
 		'Blog.BlogContent.afterDelete',
@@ -221,7 +222,27 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 	 */
 	public function blogBlogPostBeforeValidate(CakeEvent $event)
 	{
-		$Model	 = $event->subject();
+		$params = Router::getParams();
+		/**
+		 * 4系の記事複製動作仕様変更に対応
+		 * - これまで複製時のデータに、カスタムフィールドのデータは入って来なかったのが入るようになっているため
+		 */
+		if (!in_array($params['action'], array('admin_add', 'admin_edit'))) {
+			return true;
+		}
+
+		$Model = $event->subject();
+		// カスタムフィールドの入力データがない場合は、そもそもカスタムフィールドに対する validate 処理を実施しない
+		if (!Hash::get($Model->data, 'PetitCustomField')) {
+			/**
+			 * 4系の記事複製動作仕様変更に対応
+			 * - これまで複製時のデータに、カスタムフィールドのデータは入って来なかったのが入るようになっているため
+			 * - validateSection 処理まで渡してしまうと、カスタムフィールドに対して、notBlank（入力必須）を設定している場合、
+			 *   Cake側の notBlank が走ることで save エラーとなってしまい、記事複製動作が完了できないため
+			 */
+			return true;
+		}
+
 		$this->setUpModel();
 		$data	 = $this->PetitCustomFieldConfigModel->find('first', array(
 			'conditions' => array(
@@ -449,6 +470,20 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 			if (!$this->PetitCustomFieldModel->resetSection($Model->id, $this->PetitCustomFieldModel->name)) {
 				$this->log(sprintf('ブログ記事ID：%s のカスタムフィールドの削除に失敗', $Model->id));
 			}
+		}
+	}
+
+	/**
+	 * blogBlogPostAfterCopy
+	 * 
+	 * @param CakeEvent $event
+	 */
+	public function blogBlogPostAfterCopy(CakeEvent $event)
+	{
+		$petitCustomFieldData = $this->PetitCustomFieldModel->getSection($event->data['oldId'], $this->PetitCustomFieldModel->name);
+		if ($petitCustomFieldData) {
+			$saveData[$this->PetitCustomFieldModel->name] = $petitCustomFieldData;
+			$this->PetitCustomFieldModel->saveSection($event->data['id'], $saveData, 'PetitCustomField');
 		}
 	}
 
