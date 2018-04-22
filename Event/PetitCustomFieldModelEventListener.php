@@ -21,6 +21,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		'Blog.BlogPost.afterFind',
 		'Blog.BlogPost.afterSave',
 		'Blog.BlogPost.afterDelete',
+		'Blog.BlogPost.afterCopy',
 		'Blog.BlogPost.beforeValidate',
 		'Blog.BlogContent.beforeFind',
 		'Blog.BlogContent.afterDelete',
@@ -469,6 +470,20 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 			if (!$this->PetitCustomFieldModel->resetSection($Model->id, $this->PetitCustomFieldModel->name)) {
 				$this->log(sprintf('ブログ記事ID：%s のカスタムフィールドの削除に失敗', $Model->id));
 			}
+		}
+	}
+
+	/**
+	 * blogBlogPostAfterCopy
+	 * 
+	 * @param CakeEvent $event
+	 */
+	public function blogBlogPostAfterCopy(CakeEvent $event)
+	{
+		$petitCustomFieldData = $this->PetitCustomFieldModel->getSection($event->data['oldId'], $this->PetitCustomFieldModel->name);
+		if ($petitCustomFieldData) {
+			$saveData[$this->PetitCustomFieldModel->name] = $petitCustomFieldData;
+			$this->PetitCustomFieldModel->saveSection($event->data['id'], $saveData, 'PetitCustomField');
 		}
 	}
 
