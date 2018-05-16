@@ -43,7 +43,11 @@ $(function(){
 		};
 
 		self.offSaveButtonClickEvent = function() {
+			if (!saveButton.length) return false;
+
 			var saveEvents = $._data(saveButton.get(0), 'events');
+
+			if (!saveEvents.click) return false;
 
 			saveEvents.click.forEach(function(e) {
 				saveButtonClickEvents.push(e);
@@ -54,6 +58,7 @@ $(function(){
 
 		self.onSaveButtonClickEvent = function() {
 			saveButton.off('click');
+
 			saveButtonClickEvents.forEach(function(v) {
 				saveButton.on('click', v);
 			});

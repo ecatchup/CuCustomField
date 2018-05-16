@@ -301,6 +301,14 @@ class PetitCustomFieldHelper extends AppHelper
 		return $this->get($post, $field, $options);
 	}
 
+	/**
+	 * フィールド名を指定して、Googleマップの表示データを取得する
+	 *
+	 * @param array $post
+	 * @param string $field
+	 * @param array $options
+	 * @return string
+	 */
 	public function getGoogleMaps($post = array(), $field = '', $options = array())
 	{
 		$data = $this->get($post, $field, $options);
@@ -317,11 +325,11 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * フィールド名を指定して、Googleマップのテキストデータを取得する
-	 * 
+	 *
 	 * @param array $post
 	 * @param string $field
 	 * @param array $options
-	 * @return mixes
+	 * @return string
 	 */
 	public function getGoogleMapsText($post = array(), $field = '', $options = array())
 	{

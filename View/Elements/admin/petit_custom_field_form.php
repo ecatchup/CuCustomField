@@ -44,7 +44,7 @@ $formPlace = $this->request->data('PetitCustomFieldConfig.form_place');
 
 							<?php echo '経度' . $this->PetitCustomField->input("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}.google_maps_longtude", array('type' => 'text', 'class' => 'petit-google_maps_longtude', 'default' => $valueFieldConfig['PetitCustomFieldConfigField']['google_maps_longtude'], 'size' => 22)); ?>
 
-							<?php echo 'zoom値' . $this->PetitCustomField->input("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}.google_maps_zoom", array('type' => 'text', 'class' => 'petit-google_maps_zoom', 'default' => $valueFieldConfig['PetitCustomFieldConfigField']['google_maps_zoom'], 'size' => 4)); ?>
+							<?php echo 'ズーム値' . $this->PetitCustomField->input("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}.google_maps_zoom", array('type' => 'text', 'class' => 'petit-google_maps_zoom', 'default' => $valueFieldConfig['PetitCustomFieldConfigField']['google_maps_zoom'], 'size' => 4)); ?>
 
 							<br>
 
