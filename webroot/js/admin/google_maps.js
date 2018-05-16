@@ -106,6 +106,7 @@ $(function(){
 				marker.setPosition(map.getCenter());
 				latitudeInput.val(map.getCenter().lat());
 				longtudeInput.val(map.getCenter().lng());
+				zoomInput.val(map.getZoom());
 			});
 			google.maps.event.addListener(map, 'drag', function(){
 				marker.setPosition(map.getCenter());

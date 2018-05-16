@@ -316,8 +316,18 @@ class PetitCustomFieldHelper extends AppHelper
 			return false;
 		}
 
-		if (isset($options['googleMapsLabel'])) {
-			$data['googleMapsLabel'] = $options['googleMapsLabel'];
+		$elementOptions	 = array(
+			'googleMapsLabel'	 => false,
+			'googleMapsWidth'	 => '600px',
+			'googleMapsHeight'	 => '400px',
+		);
+
+		foreach ($elementOptions as $key => $var) {
+			if (isset($options[$key])) {
+				$data[$key] = $options[$key];
+			} else {
+				$data[$key] = $var;
+			}
 		}
 
 		return $this->BcBaser->getElement('PetitCustomField.petit_custom_google_maps', $data);
