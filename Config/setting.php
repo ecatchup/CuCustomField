@@ -46,6 +46,7 @@ $config['petitCustomField'] = array(
 		),
 		'コンテンツ'	 => array(
 			'wysiwyg' => 'Wysiwyg Editor',
+			'googlemaps' => 'Googleマップ',
 		//'upload' => 'FileUpload',
 		),
 	),

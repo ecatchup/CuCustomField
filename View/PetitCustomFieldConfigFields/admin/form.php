@@ -47,7 +47,7 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 <div id="ForeignId" class="display-none"><?php echo $foreignId ?></div>
 
 <div id="PetitCustomFieldConfigFieldTable">
-<table cellpadding="0" cellspacing="0" class="form-table section">
+<table cellpadding="0" cellspacing="0" id="PetitCustomFieldConfigFieldTable1" class="form-table section">
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('name'); ?>">
 		<th class="col-head">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.name', 'カスタムフィールド名') ?>&nbsp;<span class="required">*</span>
@@ -126,7 +126,7 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 
 
 <h3>管理システム表示設定</h3>
-<table cellpadding="0" cellspacing="0" class="form-table section">
+<table cellpadding="0" cellspacing="0" id="PetitCustomFieldConfigFieldTable2" class="form-table section">
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('default_value'); ?>">
 		<th class="col-head">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.default_value', '初期値') ?>
@@ -315,6 +315,36 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 					</ul>
 				</div>
 			<?php echo $this->BcForm->error('PetitCustomFieldConfigField.auto_convert') ?>
+		</td>
+	</tr>
+	<tr id="Row<?php echo $currentModelName . Inflector::camelize('google_maps'); ?>Group">
+		<th class="col-head">
+			初期値
+		</th>
+		<td class="col-input">
+
+			<div class="pcf-input-box googlemaps-input-box">
+				<span id="Row<?php echo $currentModelName . Inflector::camelize('google_maps_latitude'); ?>">
+					<?php echo $this->BcForm->label('PetitCustomFieldConfigField.google_maps_latitude', '緯度') ?>
+					<?php echo $this->BcForm->input('PetitCustomFieldConfigField.google_maps_latitude', array('type' => 'text', 'size' => 22)) ?>
+					<?php echo $this->BcForm->error('PetitCustomFieldConfigField.google_maps_latitude') ?>
+				</span>
+				<span id="Row<?php echo $currentModelName . Inflector::camelize('google_maps_longtude'); ?>">
+					<?php echo $this->BcForm->label('PetitCustomFieldConfigField.google_maps_longtude', '経度') ?>
+					<?php echo $this->BcForm->input('PetitCustomFieldConfigField.google_maps_longtude', array('type' => 'text', 'size' => 22)) ?>
+					<?php echo $this->BcForm->error('PetitCustomFieldConfigField.google_maps_longtude') ?>
+				</span>
+				<span id="Row<?php echo $currentModelName . Inflector::camelize('google_maps_zoom'); ?>">
+					<?php echo $this->BcForm->label('PetitCustomFieldConfigField.google_maps_zoom', 'ズーム値') ?>
+					<?php echo $this->BcForm->input('PetitCustomFieldConfigField.google_maps_zoom', array('type' => 'text', 'size' => 4)) ?>
+					<?php echo $this->BcForm->error('PetitCustomFieldConfigField.google_maps_zoom') ?>
+				</span>
+				<span id="Row<?php echo $currentModelName . Inflector::camelize('google_maps_text'); ?>">
+					<?php echo $this->BcForm->label('PetitCustomFieldConfigField.google_maps_text', 'テキスト') ?>
+					<?php echo $this->BcForm->input('PetitCustomFieldConfigField.google_maps_text', array('type' => 'text', 'size' => 60)) ?>
+					<?php echo $this->BcForm->error('PetitCustomFieldConfigField.google_maps_text') ?>
+				</span>
+			</div>
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('prepend'); ?>">

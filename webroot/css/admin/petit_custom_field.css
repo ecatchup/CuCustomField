@@ -59,6 +59,9 @@
 .pcf-input-box .span12 {
 	width: 100%;
 }
+.googlemaps-input-box span {
+	margin-right: 10px;
+}
 
 /* 利用中フィールド一覧表示
 -------------------------------- */

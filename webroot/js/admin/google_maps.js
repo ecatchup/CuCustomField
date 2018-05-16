@@ -1,0 +1,147 @@
+$(function(){
+	var mapFormElements = $('.petit-google-maps-form');
+
+	var GoogleMapsAdmin = new GoogleMapsAdmin();
+
+	// 保存ボタンのイベントを一時的に無効化する
+	GoogleMapsAdmin.offSaveButtonClickEvent();
+
+	mapFormElements.each(function(index, element) {
+		GoogleMapsAdmin.set($(element));
+	});
+
+	$('#BtnSave').click(function(e){
+		var result = true;
+
+		mapFormElements.each(function(index, element) {
+			result = GoogleMapsAdmin.checkFieldEmpty($(element));
+			if (!result) return false;
+		});
+
+		if (result) {
+			// 無効化した保存ボタンのイベントを有効化
+			GoogleMapsAdmin.onSaveButtonClickEvent();
+			GoogleMapsAdmin.clickSaveButton();
+		}
+
+		return false;
+	});
+
+	function GoogleMapsAdmin() {
+		var self = this;
+
+		var saveButton = $('#BtnSave');;
+		var saveButtonClickEvents = [];
+
+		var selectors = {
+			'map': '.petit-google-maps',
+			'latitudeInput': '.petit-google_maps_latitude',
+			'longtudeInput': '.petit-google_maps_longtude',
+			'zoomInput': '.petit-google_maps_zoom',
+			'addressInput': '.petit-google_maps_address',
+			'setMapButton': '.petit-set_google_maps_setting',
+		};
+
+		self.offSaveButtonClickEvent = function() {
+			var saveEvents = $._data(saveButton.get(0), 'events');
+
+			saveEvents.click.forEach(function(e) {
+				saveButtonClickEvents.push(e);
+			});
+
+			saveButton.off('click');
+		};
+
+		self.onSaveButtonClickEvent = function() {
+			saveButton.off('click');
+			saveButtonClickEvents.forEach(function(v) {
+				saveButton.on('click', v);
+			});
+		};
+
+		self.clickSaveButton = function() {
+			saveButton.click();
+		};
+
+		self.set = function(element) {
+			var mapElement = element.find(selectors.map)[0];
+			var latitudeInput = element.find(selectors.latitudeInput);
+			var longtudeInput = element.find(selectors.longtudeInput);
+			var zoomInput = element.find(selectors.zoomInput);
+			var addressInput = element.find(selectors.addressInput);
+			var setMapButton = element.find(selectors.setMapButton);
+
+			var latitude = parseFloat(latitudeInput.val());
+			var longtude = parseFloat(longtudeInput.val());
+			var zoom = parseInt(zoomInput.val());
+
+			// データが入力されていない場合の初期値を設定（東京都）
+			if (isNaN(latitude)) latitude = 35.6894875;
+			if (isNaN(longtude)) longtude = 139.69170639999993;
+			if (isNaN(zoom)) zoom = 7;
+
+			var latlng = new google.maps.LatLng(latitude, longtude);
+
+			var geocoder = new google.maps.Geocoder();
+
+			var options = {
+				center: latlng,
+				zoom: zoom
+			};
+
+			var map = new google.maps.Map(mapElement, options);
+
+			var marker = new google.maps.Marker({
+				position: latlng,
+				map: map
+			});
+
+			// 地図操作時に地図情報とマーカーの位置を更新
+			google.maps.event.addListener(map, 'dragend', function(){
+				marker.setPosition(map.getCenter());
+				latitudeInput.val(map.getCenter().lat());
+				longtudeInput.val(map.getCenter().lng());
+			});
+			google.maps.event.addListener(map, 'drag', function(){
+				marker.setPosition(map.getCenter());
+			});
+			google.maps.event.addListener(map, 'zoom_changed', function(){
+				marker.setPosition(map.getCenter());
+				zoomInput.val(map.getZoom());
+			});
+
+			// 住所から緯度経度を取得
+			setMapButton.click(function() {
+				var address = addressInput.val();
+				geocoder.geocode({ 'address': address }, function(result, status) {
+					if (status != google.maps.GeocoderStatus.OK) {
+						alert('地図情報の取得に失敗しました。')
+						return;
+					}
+					map.setCenter(result[0].geometry.location);
+					marker.setPosition(result[0].geometry.location);
+					latitudeInput.val(map.getCenter().lat());
+					longtudeInput.val(map.getCenter().lng());
+					zoomInput.val(map.getZoom());
+				});
+			});
+		}
+
+		self.checkFieldEmpty = function(element) {
+			var latitudeInput = element.find(selectors.latitudeInput);
+			var longtudeInput = element.find(selectors.longtudeInput);
+			var zoomInput = element.find(selectors.zoomInput);
+
+			var latitude = parseFloat(latitudeInput.val());
+			var longtude = parseFloat(longtudeInput.val());
+			var zoom = parseInt(zoomInput.val());
+
+			if (!latitude || !longtude || !zoom) {
+				alert('緯度、経度、zoom値を数値で入力してください');
+				return false;
+			}
+
+			return true;
+		}
+	}
+});

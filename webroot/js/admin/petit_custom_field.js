@@ -158,6 +158,15 @@ $(function(){
  * @param {string} value フィールドタイプ
  */
 	function petitCustomFieldConfigFieldFieldTypeChangeHandler(value){
+		$configTable1 = $('#PetitCustomFieldConfigFieldTable1');
+		$configTable2 = $('#PetitCustomFieldConfigFieldTable2');
+
+		// 管理システム表示設定の「初期値」、「入力欄前に表示」、「入力欄後に表示」、「このフィールドの説明文」行以外の行
+		// この４つの行はほとんどのフィールドタイプで表示されるので、除外した行を取得
+		$hideTrs = $configTable2.find('tr').not('#RowPetitCustomFieldConfigFieldPrepend, '
+			+ '#RowPetitCustomFieldConfigFieldAppend, #RowPetitCustomFieldConfigFieldDescription, '
+			+ '#RowPetitCustomFieldConfigFieldDefaultValue');
+
 		$defaultValue = $("#RowPetitCustomFieldConfigFieldDefaultValue");
 			$previewPrefList = $("#PreviewPrefList");
 		$validateGroup = $("#RowPetitCustomFieldConfigFieldValidateGroup");
@@ -178,11 +187,14 @@ $(function(){
 		$choices = $("#RowPetitCustomFieldConfigFieldChoices");
 		$separator = $("#RowPetitCustomFieldConfigFieldSeparator");
 		$autoConvert = $("#RowPetitCustomFieldConfigFieldAutoConvert");
+		$googlemapsGroup = $("#RowPetitCustomFieldConfigFieldGoogleMapsGroup");
 		
 		switch (value){
 			case 'text':
-				$defaultValue.show('slow');
-					$previewPrefList.addClass('display-none');
+				$hideTrs.hide('fast');
+				$previewPrefList.hide();
+				$defaultValue.show();
+
 				// バリデーション項目
 				$validateGroup.show('slow');
 					$validateHankaku.parent().show('slow');
@@ -193,26 +205,20 @@ $(function(){
 						if ($validateRegex.prop('checked')) {
 							$validateRegexBox.show('fast');
 						}
-				
+
 				$sizeGroup.show('slow');
 					$size.show('slow');
 					$maxLength.show('slow');
 					$counter.show('slow');
 				$placeholder.show('slow');
-				
-				$rowsGroup.hide('fast');
-					$rows.hide('fast');
-					$cols.hide('fast');
-					$editorToolType.hide('fast');
-					
-				$choices.hide('fast');
-				$separator.hide('fast');
 				$autoConvert.show('slow');
 				break;
-				
+
 			case 'textarea':
-				$defaultValue.show('slow');
-					$previewPrefList.addClass('display-none');
+				$hideTrs.hide('fast');
+				$previewPrefList.hide();
+				$defaultValue.show();
+
 				// バリデーション項目
 				$validateGroup.show('slow');
 					$validateHankaku.parent().show('slow');
@@ -223,11 +229,12 @@ $(function(){
 						if ($validateRegex.prop('checked')) {
 							$validateRegexBox.show('fast');
 						}
-				
+
 				$sizeGroup.show('slow');
 					$size.hide('fast');
 					$maxLength.hide('fast');
 					$counter.show('slow');
+
 				$placeholder.show('slow');
 				
 				$rowsGroup.show('slow');
@@ -236,123 +243,39 @@ $(function(){
 					$cols.show('slow');
 						$cols.attr('placeholder', '40');
 					$editorToolType.hide('fast');
-					
-				$choices.hide('fast');
-				$separator.hide('fast');
+
 				$autoConvert.show('slow');
 				break;
-				
+
 			case 'date':
-				$defaultValue.show('slow');
-					$previewPrefList.addClass('display-none');
-				// バリデーション項目
-				$validateGroup.hide('fast');
-					$validateHankaku.parent().hide('fast');
-					$validateNumeric.parent().hide('fast');
-					$validateNonCheckCheck.parent().hide('fast');
-					$validateRegex.parent().hide('fast');
-						$validateRegexBox.hide('fast');
-				
-				$sizeGroup.hide('fast');
-					$size.hide('fast');
-					$maxLength.hide('fast');
-					$counter.hide('fast');
-				$placeholder.hide('fast');
-				
-				$rowsGroup.hide('fast');
-					$rows.hide('fast');
-					$cols.hide('fast');
-					$editorToolType.hide('fast');
-					
-				$choices.hide('fast');
-				$separator.hide('fast');
-				$autoConvert.hide('fast');
-				break;
-				
 			case 'datetime':
-				$defaultValue.show('slow');
-					$previewPrefList.addClass('display-none');
-				// バリデーション項目
-				$validateGroup.hide('fast');
-					$validateHankaku.parent().hide('fast');
-					$validateNumeric.parent().hide('fast');
-					$validateNonCheckCheck.parent().hide('fast');
-					$validateRegex.parent().hide('fast');
-						$validateRegexBox.hide('fast');
-				
-				$sizeGroup.hide('fast');
-					$size.hide('fast');
-					$maxLength.hide('fast');
-					$counter.hide('fast');
-				$placeholder.hide('fast');
-				
-				$rowsGroup.hide('fast');
-					$rows.hide('fast');
-					$cols.hide('fast');
-					$editorToolType.hide('fast');
-					
-				$choices.hide('fast');
-				$separator.hide('fast');
-				$autoConvert.hide('fast');
+				$hideTrs.hide('fast');
+				$previewPrefList.hide();
+				$defaultValue.show();
 				break;
-				
+
 			case 'select':
-				$defaultValue.show('slow');
-					$previewPrefList.addClass('display-none');
-				// バリデーション項目
-				$validateGroup.hide('fast');
-					$validateHankaku.parent().hide('fast');
-					$validateNumeric.parent().hide('fast');
-					$validateNonCheckCheck.parent().hide('fast');
-					$validateRegex.parent().hide('fast');
-						$validateRegexBox.hide('fast');
-				
-				$sizeGroup.hide('fast');
-					$size.hide('fast');
-					$maxLength.hide('fast');
-					$counter.hide('fast');
-				$placeholder.hide('fast');
-				
-				$rowsGroup.hide('fast');
-					$rows.hide('fast');
-					$cols.hide('fast');
-					$editorToolType.hide('fast');
-					
+				$hideTrs.hide('fast');
+				$previewPrefList.hide();
+				$defaultValue.show();
+
 				$choices.show('slow');
-				$separator.hide('fast');
-				$autoConvert.hide('fast');
 				break;
-				
+
 			case 'radio':
-				$defaultValue.show('slow');
-					$previewPrefList.addClass('display-none');
-				// バリデーション項目
-				$validateGroup.hide('fast');
-					$validateHankaku.parent().hide('fast');
-					$validateNumeric.parent().hide('fast');
-					$validateNonCheckCheck.parent().hide('fast');
-					$validateRegex.parent().hide('fast');
-						$validateRegexBox.hide('fast');
-				
-				$sizeGroup.hide('fast');
-					$size.hide('fast');
-					$maxLength.hide('fast');
-					$counter.hide('fast');
-				$placeholder.hide('fast');
-				
-				$rowsGroup.hide('fast');
-					$rows.hide('fast');
-					$cols.hide('fast');
-					$editorToolType.hide('fast');
-					
+				$hideTrs.hide('fast');
+				$previewPrefList.hide();
+				$defaultValue.show();
+
 				$choices.show('slow');
 				$separator.show('slow');
-				$autoConvert.hide('fast');
 				break;
-				
+
 			case 'checkbox':
-				$defaultValue.show('slow');
-					$previewPrefList.addClass('display-none');
+				$hideTrs.hide('fast');
+				$previewPrefList.hide();
+				$defaultValue.show();
+
 				// バリデーション項目
 				$validateGroup.hide('fast');
 					$validateHankaku.parent().hide('fast');
@@ -360,26 +283,14 @@ $(function(){
 					$validateNonCheckCheck.parent().show('fast');
 					$validateRegex.parent().hide('fast');
 						$validateRegexBox.hide('fast');
-				
-				$sizeGroup.hide('fast');
-					$size.hide('fast');
-					$maxLength.hide('fast');
-					$counter.hide('fast');
-				$placeholder.hide('fast');
-				
-				$rowsGroup.hide('fast');
-					$rows.hide('fast');
-					$cols.hide('fast');
-					$editorToolType.hide('fast');
-					
-				$choices.hide('fast');
-				$separator.hide('fast');
-				$autoConvert.hide('fast');
+
 				break;
 				
 			case 'multiple':
-				$defaultValue.show('slow');
-					$previewPrefList.addClass('display-none');
+				$hideTrs.hide('fast');
+				$previewPrefList.hide();
+				$defaultValue.show();
+
 				// バリデーション項目
 				$validateGroup.show('slow');
 					$validateHankaku.parent().hide('fast');
@@ -387,67 +298,20 @@ $(function(){
 					$validateNonCheckCheck.parent().show('slow');
 					$validateRegex.parent().hide('fast');
 						$validateRegexBox.hide('fast');
-				
-				$sizeGroup.hide('fast');
-					$size.hide('fast');
-					$maxLength.hide('fast');
-					$counter.hide('fast');
-				$placeholder.hide('fast');
-				
-				$rowsGroup.hide('fast');
-					$rows.hide('fast');
-					$cols.hide('fast');
-					$editorToolType.hide('fast');
-					
+
 				$choices.show('slow');
-				$separator.hide('fast');
-				$autoConvert.hide('fast');
 				break;
 				
 			case 'pref':
-				$defaultValue.show('slow');
-					$previewPrefList.removeClass('display-none');
-					$('#PetitCustomFieldConfigFieldPreviewPrefList').removeAttr('disabled');
-				// バリデーション項目
-				$validateGroup.hide('fast');
-					$validateHankaku.parent().hide('fast');
-					$validateNumeric.parent().hide('fast');
-					$validateNonCheckCheck.parent().hide('fast');
-					$validateRegex.parent().hide('fast');
-						$validateRegexBox.hide('fast');
-				
-				$sizeGroup.hide('fast');
-					$size.hide('fast');
-					$maxLength.hide('fast');
-					$counter.hide('fast');
-				$placeholder.hide('fast');
-				
-				$rowsGroup.hide('fast');
-					$rows.hide('fast');
-					$cols.hide('fast');
-					$editorToolType.hide('fast');
-					
-				$choices.hide('fast');
-				$separator.hide('fast');
-				$autoConvert.hide('fast');
+				$hideTrs.hide('fast');
+				$previewPrefList.show();
+				$defaultValue.show();
 				break;
 				
 			case 'wysiwyg':
-				$defaultValue.hide('fast');
-					$previewPrefList.addClass('display-none');
-				// バリデーション項目
-				$validateGroup.hide('fast');
-					$validateHankaku.parent().hide('fast');
-					$validateNumeric.parent().hide('fast');
-					$validateNonCheckCheck.parent().hide('fast');
-					$validateRegex.parent().hide('fast');
-						$validateRegexBox.hide('fast');
-				
-				$sizeGroup.hide('fast');
-					$size.hide('fast');
-					$maxLength.hide('fast');
-					$counter.hide('fast');
-				$placeholder.hide('fast');
+				$hideTrs.hide('fast');
+				$previewPrefList.hide();
+				$defaultValue.hide();
 				
 				$rowsGroup.show('slow');
 					$rows.show('slow');
@@ -455,37 +319,14 @@ $(function(){
 					$cols.show('slow');
 						$cols.attr('placeholder', '100%');
 					$editorToolType.show('slow');
-					
-				$choices.hide('fast');
-				$separator.hide('fast');
-				$autoConvert.hide('fast');
 				break;
-			
-			case 'file':
-				$defaultValue.hide('fast');
-					$previewPrefList.addClass('display-none');
-				// バリデーション項目
-				$validateGroup.hide('fast');
-					$validateHankaku.parent().hide('fast');
-					$validateNumeric.parent().hide('fast');
-					$validateNonCheckCheck.parent().hide('fast');
-					$validateRegex.parent().hide('fast');
-						$validateRegexBox.hide('fast');
-				
-				$sizeGroup.hide('fast');
-					$size.hide('fast');
-					$maxLength.hide('fast');
-					$counter.hide('fast');
-				$placeholder.hide('fast');
-				
-				$rowsGroup.hide('fast');
-					$rows.hide('fast');
-					$cols.hide('fast');
-					$editorToolType.hide('fast');
-					
-				$choices.hide('fast');
-				$separator.hide('fast');
-				$autoConvert.hide('fast');
+
+			case 'googlemaps':
+				$hideTrs.hide('fast');
+				$previewPrefList.hide();
+				$defaultValue.hide();
+
+				$googlemapsGroup.show('slow');
 				break;
 		}
 	}

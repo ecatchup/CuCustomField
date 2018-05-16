@@ -17,7 +17,48 @@ $formPlace = $this->request->data('PetitCustomFieldConfig.form_place');
 	<?php foreach ($fieldConfigField as $keyFieldConfig => $valueFieldConfig): ?>
 
 		<?php if ($this->PetitCustomField->judgeStatus($valueFieldConfig)): ?>
-			<?php if ($valueFieldConfig['PetitCustomFieldConfigField']['field_type'] == 'wysiwyg'): ?>
+			<?php if ($valueFieldConfig['PetitCustomFieldConfigField']['field_type'] == 'googlemaps'): ?>
+				<tr>
+					<th colspan="2">
+						<?php echo $this->BcForm->label("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}", $valueFieldConfig['PetitCustomFieldConfigField']['name']) ?>
+					</th>
+				</tr>
+				<tr class="petit-google-maps-form">
+					<td class="col-input" colspan="2">
+						<?php if ($this->PetitCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'prepend'))): ?>
+							<div><?php echo nl2br($valueFieldConfig['PetitCustomFieldConfigField']['prepend']) ?></div>
+						<?php endif ?>
+
+						<?php if ($this->BcBaser->siteConfig['google_maps_api_key']): ?>
+							<div class="petit-google-maps" style="width:600px; height:400px;"></div>
+							<?php echo $this->BcBaser->js('https://maps.google.com/maps/api/js?key=' . $this->BcBaser->siteConfig['google_maps_api_key']) ?>
+							<?php echo $this->BcBaser->js('PetitCustomField.admin/google_maps') ?>
+
+							<div style="margin-right: 5px;">
+								<?php echo $this->BcForm->input('google_maps_address',
+									array('type' => 'text', 'name' => '', 'class' => 'petit-google_maps_address')) ?>
+								<?php echo $this->BcForm->button('入力住所から地図を設定', array('type' => 'button', 'class' => 'petit-set_google_maps_setting', 'size' => 40)) ?>
+							</div>
+
+							<?php echo '緯度' . $this->PetitCustomField->input("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}.google_maps_latitude", array('type' => 'text', 'class' => 'petit-google_maps_latitude', 'default' => $valueFieldConfig['PetitCustomFieldConfigField']['google_maps_latitude'], 'size' => 22)); ?>
+
+							<?php echo '経度' . $this->PetitCustomField->input("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}.google_maps_longtude", array('type' => 'text', 'class' => 'petit-google_maps_longtude', 'default' => $valueFieldConfig['PetitCustomFieldConfigField']['google_maps_longtude'], 'size' => 22)); ?>
+
+							<?php echo 'zoom値' . $this->PetitCustomField->input("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}.google_maps_zoom", array('type' => 'text', 'class' => 'petit-google_maps_zoom', 'default' => $valueFieldConfig['PetitCustomFieldConfigField']['google_maps_zoom'], 'size' => 4)); ?>
+
+							<br>
+
+							<?php echo 'テキスト' . $this->PetitCustomField->input("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}.google_maps_text", array('type' => 'text', 'class' => 'petit-google_maps_text full-width', 'default' => $valueFieldConfig['PetitCustomFieldConfigField']['google_maps_text'])); ?>
+						<?php else: ?>
+							※Googleマップを利用するには、Google Maps APIのキーの登録が必要です。キーを取得して、システム管理より設定してください。
+						<?php endif; ?>
+
+						<?php if ($this->PetitCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'append'))): ?>
+							<div><?php echo nl2br($valueFieldConfig['PetitCustomFieldConfigField']['append']) ?></div>
+						<?php endif ?>
+					</td>
+				</tr>
+			<?php elseif ($valueFieldConfig['PetitCustomFieldConfigField']['field_type'] == 'wysiwyg'): ?>
 				<?php // Wysiwyg の場合 ?>
 				<tr>
 					<th colspan="2">

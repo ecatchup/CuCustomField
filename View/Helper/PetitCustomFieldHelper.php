@@ -301,6 +301,36 @@ class PetitCustomFieldHelper extends AppHelper
 		return $this->get($post, $field, $options);
 	}
 
+	public function getGoogleMaps($post = array(), $field = '', $options = array())
+	{
+		$data = $this->get($post, $field, $options);
+		if (!$data) {
+			return false;
+		}
+
+		if (isset($options['googleMapsLabel'])) {
+			$data['googleMapsLabel'] = $options['googleMapsLabel'];
+		}
+
+		return $this->BcBaser->getElement('PetitCustomField.petit_custom_google_maps', $data);
+	}
+
+	/**
+	 * フィールド名を指定して、Googleマップのテキストデータを取得する
+	 * 
+	 * @param array $post
+	 * @param string $field
+	 * @param array $options
+	 * @return mixes
+	 */
+	public function getGoogleMapsText($post = array(), $field = '', $options = array())
+	{
+		$data = $this->get($post, $field, $options);
+		if (isset($data['google_maps_text'])) {
+			return $data['google_maps_text'];
+		}
+	}
+
 	/**
 	 * フォームのタイプを判定して、タイプ別の入力フォームを生成する
 	 * 
