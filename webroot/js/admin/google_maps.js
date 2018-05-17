@@ -98,21 +98,45 @@ $(function(){
 
 			var marker = new google.maps.Marker({
 				position: latlng,
-				map: map
+				map: map,
+				draggable: true
 			});
+
+			// マーカーをドラッグした際は、地図ドラッグにマーカーを追従しない
+			var markerDragMode = false;
 
 			// 地図操作時に地図情報とマーカーの位置を更新
 			google.maps.event.addListener(map, 'dragend', function(){
-				marker.setPosition(map.getCenter());
-				latitudeInput.val(map.getCenter().lat());
-				longtudeInput.val(map.getCenter().lng());
-				zoomInput.val(map.getZoom());
+				if (!markerDragMode) {
+					marker.setPosition(map.getCenter());
+					latitudeInput.val(map.getCenter().lat());
+					longtudeInput.val(map.getCenter().lng());
+					zoomInput.val(map.getZoom());
+				}
 			});
 			google.maps.event.addListener(map, 'drag', function(){
-				marker.setPosition(map.getCenter());
+				if (!markerDragMode) {
+					marker.setPosition(map.getCenter());
+				}
 			});
 			google.maps.event.addListener(map, 'zoom_changed', function(){
-				marker.setPosition(map.getCenter());
+				if (!markerDragMode) {
+					marker.setPosition(map.getCenter());
+				}
+				zoomInput.val(map.getZoom());
+			});
+			// クリックした位置にマーカー移動
+			google.maps.event.addListener(map, 'click', function(e){
+				markerDragMode = true;
+				marker.setPosition(e.latLng);
+				latitudeInput.val(e.latLng.lat());
+				longtudeInput.val(e.latLng.lng());
+			});
+			// マーカードラッグ
+			google.maps.event.addListener(marker, 'dragend', function(){
+				markerDragMode = true;
+				latitudeInput.val(marker.getPosition().lat());
+				longtudeInput.val(marker.getPosition().lng());
 				zoomInput.val(map.getZoom());
 			});
 
