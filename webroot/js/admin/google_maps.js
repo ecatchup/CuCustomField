@@ -132,6 +132,10 @@ $(function(){
 				latitudeInput.val(e.latLng.lat());
 				longtudeInput.val(e.latLng.lng());
 			});
+			// マーカーダブルクリックでマーカー座標を地図のセンターに
+			google.maps.event.addListener(marker, 'dblclick', function(){
+				map.setCenter(marker.getPosition());
+			});
 			// マーカードラッグ
 			google.maps.event.addListener(marker, 'dragend', function(){
 				markerDragMode = true;
