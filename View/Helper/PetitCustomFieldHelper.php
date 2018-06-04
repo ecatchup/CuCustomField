@@ -275,6 +275,10 @@ class PetitCustomFieldHelper extends AppHelper
 							$data = $fieldValue;
 							break;
 
+						case 'googlemaps':
+							$data = $fieldValue;
+							break;
+
 						default:
 							$data = $fieldValue;
 							break;

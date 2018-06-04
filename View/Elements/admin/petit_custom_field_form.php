@@ -29,8 +29,8 @@ $formPlace = $this->request->data('PetitCustomFieldConfig.form_place');
 							<div><?php echo nl2br($valueFieldConfig['PetitCustomFieldConfigField']['prepend']) ?></div>
 						<?php endif ?>
 
-						<?php if ($this->BcBaser->siteConfig['google_maps_api_key']): ?>
-							<div class="petit-google-maps" style="width:600px; height:400px;"></div>
+						<?php if (!empty($this->BcBaser->siteConfig['google_maps_api_key'])): ?>
+							<div class="petit-google-maps" style="width:100%; height:450px;"></div>
 							<?php echo $this->BcBaser->js('https://maps.google.com/maps/api/js?key=' . $this->BcBaser->siteConfig['google_maps_api_key']) ?>
 							<?php echo $this->BcBaser->js('PetitCustomField.admin/google_maps') ?>
 
