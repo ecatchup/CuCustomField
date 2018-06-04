@@ -322,7 +322,7 @@ class PetitCustomFieldHelper extends AppHelper
 
 		$elementOptions	 = array(
 			'googleMapsLabel'	 => false,
-			'googleMapsWidth'	 => '600px',
+			'googleMapsWidth'	 => '100%',
 			'googleMapsHeight'	 => '400px',
 		);
 

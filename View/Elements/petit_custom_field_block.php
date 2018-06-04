@@ -39,7 +39,8 @@ $this->BcBaser->css('PetitCustomField.petit_custom_field');
 						<?php
 						$fieldConfig = $this->PetitCustomField->getFieldConfig($this->request->params['Content']['entity_id'], $fieldName);
 						if ($fieldConfig['field_type'] == 'googlemaps') {
-							echo $this->PetitCustomField->getGoogleMaps($post, $fieldName, ['googleMapsLabel' => true]);
+							echo $this->PetitCustomField->getGoogleMaps($post, $fieldName,
+								['googleMapsLabel' => true, 'googleMapsWidth' => '600px']);
 						} else {
 							echo $this->PetitCustomField->get($post, $fieldName);
 						}
