@@ -340,7 +340,7 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 					<?php echo $this->BcForm->error('PetitCustomFieldConfigField.google_maps_zoom') ?>
 				</span>
 				<span id="Row<?php echo $currentModelName . Inflector::camelize('google_maps_text'); ?>">
-					<?php echo $this->BcForm->label('PetitCustomFieldConfigField.google_maps_text', 'テキスト') ?>
+					<?php echo $this->BcForm->label('PetitCustomFieldConfigField.google_maps_text', 'ポップアップテキスト') ?>
 					<?php echo $this->BcForm->input('PetitCustomFieldConfigField.google_maps_text', array('type' => 'text', 'size' => 60)) ?>
 					<?php echo $this->BcForm->error('PetitCustomFieldConfigField.google_maps_text') ?>
 				</span>

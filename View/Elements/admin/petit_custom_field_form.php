@@ -48,7 +48,7 @@ $formPlace = $this->request->data('PetitCustomFieldConfig.form_place');
 
 							<br>
 
-							<?php echo 'テキスト' . $this->PetitCustomField->input("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}.google_maps_text", array('type' => 'text', 'class' => 'petit-google_maps_text full-width', 'default' => $valueFieldConfig['PetitCustomFieldConfigField']['google_maps_text'])); ?>
+							<?php echo 'ポップアップテキスト' . $this->PetitCustomField->input("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}.google_maps_text", array('type' => 'text', 'class' => 'petit-google_maps_text', 'default' => $valueFieldConfig['PetitCustomFieldConfigField']['google_maps_text'], 'size' => 60)); ?>
 						<?php else: ?>
 							※Googleマップを利用するには、Google Maps APIのキーの登録が必要です。キーを取得して、システム管理より設定してください。
 						<?php endif; ?>
