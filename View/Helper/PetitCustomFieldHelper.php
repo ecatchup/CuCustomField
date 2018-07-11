@@ -321,7 +321,7 @@ class PetitCustomFieldHelper extends AppHelper
 		}
 
 		$elementOptions	 = array(
-			'googleMapsLabel'	 => false,
+			'googleMapsPopupText'	 => true,
 			'googleMapsWidth'	 => '100%',
 			'googleMapsHeight'	 => '400px',
 		);

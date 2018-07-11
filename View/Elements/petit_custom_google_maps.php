@@ -1,9 +1,9 @@
 <?php
-if (isset($googleMapsLabel)) {
-	if ($googleMapsLabel === true) {
+if (isset($googleMapsPopupText)) {
+	if ($googleMapsPopupText === true) {
 		$text = $google_maps_text;
 	} else {
-		$text = $googleMapsLabel;
+		$text = $googleMapsPopupText;
 	}
 } else {
 	$text = '';

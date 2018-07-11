@@ -24,8 +24,34 @@ $(function(){
 			position: latlng,
 			map: map,
 		};
-		if (text) markerOptions.label = text;
 
 		var marker = new google.maps.Marker(markerOptions);
+
+		if (text) {
+			text = escapeHtml(text);
+
+			infoWindow = new google.maps.InfoWindow({
+				content: '<div class="petit-google-maps-popup">' + text + '</div>'
+			});
+			marker.addListener('click', function() {
+				infoWindow.open(map, marker);
+			});
+		}
+	}
+
+	function escapeHtml(string) {
+		var entityMap = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;',
+			'"': '&quot;',
+			"'": '&#39;',
+			'/': '&#x2F;',
+			'`': '&#x60;',
+			'=': '&#x3D;'
+		};
+		return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+			return entityMap[s];
+		});
 	}
 });
