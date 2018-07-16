@@ -30,7 +30,7 @@ $(function(){
 		if (text) {
 			text = escapeHtml(text);
 
-			infoWindow = new google.maps.InfoWindow({
+			var infoWindow = new google.maps.InfoWindow({
 				content: '<div class="petit-google-maps-popup">' + text + '</div>'
 			});
 			marker.addListener('click', function() {
