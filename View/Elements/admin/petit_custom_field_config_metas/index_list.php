@@ -31,7 +31,7 @@ $this->BcBaser->css(array(
 		<tr>
 			<th class="list-tool">
 				<div>
-					<?php $this->BcBaser->link($this->BcBaser->getImg('admin/btn_add.png', array('width' => 69, 'height' => 18, 'alt' => '新規追加', 'class' => 'btn')),
+					<?php $this->BcBaser->link($this->BcBaser->getImg('admin/btn_add.png', array('alt' => '新規追加', 'class' => 'btn')) . '新規追加',
 							array('controller' => 'petit_custom_field_config_fields', 'action' => 'add', $configId)) ?>
 				</div>
 			</th>
