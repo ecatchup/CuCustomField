@@ -2,8 +2,8 @@
 /**
  * [PUBLISH] PetitCustomField
  *
- * @link			http://www.materializing.net/
- * @author			arata
+ * @copyright		Copyright, Catchup, Inc.
+ * @link			https://catchup.co.jp
  * @package			PetitCustomField
  * @license			MIT
  * 
