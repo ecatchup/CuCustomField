@@ -163,15 +163,13 @@ $(function(){
 			});
 
 			// マーカークリック時にポップアップテキストを表示
-			var text = $('.petit-google_maps_text').val();
-			var infoWindow = new google.maps.InfoWindow({
-				content: '<div class="petit-google-maps-popup">' + text + '</div>'
-			});
-
+			var infoWindow = new google.maps.InfoWindow();
 			marker.addListener('click', function() {
 				var text = popupTextInput.val();
-				infoWindow.setContent('<div class="petit-google-maps-popup">' + text + '</div>');
-				infoWindow.open(map, marker);
+				if (text) {
+					infoWindow.setContent('<div class="petit-google-maps-popup">' + text + '</div>');
+					infoWindow.open(map, marker);
+				}
 			});
 		}
 
