@@ -38,6 +38,7 @@ $(function(){
 			'latitudeInput': '.petit-google_maps_latitude',
 			'longtudeInput': '.petit-google_maps_longtude',
 			'zoomInput': '.petit-google_maps_zoom',
+			'popupTextInput': '.petit-google_maps_text',
 			'addressInput': '.petit-google_maps_address',
 			'setMapButton': '.petit-set_google_maps_setting',
 		};
@@ -73,6 +74,7 @@ $(function(){
 			var latitudeInput = element.find(selectors.latitudeInput);
 			var longtudeInput = element.find(selectors.longtudeInput);
 			var zoomInput = element.find(selectors.zoomInput);
+			var popupTextInput = element.find(selectors.popupTextInput);
 			var addressInput = element.find(selectors.addressInput);
 			var setMapButton = element.find(selectors.setMapButton);
 
@@ -158,6 +160,18 @@ $(function(){
 					longtudeInput.val(map.getCenter().lng());
 					zoomInput.val(map.getZoom());
 				});
+			});
+
+			// マーカークリック時にポップアップテキストを表示
+			var text = $('.petit-google_maps_text').val();
+			var infoWindow = new google.maps.InfoWindow({
+				content: '<div class="petit-google-maps-popup">' + text + '</div>'
+			});
+
+			marker.addListener('click', function() {
+				var text = popupTextInput.val();
+				infoWindow.setContent('<div class="petit-google-maps-popup">' + text + '</div>');
+				infoWindow.open(map, marker);
 			});
 		}
 
