@@ -15,7 +15,7 @@
 		<tr>
 			<th class="list-tool">
 				<div>
-					<?php $this->BcBaser->link($this->BcBaser->getImg('admin/btn_add.png', array('alt' => '新規追加', 'class' => 'btn')), array('action' => 'add')) ?>
+					<?php $this->BcBaser->link($this->BcBaser->getImg('admin/btn_add.png', array('alt' => '新規追加', 'class' => 'btn')) . '新規追加', array('action' => 'add')) ?>
 				</div>	
 			</th>
 			<th><?php echo $this->Paginator->sort('id', array(
