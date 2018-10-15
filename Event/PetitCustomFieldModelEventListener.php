@@ -120,7 +120,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 					break;
 
 				case 'admin_edit':
-					$data = $this->PetitCustomFieldModel->getSection($Model->id, $this->PetitCustomFieldModel->name);
+					$data = $this->PetitCustomFieldModel->getSection($params['pass'][1], $this->PetitCustomFieldModel->name);
 					if ($data) {
 						$event->data[0][0][$this->PetitCustomFieldModel->name] = $data;
 					}
@@ -158,10 +158,10 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 
 			$contentId = '';
 			// カスタムフィールドの設定情報を取得するため、記事のブログコンテンツIDからカスタムフィールド側のコンテンツIDを取得する
-			if (!empty($Model->BlogContent->data)) {
-				$contentId = $Model->BlogContent->data['BlogContent']['id'];
-			} else {
+			if (!empty($value['BlogPost']['blog_content_id'])) {
 				$contentId = $value['BlogPost']['blog_content_id'];
+			} else {
+				$contentId = $Model->BlogContent->data['BlogContent']['id'];
 			}
 			$configData = $this->hasCustomFieldConfigData($contentId);
 			if (!$configData) {
