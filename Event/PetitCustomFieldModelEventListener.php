@@ -85,7 +85,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		$Model = $event->subject();
 		// 最近の投稿、ブログ記事前後移動を find する際に実行
 		// TODO get_recent_entries に呼ばれる find 判定に、より良い方法があったら改修する
-		if (count($event->data[0]['fields']) === 2) {
+		if (is_array($event->data[0]['fields']) && count($event->data[0]['fields']) === 2) {
 			if (($event->data[0]['fields'][0] == 'no') && ($event->data[0]['fields'][1] == 'name')) {
 				$event->data[0]['fields'][]	 = 'id';
 				$event->data[0]['fields'][]	 = 'posts_date';
