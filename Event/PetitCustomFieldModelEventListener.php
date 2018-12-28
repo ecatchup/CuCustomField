@@ -103,13 +103,19 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 	 * ブログ記事取得の際にプチ・カスタムフィールド情報も併せて取得する
 	 * 
 	 * @param CakeEvent $event
-	 * @return array
+	 * @return void
 	 */
 	public function blogBlogPostAfterFind(CakeEvent $event)
 	{
 		$Model	 = $event->subject();
 		$params	 = Router::getParams();
 		$this->setUpModel();
+
+		if(empty($event->data[0][0]['BlogPost']['id'])) {
+			return;
+		} else {
+			$blogPostId = $event->data[0][0]['BlogPost']['id'];
+		}
 
 		if (BcUtil::isAdminSystem()) {
 			switch ($params['action']) {
@@ -120,14 +126,14 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 					break;
 
 				case 'admin_edit':
-					$data = $this->PetitCustomFieldModel->getSection($params['pass'][1], $this->PetitCustomFieldModel->name);
+					$data = $this->PetitCustomFieldModel->getSection($blogPostId, $this->PetitCustomFieldModel->name);
 					if ($data) {
 						$event->data[0][0][$this->PetitCustomFieldModel->name] = $data;
 					}
 					break;
 
 				case 'admin_preview':
-					$data = $this->PetitCustomFieldModel->getSection($params['pass'][1], $this->PetitCustomFieldModel->name);
+					$data = $this->PetitCustomFieldModel->getSection($blogPostId, $this->PetitCustomFieldModel->name);
 					if ($data) {
 						$event->data[0][0][$this->PetitCustomFieldModel->name] = $data;
 					}
