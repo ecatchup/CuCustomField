@@ -118,6 +118,13 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		}
 
 		if (BcUtil::isAdminSystem()) {
+			if ($params['plugin'] !== 'blog') {
+				return;
+			}
+			if ($params['controller'] !== 'blog_posts') {
+				return;
+			}
+
 			switch ($params['action']) {
 				case 'admin_index':
 					break;
