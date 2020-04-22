@@ -13,18 +13,18 @@ $formPlace = $this->request->data('PetitCustomFieldConfig.form_place');
 
 <h3 id="textPetitCustomFieldTable">カスタム項目</h3>
 <?php if ($fieldConfigField): ?>
-<table cellpadding="0" cellspacing="0" class="form-table section" id="PetitCustomFieldTable">
+<table cellpadding="0" cellspacing="0" class="form-table section bca-form-table" id="PetitCustomFieldTable">
 	<?php foreach ($fieldConfigField as $keyFieldConfig => $valueFieldConfig): ?>
 
 		<?php if ($this->PetitCustomField->judgeStatus($valueFieldConfig)): ?>
 			<?php if ($valueFieldConfig['PetitCustomFieldConfigField']['field_type'] == 'googlemaps'): ?>
 				<tr>
-					<th colspan="2">
+					<th class="col-head bca-form-table__label" colspan="2">
 						<?php echo $this->BcForm->label("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}", $valueFieldConfig['PetitCustomFieldConfigField']['name']) ?>
 					</th>
 				</tr>
 				<tr class="petit-google-maps-form">
-					<td class="col-input" colspan="2">
+					<td class="col-input bca-form-table__input" colspan="2">
 						<?php if ($this->PetitCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'prepend'))): ?>
 							<div><?php echo nl2br($valueFieldConfig['PetitCustomFieldConfigField']['prepend']) ?></div>
 						<?php endif ?>
@@ -61,13 +61,13 @@ $formPlace = $this->request->data('PetitCustomFieldConfig.form_place');
 			<?php elseif ($valueFieldConfig['PetitCustomFieldConfigField']['field_type'] == 'wysiwyg'): ?>
 				<?php // Wysiwyg の場合 ?>
 				<tr>
-					<th colspan="2">
+					<th class="col-head bca-form-table__label" colspan="2">
 						<?php echo $this->BcForm->label("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}", $valueFieldConfig['PetitCustomFieldConfigField']['name']) ?>
 						<?php if ($this->PetitCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'required'))): ?>&nbsp;<span class="required">*</span><?php endif ?>
 					</th>
 				</tr>
 				<tr>
-					<td class="col-input" colspan="2">
+					<td class="col-input bca-form-table__input" colspan="2">
 						<?php if ($this->PetitCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'prepend'))): ?>
 							<?php echo nl2br($valueFieldConfig['PetitCustomFieldConfigField']['prepend']) ?>
 						<?php endif ?>
@@ -89,11 +89,11 @@ $formPlace = $this->request->data('PetitCustomFieldConfig.form_place');
 			<?php elseif ($valueFieldConfig['PetitCustomFieldConfigField']['field_type'] == 'upload'): ?>
 				<?php // アップロードの場合 ?>
 				<tr>
-					<th class="col-head">
+					<th class="col-head bca-form-table__label">
 						<?php echo $this->BcForm->label("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}", $valueFieldConfig['PetitCustomFieldConfigField']['name']) ?>
 						<?php if ($this->PetitCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'required'))): ?>&nbsp;<span class="required">*</span><?php endif ?>
 					</th>
-					<td class="col-input">
+					<td class="col-input bca-form-table__input">
 						<?php if ($this->PetitCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'prepend'))): ?>
 							<?php echo nl2br($valueFieldConfig['PetitCustomFieldConfigField']['prepend']) ?>
 						<?php endif ?>
@@ -115,11 +115,11 @@ $formPlace = $this->request->data('PetitCustomFieldConfig.form_place');
 			<?php else: ?>
 				<?php // デフォルトのフィールド ?>
 				<tr>
-					<th class="col-head">
+					<th class="col-head bca-form-table__label">
 						<?php echo $this->BcForm->label("PetitCustomField.{$valueFieldConfig['PetitCustomFieldConfigField']['field_name']}", $valueFieldConfig['PetitCustomFieldConfigField']['name']) ?>
 						<?php if ($this->PetitCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'required'))): ?>&nbsp;<span class="required">*</span><?php endif ?>
 					</th>
-					<td class="col-input">
+					<td class="col-input bca-form-table__input">
 						<?php if ($this->PetitCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'prepend'))): ?>
 							<?php echo nl2br($valueFieldConfig['PetitCustomFieldConfigField']['prepend']) ?>
 						<?php endif ?>

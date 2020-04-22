@@ -41,13 +41,14 @@ if (count($blogContentDatas) > 0) {
 </h2>
 <?php endif ?>
 
-<div id="PetitCustomFieldConfigTable">
-
-<table cellpadding="0" cellspacing="0" class="form-table section">
+<div id="PetitCustomFieldConfigTable" class="section">
+<table cellpadding="0" cellspacing="0" id="FormTable" class="form-table bca-form-table">
 	<?php if($this->request->params['action'] != 'admin_add'): ?>
 	<tr>
-		<th class="col-head"><?php echo $this->BcForm->label('PetitCustomFieldConfig.id', 'NO') ?></th>
-		<td class="col-input">
+		<th class="col-head bca-form-table__label">
+			<?php echo $this->BcForm->label('PetitCustomFieldConfig.id', 'NO') ?>
+		</th>
+		<td class="col-input bca-form-table__input">
 			<?php echo $this->BcForm->value('PetitCustomFieldConfig.id') ?>
 		</td>
 	</tr>
@@ -56,8 +57,10 @@ if (count($blogContentDatas) > 0) {
 	<?php if ($hasAddableBlog): ?>
 		<?php if($this->request->params['action'] == 'admin_add'): ?>
 		<tr>
-			<th class="col-head"><?php echo $this->BcForm->label('PetitCustomFieldConfig.content_id', 'ブログ') ?></th>
-			<td class="col-input">
+			<th class="col-head bca-form-table__label">
+				<?php echo $this->BcForm->label('PetitCustomFieldConfig.content_id', 'ブログ') ?>
+			</th>
+			<td class="col-input bca-form-table__input">
 				<?php echo $this->BcForm->input('PetitCustomFieldConfig.content_id', array('type' => 'select', 'options' => $blogContentDatas)) ?>
 				<?php echo $this->BcForm->error('PetitCustomFieldConfig.content_id') ?>
 			</td>
@@ -65,7 +68,7 @@ if (count($blogContentDatas) > 0) {
 		<?php endif ?>
 
 		<tr>
-			<th class="col-head">
+			<th class="col-head bca-form-table__label">
 				<?php echo $this->BcForm->label('PetitCustomFieldConfig.status', 'カスタムフィールドの利用') ?>
 				<?php echo $this->BcBaser->img('admin/icn_help.png', array('id' => 'helpPetitCustomFieldConfigStatus', 'class' => 'btn help', 'alt' => 'ヘルプ')) ?>
 				<div id="helptextPetitCustomFieldConfigStatus" class="helptext">
@@ -74,24 +77,26 @@ if (count($blogContentDatas) > 0) {
 					</ul>
 				</div>
 			</th>
-			<td class="col-input">
+			<td class="col-input bca-form-table__input">
 				<?php echo $this->BcForm->input('PetitCustomFieldConfig.status', array('type' => 'radio', 'options' => $this->BcText->booleanDoList('利用'))) ?>
 				<?php echo $this->BcForm->error('PetitCustomFieldConfig.status') ?>
 			</td>
 		</tr>
 		<tr>
-			<th class="col-head">
+			<th class="col-head bca-form-table__label">
 				<?php echo $this->BcForm->label('PetitCustomFieldConfig.form_place', 'カスタムフィールドの表示位置指定') ?>
 			</th>
-			<td class="col-input">
+			<td class="col-input bca-form-table__input">
 				<?php echo $this->BcForm->input('PetitCustomFieldConfig.form_place', array('type' => 'select', 'options' => $customFieldConfig['form_place'])) ?>
 				<?php echo $this->BcForm->error('PetitCustomFieldConfig.form_place') ?>
 			</td>
 		</tr>
 	<?php else: ?>
 	<tr>
-		<th class="col-head"><?php echo $this->BcForm->label('PetitCustomFieldConfig.content_id', 'ブログ') ?></th>
-		<td class="col-input">
+		<th class="col-head bca-form-table__label">
+			<?php echo $this->BcForm->label('PetitCustomFieldConfig.content_id', 'ブログ') ?>
+		</th>
+		<td class="col-input bca-form-table__input">
 			追加設定可能なブログがありません。
 		</td>
 	</tr>
@@ -100,8 +105,19 @@ if (count($blogContentDatas) > 0) {
 </div>
 
 <?php if ($hasAddableBlog): ?>
-<div class="submit">
-	<?php echo $this->BcForm->submit('保　存', array('div' => false, 'class' => 'button btn-red', 'id' => 'BtnSave')) ?>
+<!-- button -->
+<div class="submit bca-actions">
+	<div class="bca-actions__main">
+		<?php echo $this->BcForm->button(__d('baser', '保存'), ['div' => false, 'class' => 'button bca-btn bca-actions__item',
+      'data-bca-btn-type' => 'save',
+      'data-bca-btn-size' => 'lg',
+      'data-bca-btn-width' => 'lg',]) ?>
+	</div>
 </div>
 <?php endif ?>
 <?php echo $this->BcForm->end() ?>
+<?php
+if(Configure::read('petitCustomFieldConfig.submenu')) {
+	$this->BcBaser->element('submenu');
+}
+?>

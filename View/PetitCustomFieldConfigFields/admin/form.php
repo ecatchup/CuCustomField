@@ -396,14 +396,58 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 </table>
 </div>
 
-<div class="submit">
-	<?php echo $this->BcForm->submit('保　存', array('div' => false, 'class' => 'button btn-red', 'id' => 'BtnSave')) ?>
-	<?php if ($deletable): ?>
-		<?php $this->BcBaser->link('削　除',
-			array('action' => 'delete', $configId, $foreignId),
-			array('class' => 'btn-gray button', 'id' => 'BtnDelete'),
-			sprintf('ID：%s のデータを削除して良いですか？', $this->BcForm->value('PetitCustomFieldConfigField.name')),
-			false); ?>
-	<?php endif ?>
-</div>
+<?php if ($this->BcBaser->siteConfig['admin_theme'] == 'admin-third'):?>
+	<!-- button -->
+	<div class="submit bca-actions">
+		<div class="bca-actions__main">
+			<?php
+			echo $this->BcForm->button(__d('baser', '保存'), 
+				[
+					'div' => false, 
+					'class' => 'button bca-btn bca-actions__item',
+					'data-bca-btn-type' => 'save',
+					'data-bca-btn-size' => 'lg',
+					'data-bca-btn-width' => 'lg',
+				]);
+			?>
+		</div>
+		<?php if ($this->action == 'admin_edit'): ?>
+			<div class="bca-actions__sub">
+				<?php
+				$this->BcBaser->link(__d('baser', '削除'), 
+					[
+						'action' => 'delete', 
+						$configId, 
+						$foreignId
+					], 
+					[
+						'class' => 'submit-token button bca-btn bca-actions__item', 
+						'data-bca-btn-type' => 'delete', 
+						'data-bca-btn-size' => 'sm'
+					], 
+					sprintf('ID：%s のデータを削除して良いですか？', $this->BcForm->value('PetitCustomFieldConfigField.name')), 
+					false
+				);
+				?>
+			</div>
+		<?php endif ?>
+	</div>
+<?php else: ?>
+	<div class="submit">
+		<?php echo $this->BcForm->submit('保　存', array('div' => false, 'class' => 'button btn-red', 'id' => 'BtnSave')) ?>
+		<?php if ($deletable): ?>
+			<?php $this->BcBaser->link('削　除',
+				array('action' => 'delete', $configId, $foreignId),
+				array('class' => 'btn-gray button', 'id' => 'BtnDelete'),
+				sprintf('ID：%s のデータを削除して良いですか？', $this->BcForm->value('PetitCustomFieldConfigField.name')),
+				false); ?>
+		<?php endif ?>
+	</div>
+<?php endif ?>
+
 <?php echo $this->BcForm->end() ?>
+<?php
+if(Configure::read('petitCustomFieldConfig.submenu')) {
+	$this->BcBaser->element('submenu');
+}
+?>

@@ -77,3 +77,10 @@ $config['petitCustomField'] = array(
 		1	 => '必須とする',
 	),
 );
+/**
+ * プチ・カスタムフィールド管理画面表示用設定
+ * 
+ */
+$config['petitCustomFieldConfig'] = array(
+	'submenu' => false
+);

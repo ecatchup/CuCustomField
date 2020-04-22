@@ -64,3 +64,8 @@ $(function(){
 <?php endif ?>
 </div>
 <?php echo $this->BcForm->end() ?>
+<?php
+if(Configure::read('petitCustomFieldConfig.submenu')) {
+	$this->BcBaser->element('PetitCustomField.submenu');
+}
+?>
