@@ -45,14 +45,13 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 	<?php $this->BcBaser->url(array('controller' => 'petit_custom_field_config_fields', 'action' => 'ajax_check_duplicate')) ?>
 </div>
 <div id="ForeignId" class="display-none"><?php echo $foreignId ?></div>
-
-<div id="PetitCustomFieldConfigFieldTable">
-<table cellpadding="0" cellspacing="0" id="PetitCustomFieldConfigFieldTable1" class="form-table section">
+<div id="PetitCustomFieldConfigFieldTable" class="section">
+<table cellpadding="0" cellspacing="0" id="PetitCustomFieldConfigFieldTable1" class="form-table bca-form-table">
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('name'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.name', 'カスタムフィールド名') ?>&nbsp;<span class="required">*</span>
 		</th>
-		<td class="col-input" colspan="3">
+		<td class="col-input bca-form-table__input" colspan="3">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.name',
 					array('type' => 'text', 'size' => 60, 'maxlength' => 255, 'counter' => true, 'placeholder' => 'カスタムフィールドの名称')) ?>
 			<?php echo $this->BcForm->error('PetitCustomFieldConfigField.name') ?>
@@ -62,10 +61,10 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('label_name'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.label_name', 'ラベル名') ?>&nbsp;<span class="required">*</span>
 		</th>
-		<td class="col-input" colspan="3">
+		<td class="col-input bca-form-table__input" colspan="3">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.label_name',
 					array('type' => 'text', 'size' => 60, 'maxlength' => 255, 'counter' => true, 'placeholder' => 'ラベルの名称')) ?>
 			<?php echo $this->BcForm->error('PetitCustomFieldConfigField.label_name') ?>
@@ -75,10 +74,10 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('field_name'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.field_name', 'フィールド名') ?>&nbsp;<span class="required">*</span>
 		</th>
-		<td class="col-input" colspan="3">
+		<td class="col-input bca-form-table__input" colspan="3">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.field_name',
 					array('type' => 'text', 'size' => 60, 'maxlength' => 255, 'counter' => true, 'placeholder' => 'field_name_sample')) ?>
 			<?php echo $this->BcForm->error('PetitCustomFieldConfigField.field_name') ?>
@@ -93,10 +92,10 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('field_type'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.field_type', 'フィールドタイプ') ?>&nbsp;<span class="required">*</span>
 		</th>
-		<td class="col-input" colspan="3">
+		<td class="col-input bca-form-table__input" colspan="3">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.field_type', array('type' => 'select', 'options' => $customFieldConfig['field_type'])) ?>
 			<?php echo $this->BcForm->error('PetitCustomFieldConfigField.field_type') ?>
 			
@@ -107,17 +106,17 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('status'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.status', '利用状態') ?>
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.status', array('type' => 'checkbox', 'label' => '利用中')) ?>
 			<?php echo $this->BcForm->error('PetitCustomFieldConfigField.status') ?>
 		</td>
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.required', '必須設定') ?>
 		</th>
-		<td class="col-input" id="Row<?php echo $currentModelName . Inflector::camelize('required'); ?>">
+		<td class="col-input bca-form-table__input" id="Row<?php echo $currentModelName . Inflector::camelize('required'); ?>">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.required', array('type' => 'checkbox', 'label' => '必須入力とする')) ?>
 			<?php echo $this->BcForm->error('PetitCustomFieldConfigField.required') ?>
 		</td>
@@ -126,12 +125,12 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 
 
 <h3>管理システム表示設定</h3>
-<table cellpadding="0" cellspacing="0" id="PetitCustomFieldConfigFieldTable2" class="form-table section">
+<table cellpadding="0" cellspacing="0" id="PetitCustomFieldConfigFieldTable2" class="form-table bca-form-table">
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('default_value'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.default_value', '初期値') ?>
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.default_value', array('type' => 'text', 'size' => 60, 'maxlength' => 255, 'counter' => true)) ?>
 				<?php echo $this->BcBaser->img('admin/icn_help.png', array('id' => 'helpPetitCustomFieldConfigFieldDefaultValue', 'class' => 'btn help', 'alt' => 'ヘルプ')) ?>
 				<div id="helptextPetitCustomFieldConfigFieldDefaultValue" class="helptext">
@@ -158,10 +157,10 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('validate'); ?>Group">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.validate', '入力値チェック') ?>
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.validate', array('type' => 'select', 'multiple' => 'checkbox', 'options' => $customFieldConfig['validate'])) ?>
 			<?php echo $this->BcForm->error('PetitCustomFieldConfigField.validate') ?>
 			
@@ -191,10 +190,10 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr  id="Row<?php echo $currentModelName . Inflector::camelize('size'); ?>Group">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			テキスト
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 			<div class="pcf-input-box">
 				<span class="span4" id="Row<?php echo $currentModelName . Inflector::camelize('size'); ?>">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.size', '入力サイズ') ?>
@@ -220,10 +219,10 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('placeholder'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.placeholder', 'プレースホルダー') ?>
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.placeholder', array('type' => 'text', 'size' => 60, 'placeholder' => 'プレースホルダー表示例')) ?>
 				<?php echo $this->BcBaser->img('admin/icn_help.png', array('id' => 'helpPetitCustomFieldConfigFieldPlaceholder', 'class' => 'btn help', 'alt' => 'ヘルプ')) ?>
 				<div id="helptextPetitCustomFieldConfigFieldPlaceholder" class="helptext">
@@ -235,10 +234,10 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('rows'); ?>Group">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			テキストエリア
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 			<div class="pcf-input-box">
 				<span class="span4" id="Row<?php echo $currentModelName . Inflector::camelize('rows'); ?>">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.rows', '行数') ?>
@@ -273,10 +272,10 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('choices'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.choices', '選択肢') ?>
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.choices', array('type' => 'textarea', 'rows' => '4')) ?>
 			<?php echo $this->BcForm->error('PetitCustomFieldConfigField.choices') ?>
 			<br /><small>選択肢を改行毎に入力します。</small>
@@ -291,20 +290,20 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('separator'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.separator', '区切り文字') ?>
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.separator', array('type' => 'text', 'size' => 60, 'placeholder' => '&nbsp;&nbsp;')) ?>
 			<?php echo $this->BcForm->error('PetitCustomFieldConfigField.separator') ?>
 			<br /><small>※ラジオボタン表示の際の区切り文字を指定できます。</small>
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('auto_convert'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			入力テキスト変換処理
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.auto_convert', '自動変換') ?>
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.auto_convert', array('type' => 'select', 'options' => $customFieldConfig['auto_convert'])) ?>
 				<?php echo $this->BcBaser->img('admin/icn_help.png', array('id' => 'helpPetitCustomFieldConfigFieldAutoConvert', 'class' => 'btn help', 'alt' => 'ヘルプ')) ?>
@@ -318,10 +317,10 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('google_maps'); ?>Group">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			初期値
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 
 			<div class="pcf-input-box googlemaps-input-box">
 				<span id="Row<?php echo $currentModelName . Inflector::camelize('google_maps_latitude'); ?>">
@@ -348,10 +347,10 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('prepend'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.prepend', '入力欄前に表示') ?>
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.prepend', array('type' => 'text', 'size' => 60)) ?>
 				<?php echo $this->BcBaser->img('admin/icn_help.png', array('id' => 'helpPetitCustomFieldConfigFieldPrepend', 'class' => 'btn help', 'alt' => 'ヘルプ')) ?>
 				<div id="helptextPetitCustomFieldConfigFieldPrepend" class="helptext">
@@ -363,10 +362,10 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('append'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.append', '入力欄後に表示') ?>
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.append', array('type' => 'text', 'size' => 60)) ?>
 				<?php echo $this->BcBaser->img('admin/icn_help.png', array('id' => 'helpPetitCustomFieldConfigFieldAppend', 'class' => 'btn help', 'alt' => 'ヘルプ')) ?>
 				<div id="helptextPetitCustomFieldConfigFieldAppend" class="helptext">
@@ -378,10 +377,10 @@ $currentModelName = $this->request->params['models']['PetitCustomFieldConfigFiel
 		</td>
 	</tr>
 	<tr id="Row<?php echo $currentModelName . Inflector::camelize('description'); ?>">
-		<th class="col-head">
+		<th class="col-head bca-form-table__label">
 			<?php echo $this->BcForm->label('PetitCustomFieldConfigField.description', 'このフィールドの説明文') ?>
 		</th>
-		<td class="col-input">
+		<td class="col-input bca-form-table__input">
 			<?php echo $this->BcForm->input('PetitCustomFieldConfigField.description', array('type' => 'textarea', 'rows' => '2')) ?>
 				<?php echo $this->BcBaser->img('admin/icn_help.png', array('id' => 'helpPetitCustomFieldConfigFieldDescription', 'class' => 'btn help', 'alt' => 'ヘルプ')) ?>
 				<div id="helptextPetitCustomFieldConfigFieldDescription" class="helptext">

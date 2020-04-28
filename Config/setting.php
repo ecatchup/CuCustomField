@@ -23,6 +23,20 @@ $config['BcApp.adminNavi.petit_custom_field'] = array(
 		)
 	)
 );
+$config['BcApp.adminNavigation'] = [
+	'Plugins' => [
+		'menus' => [
+			'PetitCustomField' => [
+				'title' => 'プチ・カスタムフィールドプラグイン', 
+				'url' => [
+					'admin' => true, 
+					'plugin' => 'petit_custom_field', 
+					'controller' => 'petit_custom_field_configs',
+					'action' => 'index',
+				]
+			],
+		]
+]];
 
 /**
  * プチ・カスタムフィールド用設定
