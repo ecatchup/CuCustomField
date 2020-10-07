@@ -1,19 +1,19 @@
 <?php
 
 /**
- * [Model] PetitCustomField
+ * [Model] CuCustomFieldAppModel
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
-class PetitCustomFieldAppModel extends AppModel
+class CuCustomFieldAppModel extends AppModel
 {
 
 	/**
 	 * シリアライズされているデータを復元する
-	 * 
+	 *
 	 * @param array $data
 	 * @return array
 	 */
@@ -30,7 +30,7 @@ class PetitCustomFieldAppModel extends AppModel
 
 	/**
 	 * 半角パイプで区切られたデータを配列に変換する
-	 * 
+	 *
 	 * @param array $data
 	 * @return array
 	 */

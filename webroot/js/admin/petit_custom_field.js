@@ -10,22 +10,22 @@
  * プチカスタムフィールド用のJS処理
  */
 $(function(){
-	$fieldType = $("#PetitCustomFieldConfigFieldFieldType").val();
-	petitCustomFieldConfigFieldFieldTypeChangeHandler($fieldType);
+	$fieldType = $("#CuCustomFieldDefinitionFieldType").val();
+	cuCustomFieldCefinitionFieldTypeChangeHandler($fieldType);
 	// タイプを選択すると入力するフィールドが切り替わる
-	$("#PetitCustomFieldConfigFieldFieldType").change(function(){
-		petitCustomFieldConfigFieldFieldTypeChangeHandler($("#PetitCustomFieldConfigFieldFieldType").val());
+	$("#CuCustomFieldDefinitionFieldType").change(function(){
+		cuCustomFieldCefinitionFieldTypeChangeHandler($("#CuCustomFieldDefinitionFieldType").val());
 	});
-	
+
 	// カスタムフィールド名の入力時、ラベル名が空の場合は名称を自動で入力する
-	$("#PetitCustomFieldConfigFieldName").change(function(){
-		$labelName = $("#PetitCustomFieldConfigFieldLabelName");
+	$("#CuCustomFieldDefinitionName").change(function(){
+		$labelName = $("#CuCustomFieldDefinitionLabelName");
 		var labelNameValue = $labelName.val();
 		if(!labelNameValue){
-			$labelName.val($("#PetitCustomFieldConfigFieldName").val());
+			$labelName.val($("#CuCustomFieldDefinitionName").val());
 		}
 	});
-	
+
 	// 利用中フィールド名一覧を表示する
 	$('#show_field_name_list').change(function() {
 		if ($(this).prop('checked')) {
@@ -34,11 +34,11 @@ $(function(){
 			$('#FieldNameList').hide();
 		}
 	});
-	
+
 	// カスタムフィールド名、ラベル名、フィールド名の入力時、リアルタイムで重複チェックを行う
-	$("#PetitCustomFieldConfigFieldName").keyup(checkDuplicateValueChengeHandler);
-	$("#PetitCustomFieldConfigFieldLabelName").keyup(checkDuplicateValueChengeHandler);
-	$("#PetitCustomFieldConfigFieldFieldName").keyup(checkDuplicateValueChengeHandler);
+	$("#CuCustomFieldDefinitionName").keyup(checkDuplicateValueChengeHandler);
+	$("#CuCustomFieldDefinitionLabelName").keyup(checkDuplicateValueChengeHandler);
+	$("#CuCustomFieldDefinitionFieldName").keyup(checkDuplicateValueChengeHandler);
 	// 重複があればメッセージを表示する
 	function checkDuplicateValueChengeHandler() {
 		var fieldId = this.id;
@@ -46,24 +46,24 @@ $(function(){
 		// 本来であれば編集時のみ必要な値だが、actionによる条件分岐でビュー側に値を設定しなかった場合、
 		// Controllerでの取得値が文字列での null となってしまうため、常に設定し取得している
 		var foreignId = $("#ForeignId").html();
-		
+
 		switch (fieldId) {
-			case 'PetitCustomFieldConfigFieldName':
+			case 'CuCustomFieldDefinitionName':
 				options = {
-					"data[PetitCustomFieldConfigField][foreign_id]": foreignId,
-					"data[PetitCustomFieldConfigField][name]": $("#PetitCustomFieldConfigFieldName").val()
+					"data[CuCustomFieldDefinition][foreign_id]": foreignId,
+					"data[CuCustomFieldDefinition][name]": $("#CuCustomFieldDefinitionName").val()
 				};
 				break;
-			case 'PetitCustomFieldConfigFieldLabelName':
+			case 'CuCustomFieldDefinitionLabelName':
 				options = {
-					"data[PetitCustomFieldConfigField][foreign_id]": foreignId,
-					"data[PetitCustomFieldConfigField][label_name]": $("#PetitCustomFieldConfigFieldLabelName").val()
+					"data[CuCustomFieldDefinition][foreign_id]": foreignId,
+					"data[CuCustomFieldDefinition][label_name]": $("#CuCustomFieldDefinitionLabelName").val()
 				};
 				break;
-			case 'PetitCustomFieldConfigFieldFieldName':
+			case 'CuCustomFieldDefinitionFieldName':
 				options = {
-					"data[PetitCustomFieldConfigField][foreign_id]": foreignId,
-					"data[PetitCustomFieldConfigField][field_name]": $("#PetitCustomFieldConfigFieldFieldName").val()
+					"data[CuCustomFieldDefinition][foreign_id]": foreignId,
+					"data[CuCustomFieldDefinition][field_name]": $("#CuCustomFieldDefinitionFieldName").val()
 				};
 				break;
 		}
@@ -76,23 +76,23 @@ $(function(){
 			success: function(result, status, xhr) {
 				if(status === 'success') {
 					if(!result) {
-						if (fieldId === 'PetitCustomFieldConfigFieldName') {
+						if (fieldId === 'CuCustomFieldDefinitionName') {
 							$('#CheckValueResultName').show('fast');
 						}
-						if (fieldId === 'PetitCustomFieldConfigFieldLabelName') {
+						if (fieldId === 'CuCustomFieldDefinitionLabelName') {
 							$('#CheckValueResultLabelName').show('fast');
 						}
-						if (fieldId === 'PetitCustomFieldConfigFieldFieldName') {
+						if (fieldId === 'CuCustomFieldDefinitionFieldName') {
 							$('#CheckValueResultFieldName').show('fast');
 						}
 					} else {
-						if (fieldId === 'PetitCustomFieldConfigFieldName') {
+						if (fieldId === 'CuCustomFieldDefinitionName') {
 							$('#CheckValueResultName').hide('fast');
 						}
-						if (fieldId === 'PetitCustomFieldConfigFieldLabelName') {
+						if (fieldId === 'CuCustomFieldDefinitionLabelName') {
 							$('#CheckValueResultLabelName').hide('fast');
 						}
-						if (fieldId === 'PetitCustomFieldConfigFieldFieldName') {
+						if (fieldId === 'CuCustomFieldDefinitionFieldName') {
 							$('#CheckValueResultFieldName').hide('fast');
 						}
 					}
@@ -100,13 +100,13 @@ $(function(){
 			}
 		});
 	}
-	
+
 	// 編集画面のときのみ実行する（削除ボタンの有無で判定）
 	if ($('#BtnDelete').html()) {
 		$('#BeforeFieldName').hide();
 		$("#BtnSave").click(function(){
 			$beforeFieldName = $('#BeforeFieldName').html();
-			$inputFieldName = $('#PetitCustomFieldConfigFieldFieldName').val();
+			$inputFieldName = $('#CuCustomFieldDefinitionFieldName').val();
 			if ($beforeFieldName !== $inputFieldName) {
 				if(!confirm('フィールド名を変更した場合、これまでの記事でこのフィールドに入力していた内容は引き継がれません。\n本当によろしいですか？')) {
 					$('#BeforeFieldNameComment').css('visibility', 'visible');
@@ -116,79 +116,79 @@ $(function(){
 			}
 		});
 	}
-	
+
 	// 正規表現チェックのチェック時に、専用の入力欄を表示する
-	$('#PetitCustomFieldConfigFieldValidateREGEXCHECK').change(function() {
+	$('#CuCustomFieldDefinitionValidateREGEXCHECK').change(function() {
 		$value = $(this).prop('checked');
 		if ($value) {
-			$('#PetitCustomFieldConfigFieldValidateRegexBox').show('slow');
+			$('#CuCustomFieldDefinitionValidateRegexBox').show('slow');
 		} else {
-			$('#PetitCustomFieldConfigFieldValidateRegexBox').hide('high');
+			$('#CuCustomFieldDefinitionValidateRegexBox').hide('high');
 		}
 	});
-	
+
 	// 正規表現入力欄が空欄になった際はメッセージを表示して入力促す
-	$('#PetitCustomFieldConfigFieldValidateRegex').change(function() {
+	$('#CuCustomFieldDefinitionValidateRegex').change(function() {
 		if (!$(this).val()) {
 			$('#CheckValueResultValidateRegex').show('slow');
 		} else {
 			$('#CheckValueResultValidateRegex').hide();
 		}
 	});
-	
+
 	// submit時の処理
 	$("#BtnSave").click(function(){
 		// 都道府県の選択値対応表は送らないようにする
-		$('#PetitCustomFieldConfigFieldPreviewPrefList').attr('disabled', 'disabled');
-		
+		$('#CuCustomFieldDefinitionPreviewPrefList').attr('disabled', 'disabled');
+
 		// 正規表現チェックが有効の場合に、正規表現入力欄が空の場合は submit させない
-		$validateRegexCheck = $('#PetitCustomFieldConfigFieldValidateREGEXCHECK');
+		$validateRegexCheck = $('#CuCustomFieldDefinitionValidateREGEXCHECK');
 		if ($validateRegexCheck.prop('checked')) {
-			$validateRegex = $('#PetitCustomFieldConfigFieldValidateRegex').val();
+			$validateRegex = $('#CuCustomFieldDefinitionValidateRegex').val();
 			if (!$validateRegex) {
 				alert('正規表現入力欄が未入力です。');
 				return false;
 			}
 		}
 	});
-	
+
 /**
  * タイプの値によってフィールドの表示設定を行う
- * 
+ *
  * @param {string} value フィールドタイプ
  */
-	function petitCustomFieldConfigFieldFieldTypeChangeHandler(value){
-		$configTable1 = $('#PetitCustomFieldConfigFieldTable1');
-		$configTable2 = $('#PetitCustomFieldConfigFieldTable2');
+	function cuCustomFieldCefinitionFieldTypeChangeHandler(value){
+		$configTable1 = $('#CuCustomFieldDefinitionTable1');
+		$configTable2 = $('#CuCustomFieldDefinitionTable2');
 
 		// 管理システム表示設定の「初期値」、「入力欄前に表示」、「入力欄後に表示」、「このフィールドの説明文」行以外の行
 		// この４つの行はほとんどのフィールドタイプで表示されるので、除外した行を取得
-		$hideTrs = $configTable2.find('tr').not('#RowPetitCustomFieldConfigFieldPrepend, '
-			+ '#RowPetitCustomFieldConfigFieldAppend, #RowPetitCustomFieldConfigFieldDescription, '
-			+ '#RowPetitCustomFieldConfigFieldDefaultValue');
+		$hideTrs = $configTable2.find('tr').not('#RowCuCustomFieldDefinitionPrepend, '
+			+ '#RowCuCustomFieldDefinitionAppend, #RowCuCustomFieldDefinitionDescription, '
+			+ '#RowCuCustomFieldDefinitionDefaultValue');
 
-		$defaultValue = $("#RowPetitCustomFieldConfigFieldDefaultValue");
+		$defaultValue = $("#RowCuCustomFieldDefinitionDefaultValue");
 			$previewPrefList = $("#PreviewPrefList");
-		$validateGroup = $("#RowPetitCustomFieldConfigFieldValidateGroup");
-			$validateHankaku = $("#PetitCustomFieldConfigFieldValidateHANKAKUCHECK");
-			$validateNumeric = $("#PetitCustomFieldConfigFieldValidateNUMERICCHECK");
-			$validateNonCheckCheck = $("#PetitCustomFieldConfigFieldValidateNONCHECKCHECK");
-			$validateRegex = $('#PetitCustomFieldConfigFieldValidateREGEXCHECK');
-				$validateRegexBox = $('#PetitCustomFieldConfigFieldValidateRegexBox');
-		$sizeGroup = $("#RowPetitCustomFieldConfigFieldSizeGroup");
-			$size = $("#RowPetitCustomFieldConfigFieldSize");
-			$maxLength = $("#RowPetitCustomFieldConfigFieldMaxLenght");
-			$counter = $("#RowPetitCustomFieldConfigFieldCounter");
-		$placeholder = $("#RowPetitCustomFieldConfigFieldPlaceholder");
-		$rowsGroup = $("#RowPetitCustomFieldConfigFieldRowsGroup");
-			$rows = $("#PetitCustomFieldConfigFieldRows");
-			$cols = $("#PetitCustomFieldConfigFieldCols");
-			$editorToolType = $("#RowPetitCustomFieldConfigFieldEditorToolType");
-		$choices = $("#RowPetitCustomFieldConfigFieldChoices");
-		$separator = $("#RowPetitCustomFieldConfigFieldSeparator");
-		$autoConvert = $("#RowPetitCustomFieldConfigFieldAutoConvert");
-		$googlemapsGroup = $("#RowPetitCustomFieldConfigFieldGoogleMapsGroup");
-		
+		$validateGroup = $("#RowCuCustomFieldDefinitionValidateGroup");
+			$validateHankaku = $("#CuCustomFieldDefinitionValidateHANKAKUCHECK");
+			$validateNumeric = $("#CuCustomFieldDefinitionValidateNUMERICCHECK");
+			$validateNonCheckCheck = $("#CuCustomFieldDefinitionValidateNONCHECKCHECK");
+			$validateRegex = $('#CuCustomFieldDefinitionValidateREGEXCHECK');
+				$validateRegexBox = $('#CuCustomFieldDefinitionValidateRegexBox');
+		$sizeGroup = $("#RowCuCustomFieldDefinitionSizeGroup");
+			$size = $("#RowCuCustomFieldDefinitionSize");
+			$maxLength = $("#RowCuCustomFieldDefinitionMaxLenght");
+			$counter = $("#RowCuCustomFieldDefinitionCounter");
+		$placeholder = $("#RowCuCustomFieldDefinitionPlaceholder");
+		$rowsGroup = $("#RowCuCustomFieldDefinitionRowsGroup");
+			$rows = $("#CuCustomFieldDefinitionRows");
+			$cols = $("#CuCustomFieldDefinitionCols");
+			$editorToolType = $("#RowCuCustomFieldDefinitionEditorToolType");
+		$choices = $("#RowCuCustomFieldDefinitionChoices");
+		$separator = $("#RowCuCustomFieldDefinitionSeparator");
+		$autoConvert = $("#RowCuCustomFieldDefinitionAutoConvert");
+		$googlemapsGroup = $("#RowCuCustomFieldDefinitionGoogleMapsGroup");
+
 		switch (value){
 			case 'text':
 				$hideTrs.hide('fast');
@@ -236,7 +236,7 @@ $(function(){
 					$counter.show('slow');
 
 				$placeholder.show('slow');
-				
+
 				$rowsGroup.show('slow');
 					$rows.show('slow');
 						$rows.attr('placeholder', '3');
@@ -285,7 +285,7 @@ $(function(){
 						$validateRegexBox.hide('fast');
 
 				break;
-				
+
 			case 'multiple':
 				$hideTrs.hide('fast');
 				$previewPrefList.hide();
@@ -301,18 +301,18 @@ $(function(){
 
 				$choices.show('slow');
 				break;
-				
+
 			case 'pref':
 				$hideTrs.hide('fast');
 				$previewPrefList.show();
 				$defaultValue.show();
 				break;
-				
+
 			case 'wysiwyg':
 				$hideTrs.hide('fast');
 				$previewPrefList.hide();
 				$defaultValue.hide();
-				
+
 				$rowsGroup.show('slow');
 					$rows.show('slow');
 						$rows.attr('placeholder', '200px');

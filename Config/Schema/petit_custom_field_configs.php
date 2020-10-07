@@ -1,18 +1,18 @@
 <?php
 
-class PetitCustomFieldConfigsSchema extends CakeSchema {
+class CuCustomFieldConfigsSchema extends CakeSchema {
 
-	public $file = 'petit_custom_field_configs.php';
+	public $file = 'cu_custom_field_configs.php';
 
 	public function before($event = array()) {
 		return true;
 	}
 
 	public function after($event = array()) {
-		
+
 	}
 
-	public $petit_custom_field_configs = array(
+	public $cu_custom_field_configs = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary', 'comment' => 'ID'),
 		'content_id' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false, 'comment' => 'コンテンツID'),
 		'status' => array('type' => 'boolean', 'null' => true, 'default' => '1', 'comment' => '利用状態'),

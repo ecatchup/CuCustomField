@@ -1,31 +1,31 @@
 <?php
 
 /**
- * [Controller] PetitCustomField
+ * [Controller] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
-App::uses('PetitCustomFieldApp', 'PetitCustomField.Controller');
+App::uses('CuCustomFieldApp', 'CuCustomField.Controller');
 
-class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppController
+class PetitCustomFieldConfigMetasController extends CuCustomFieldAppController
 {
 
 	/**
 	 * ControllerName
-	 * 
+	 *
 	 * @var string
 	 */
 	public $name = 'PetitCustomFieldConfigMetas';
 
 	/**
 	 * Model
-	 * 
+	 *
 	 * @var array
 	 */
-	public $uses = array('PetitCustomField.PetitCustomFieldConfigMeta', 'PetitCustomField.PetitCustomFieldConfigField');
+	public $uses = array('CuCustomField.PetitCustomFieldConfigMeta', 'CuCustomField.CuCustomFieldDefinition');
 
 	/**
 	 * ぱんくずナビ
@@ -34,7 +34,7 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 	 */
 	public $crumbs = array(
 		array('name' => 'プラグイン管理', 'url' => array('plugin' => '', 'controller' => 'plugins', 'action' => 'index')),
-		array('name' => 'プチ・カスタムフィールド設定管理', 'url' => array('plugin' => 'petit_custom_field', 'controller' => 'petit_custom_field_configs', 'action' => 'index')),
+		array('name' => 'プチ・カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index')),
 	);
 
 	/**
@@ -55,7 +55,7 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 
 	/**
 	 * [ADMIN] プチ・カスタムフィールド設定一覧
-	 * 
+	 *
 	 * @param int $configId
 	 */
 	public function admin_index($configId = null)
@@ -63,10 +63,10 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 		$this->pageTitle = $this->adminTitle . '一覧';
 		$this->help		 = 'petit_custom_field_metas_index';
 
-		$this->crumbs[] = array('name' => 'フィールド設定管理', 'url' => array('plugin' => 'petit_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
+		$this->crumbs[] = array('name' => 'フィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
 
 		// フィールド一覧の最大件数を取得し、ページネーション件数に設定する
-		$max = $this->PetitCustomFieldConfigField->getMax('foreign_id');
+		$max = $this->CuCustomFieldDefinition->getMax('foreign_id');
 		if (!$max) {
 			$max = $this->siteConfigs['admin_list_num'];
 		}
@@ -92,11 +92,11 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 		);
 		$this->set('datas', $this->paginate('PetitCustomFieldConfigMeta'));
 
-		$configData = $this->PetitCustomFieldConfigMeta->PetitCustomFieldConfig->find('first', array(
-			'conditions' => array('PetitCustomFieldConfig.id' => $configId),
+		$configData = $this->PetitCustomFieldConfigMeta->CuCustomFieldConfig->find('first', array(
+			'conditions' => array('CuCustomFieldConfig.id' => $configId),
 			'recursive'	 => -1,
 		));
-		$this->set('contentId', $configData['PetitCustomFieldConfig']['content_id']);
+		$this->set('contentId', $configData['CuCustomFieldConfig']['content_id']);
 
 		$this->set('configId', $configId);
 		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
@@ -104,7 +104,7 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 
 	/**
 	 * [ADMIN] 編集
-	 * 
+	 *
 	 * @param int $id
 	 */
 	public function admin_edit($id = null)
@@ -118,9 +118,9 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 			$this->{$this->modelClass}->id	 = $id;
 			$this->request->data			 = $this->{$this->modelClass}->read();
 		} else {
-			$configData = $this->PetitCustomFieldConfigMeta->PetitCustomFieldConfig->find('first', array(
+			$configData = $this->PetitCustomFieldConfigMeta->CuCustomFieldConfig->find('first', array(
 				'conditions' => array(
-					'PetitCustomFieldConfig.content_id' => $this->request->data['PetitCustomFieldConfig']['content_id'],
+					'CuCustomFieldConfig.content_id' => $this->request->data['CuCustomFieldConfig']['content_id'],
 				),
 				'recursive'	 => -1,
 			));
@@ -129,7 +129,7 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 			$nextData = $this->PetitCustomFieldConfigMeta->lowerItem($id);
 
 			// petit_custom_field_config_id
-			$newFieldConfigId														 = $configData['PetitCustomFieldConfig']['id'];
+			$newFieldConfigId														 = $configData['CuCustomFieldConfig']['id'];
 			$this->request->data[$this->modelClass]['petit_custom_field_config_id']	 = $newFieldConfigId;
 			$max																	 = $this->{$this->modelClass}->getMax('position', array(
 				'PetitCustomFieldConfigMeta.petit_custom_field_config_id' => $newFieldConfigId
@@ -144,7 +144,7 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 				// 最後のデータの場合は何もしなくてOK
 				if ($nextData) {
 					if ($nextData['PetitCustomFieldConfigMeta']['position'] == 2) {
-						$this->PetitCustomFieldConfigMeta->unbindModel(array('belongsTo' => array('PetitCustomFieldConfig')));
+						$this->PetitCustomFieldConfigMeta->unbindModel(array('belongsTo' => array('CuCustomFieldConfig')));
 						$this->PetitCustomFieldConfigMeta->updateAll(
 								array('PetitCustomFieldConfigMeta.position' => 'PetitCustomFieldConfigMeta.position - 1'), array('PetitCustomFieldConfigMeta.petit_custom_field_config_id' => $nextData['PetitCustomFieldConfigMeta']['petit_custom_field_config_id'])
 						);
@@ -160,21 +160,21 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 				}
 
 				$this->setMessage($this->name . ' ID:' . $id . '　を更新しました。', false, true);
-				$this->redirect(array('action' => 'index', $configData['PetitCustomFieldConfig']['id']));
+				$this->redirect(array('action' => 'index', $configData['CuCustomFieldConfig']['id']));
 			} else {
 				$this->setMessage('入力エラーです。内容を修正して下さい。', true);
 			}
 		}
 
-		$configData['PetitCustomFieldConfig'] = $this->request->data['PetitCustomFieldConfig'];
-		$this->set('configId', $configData['PetitCustomFieldConfig']['id']);
+		$configData['CuCustomFieldConfig'] = $this->request->data['CuCustomFieldConfig'];
+		$this->set('configId', $configData['CuCustomFieldConfig']['id']);
 		$this->set('blogContentDatas', $this->blogContentDatas);
 		$this->render('form');
 	}
 
 	/**
 	 * [ADMIN] 削除
-	 * 
+	 *
 	 * @param int $configId
 	 * @param int $id
 	 */
@@ -194,10 +194,10 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 		if ($this->PetitCustomFieldConfigMeta->delete($id)) {
 
 			// メタ情報削除時、そのメタ情報が持つカスタムフィールド設定を削除する
-			$this->PetitCustomFieldConfigField->Behaviors->KeyValue->KeyValue = $this->PetitCustomFieldConfigField;
+			$this->CuCustomFieldDefinition->Behaviors->KeyValue->KeyValue = $this->CuCustomFieldDefinition;
 			if ($data) {
 				//resetSection(Model $Model, $foreignKey = null, $section = null, $key = null)
-				if (!$this->PetitCustomFieldConfigField->resetSection($data['PetitCustomFieldConfigMeta']['field_foreign_id'], 'PetitCustomFieldConfigField')) {
+				if (!$this->CuCustomFieldDefinition->resetSection($data['PetitCustomFieldConfigMeta']['field_foreign_id'], 'CuCustomFieldDefinition')) {
 					$this->log(sprintf('field_foreign_id：%s のカスタムフィールドの削除に失敗', $data['PetitCustomFieldConfigMeta']['field_foreign_id']));
 				}
 			}
@@ -213,7 +213,7 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 
 	/**
 	 * [ADMIN] 削除処理　(ajax)
-	 * 
+	 *
 	 * @param int $configId
 	 * @param int $id
 	 */
@@ -232,9 +232,9 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 
 	/**
 	 * データを削除する
-	 * 
+	 *
 	 * @param int $id
-	 * @return boolean 
+	 * @return boolean
 	 */
 	protected function _delete($id)
 	{
@@ -244,9 +244,9 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 		if ($this->PetitCustomFieldConfigMeta->delete($id)) {
 
 			// メタ情報削除時、そのメタ情報が持つカスタムフィールド設定を削除する
-			$this->PetitCustomFieldConfigField->Behaviors->KeyValue->KeyValue = $this->PetitCustomFieldConfigField;
+			$this->CuCustomFieldDefinition->Behaviors->KeyValue->KeyValue = $this->CuCustomFieldDefinition;
 			//resetSection(Model $Model, $foreignKey = null, $section = null, $key = null)
-			if (!$this->PetitCustomFieldConfigField->resetSection($data['PetitCustomFieldConfigMeta']['field_foreign_id'], 'PetitCustomFieldConfigField')) {
+			if (!$this->CuCustomFieldDefinition->resetSection($data['PetitCustomFieldConfigMeta']['field_foreign_id'], 'CuCustomFieldDefinition')) {
 				$this->log(sprintf('field_foreign_id：%s のカスタムフィールドの削除に失敗', $data['PetitCustomFieldConfigMeta']['field_foreign_id']));
 			}
 
@@ -259,7 +259,7 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 
 	/**
 	 * [ADMIN] 無効状態にする（AJAX）
-	 * 
+	 *
 	 * @param int $configId
 	 * @param int $id
 	 */
@@ -279,7 +279,7 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 
 	/**
 	 * [ADMIN] 有効状態にする（AJAX）
-	 * 
+	 *
 	 * @param int $configId
 	 * @param int $id
 	 */
@@ -299,11 +299,11 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 
 	/**
 	 * ステータスを変更する
-	 * 
+	 *
 	 * @param int $configId
 	 * @param int $id
 	 * @param boolean $status
-	 * @return boolean 
+	 * @return boolean
 	 */
 	protected function _changeStatus($configId = null, $id = null, $status = false)
 	{
@@ -312,19 +312,19 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 			'recursive'	 => -1
 		));
 
-		if (ClassRegistry::isKeySet('PetitCustomField.PetitCustomFieldConfigField')) {
-			$this->PetitCustomFieldConfigFieldModel = ClassRegistry::getObject('PetitCustomField.PetitCustomFieldConfigField');
+		if (ClassRegistry::isKeySet('PetitCustomField.CuCustomFieldDefinition')) {
+			$this->CuCustomFieldDefinitionModel = ClassRegistry::getObject('PetitCustomField.CuCustomFieldDefinition');
 		} else {
-			$this->PetitCustomFieldConfigFieldModel = ClassRegistry::init('PetitCustomField.PetitCustomFieldConfigField');
+			$this->CuCustomFieldDefinitionModel = ClassRegistry::init('PetitCustomField.CuCustomFieldDefinition');
 		}
 
-		$data['PetitCustomFieldConfigField']['status'] = $status;
+		$data['CuCustomFieldDefinition']['status'] = $status;
 		if ($status) {
-			$data['PetitCustomFieldConfigField']['status'] = '1';
+			$data['CuCustomFieldDefinition']['status'] = '1';
 		} else {
-			$data['PetitCustomFieldConfigField']['status'] = '0';
+			$data['CuCustomFieldDefinition']['status'] = '0';
 		}
-		if ($this->PetitCustomFieldConfigFieldModel->saveSection($data['PetitCustomFieldConfigMeta']['field_foreign_id'], $data, 'PetitCustomFieldConfigField')) {
+		if ($this->CuCustomFieldDefinitionModel->saveSection($data['PetitCustomFieldConfigMeta']['field_foreign_id'], $data, 'CuCustomFieldDefinition')) {
 			return true;
 		} else {
 			return false;
@@ -333,8 +333,8 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 
 	/**
 	 * [ADMIN] 並び順を上げる
-	 * 
-	 * @param int $configId 
+	 *
+	 * @param int $configId
 	 * @param int $id
 	 */
 	public function admin_move_up($configId = null, $id = null, $toTop = '')
@@ -373,9 +373,9 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 
 	/**
 	 * [ADMIN] 並び順を下げる
-	 * 
-	 * @param int $configId 
-	 * @param int $id 
+	 *
+	 * @param int $configId
+	 * @param int $id
 	 */
 	public function admin_move_down($configId = null, $id = null, $toBottom = '')
 	{
@@ -413,7 +413,7 @@ class PetitCustomFieldConfigMetasController extends PetitCustomFieldAppControlle
 
 	/**
 	 * [ADMIN] ListBehavior利用中のデータ並び順を割り振る
-	 * 
+	 *
 	 */
 	public function admin_reposition()
 	{

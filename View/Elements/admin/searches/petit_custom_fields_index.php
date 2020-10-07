@@ -1,14 +1,14 @@
 <?php
 /**
- * [ADMIN] PetitCustomField
+ * [ADMIN] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
 ?>
-<?php echo $this->BcForm->create('PetitCustomField', array('url' => array('action' => 'index'))) ?>
+<?php echo $this->BcForm->create('CuCustomFieldValue', array('url' => array('action' => 'index'))) ?>
 <p>
 	<span>
 		<?php echo $this->BcForm->label('PetitCustomField.name', 'カスタムネーム') ?>

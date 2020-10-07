@@ -1,14 +1,14 @@
 <?php
 
 /**
- * [ModelEventListener] PetitCustomField
+ * [ModelEventListener] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
-class PetitCustomFieldModelEventListener extends BcModelEventListener
+class CuCustomFieldModelEventListener extends BcModelEventListener
 {
 
 	/**
@@ -29,50 +29,50 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 
 	/**
 	 * プチ・カスタムフィールドモデル
-	 * 
+	 *
 	 * @var Object
 	 */
 	private $PetitCustomFieldModel = null;
 
 	/**
 	 * プチ・カスタムフィールド設定モデル
-	 * 
+	 *
 	 * @var Object
 	 */
-	private $PetitCustomFieldConfigModel = null;
+	private $CuCustomFieldConfigModel = null;
 
 	/**
 	 * ブログ記事多重保存の判定
-	 * 
+	 *
 	 * @var boolean
 	 */
 	private $throwBlogPost = false;
 
 	/**
-	 * モデル初期化：PetitCustomField, PetitCustomFieldConfig
-	 * 
+	 * モデル初期化：PetitCustomField, CuCustomFieldConfig
+	 *
 	 * @return void
 	 */
 	private function setUpModel()
 	{
-		if (ClassRegistry::isKeySet('PetitCustomField.PetitCustomField')) {
-			$this->PetitCustomFieldModel = ClassRegistry::getObject('PetitCustomField.PetitCustomField');
+		if (ClassRegistry::isKeySet('PetitCustomField.CuCustomFieldValue')) {
+			$this->PetitCustomFieldModel = ClassRegistry::getObject('PetitCustomField.CuCustomFieldValue');
 		} else {
-			$this->PetitCustomFieldModel = ClassRegistry::init('PetitCustomField.PetitCustomField');
+			$this->PetitCustomFieldModel = ClassRegistry::init('PetitCustomField.CuCustomFieldValue');
 		}
 		$this->PetitCustomFieldModel->Behaviors->KeyValue->KeyValue = $this->PetitCustomFieldModel;
 
-		if (ClassRegistry::isKeySet('PetitCustomField.PetitCustomFieldConfig')) {
-			$this->PetitCustomFieldConfigModel = ClassRegistry::getObject('PetitCustomField.PetitCustomFieldConfig');
+		if (ClassRegistry::isKeySet('PetitCustomField.CuCustomFieldConfig')) {
+			$this->CuCustomFieldConfigModel = ClassRegistry::getObject('PetitCustomField.CuCustomFieldConfig');
 		} else {
-			$this->PetitCustomFieldConfigModel = ClassRegistry::init('PetitCustomField.PetitCustomFieldConfig');
+			$this->CuCustomFieldConfigModel = ClassRegistry::init('PetitCustomField.CuCustomFieldConfig');
 		}
 	}
 
 	/**
 	 * blogBlogPostBeforeFind
 	 * 最近の投稿、ブログ記事前後移動を find する際に実行
-	 * 
+	 *
 	 * @param CakeEvent $event
 	 * @return array
 	 */
@@ -101,7 +101,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 	/**
 	 * blogBlogPostAfterFind
 	 * ブログ記事取得の際にプチ・カスタムフィールド情報も併せて取得する
-	 * 
+	 *
 	 * @param CakeEvent $event
 	 * @return void
 	 */
@@ -181,25 +181,25 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 				continue;
 			}
 
-			if ($configData['PetitCustomFieldConfig']['status']) {
+			if ($configData['CuCustomFieldConfig']['status']) {
 				$data = $this->PetitCustomFieldModel->getSection($value['BlogPost']['id'], $this->PetitCustomFieldModel->name);
 				if ($data) {
 					// カスタムフィールドデータを結合
 					$event->data[0][$key][$this->PetitCustomFieldModel->name] = $data;
 				}
 
-				// PetitCustomFieldConfigMeta::afterFind で KeyValue のモデル情報が PetitCustomFieldConfig に切り替わる
-				$fieldConfigField = $this->PetitCustomFieldConfigModel->PetitCustomFieldConfigMeta->find('all', array(
+				// PetitCustomFieldConfigMeta::afterFind で KeyValue のモデル情報が CuCustomFieldConfig に切り替わる
+				$fieldConfigField = $this->CuCustomFieldConfigModel->PetitCustomFieldConfigMeta->find('all', array(
 					'conditions' => array(
-						'PetitCustomFieldConfigMeta.petit_custom_field_config_id' => $configData['PetitCustomFieldConfig']['id']
+						'PetitCustomFieldConfigMeta.petit_custom_field_config_id' => $configData['CuCustomFieldConfig']['id']
 					),
 					'order'		 => 'PetitCustomFieldConfigMeta.position ASC',
 					'recursive'	 => -1,
 				));
 				if ($contentId) {
-					$defaultFieldValue[$contentId] = Hash::combine($fieldConfigField, '{n}.PetitCustomFieldConfigField.field_name', '{n}.PetitCustomFieldConfigField');
+					$defaultFieldValue[$contentId] = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition');
 				} else {
-					$defaultFieldValue = Hash::combine($fieldConfigField, '{n}.PetitCustomFieldConfigField.field_name', '{n}.PetitCustomFieldConfigField');
+					$defaultFieldValue = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition');
 				}
 				//$this->PetitCustomFieldModel->fieldConfig = $fieldConfigField;
 				// カスタムフィールドへの入力データ
@@ -212,16 +212,16 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 
 	/**
 	 * ブログコンテンツIDからカスタムフィールド設定情報を取得する
-	 * 
+	 *
 	 * @param int $contentId
 	 * @return array or boolean
 	 */
 	private function hasCustomFieldConfigData($contentId)
 	{
-		$data = $this->PetitCustomFieldConfigModel->find('first', array(
+		$data = $this->CuCustomFieldConfigModel->find('first', array(
 			'conditions' => array(
-				'PetitCustomFieldConfig.content_id'	 => $contentId,
-				'PetitCustomFieldConfig.model'		 => 'BlogContent',
+				'CuCustomFieldConfig.content_id'	 => $contentId,
+				'CuCustomFieldConfig.model'		 => 'BlogContent',
 			),
 			'recursive'	 => -1,
 		));
@@ -230,7 +230,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 
 	/**
 	 * blogBlogPostBeforeValidate
-	 * 
+	 *
 	 * @param CakeEvent $event
 	 */
 	public function blogBlogPostBeforeValidate(CakeEvent $event)
@@ -246,7 +246,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 
 		$Model = $event->subject();
 		// カスタムフィールドの入力データがない場合は、そもそもカスタムフィールドに対する validate 処理を実施しない
-		if (!Hash::get($Model->data, 'PetitCustomField')) {
+		if (!Hash::get($Model->data, 'CuCustomFieldValue')) {
 			/**
 			 * 4系の記事複製動作仕様変更に対応
 			 * - これまで複製時のデータに、カスタムフィールドのデータは入って来なかったのが入るようになっているため
@@ -259,8 +259,8 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		$this->setUpModel();
 		$data	 = $this->PetitCustomFieldConfigModel->find('first', array(
 			'conditions' => array(
-				'PetitCustomFieldConfig.content_id'	 => $Model->BlogContent->id,
-				'PetitCustomFieldConfig.status'		 => true,
+				'CuCustomFieldConfig.content_id'	 => $Model->BlogContent->id,
+				'CuCustomFieldConfig.status'		 => true,
 			),
 			'recursive'	 => -1
 		));
@@ -268,9 +268,9 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 			return true;
 		}
 
-		$fieldConfigField = $this->PetitCustomFieldConfigModel->PetitCustomFieldConfigMeta->find('all', array(
+		$fieldConfigField = $this->CuCustomFieldConfigModel->PetitCustomFieldConfigMeta->find('all', array(
 			'conditions' => array(
-				'PetitCustomFieldConfigMeta.petit_custom_field_config_id' => $data['PetitCustomFieldConfig']['id'],
+				'PetitCustomFieldConfigMeta.petit_custom_field_config_id' => $data['CuCustomFieldConfig']['id'],
 			),
 			'order'		 => 'PetitCustomFieldConfigMeta.position ASC',
 			'recursive'	 => -1,
@@ -281,7 +281,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		$this->PetitCustomFieldModel->fieldConfig = $fieldConfigField;
 		foreach ($fieldConfigField as $key => $fieldConfig) {
 			// ステータスが利用しないになっているフィールドは、バリデーション情報として渡さない
-			if (!$fieldConfig['PetitCustomFieldConfigField']['status']) {
+			if (!$fieldConfig['CuCustomFieldDefinition']['status']) {
 				unset($fieldConfigField[$key]);
 			}
 		}
@@ -290,14 +290,14 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		}
 		$this->_setValidate($fieldConfigField);
 		// ブログ記事本体にエラーがない場合、beforeValidate で判定しないと、カスタムフィールド側でバリデーションエラーが起きない
-		if (!$this->PetitCustomFieldModel->validateSection($Model->data, 'PetitCustomField')) {
+		if (!$this->PetitCustomFieldModel->validateSection($Model->data, 'CuCustomFieldValue')) {
 			return false;
 		}
 	}
 
 	/**
 	 * バリデーションを設定する
-	 * 
+	 *
 	 * @param array $data 元データ
 	 */
 	protected function _setValidate($data = array())
@@ -307,12 +307,12 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		$fieldName	 = '';
 
 		foreach ($data as $key => $fieldConfig) {
-			$fieldType	 = $fieldConfig['PetitCustomFieldConfigField']['field_type'];
-			$fieldName	 = $fieldConfig['PetitCustomFieldConfigField']['field_name'];
+			$fieldType	 = $fieldConfig['CuCustomFieldDefinition']['field_type'];
+			$fieldName	 = $fieldConfig['CuCustomFieldDefinition']['field_name'];
 			$fieldRule	 = array();
 
 			// 必須項目のバリデーションルールを設定する
-			if (!empty($fieldConfig['PetitCustomFieldConfigField']['required'])) {
+			if (!empty($fieldConfig['CuCustomFieldDefinition']['required'])) {
 				$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('notBlank'));
 				$validation[$fieldName]	 = $fieldRule;
 			}
@@ -320,8 +320,8 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 			switch ($fieldType) {
 				// フィールドタイプがテキストの場合は、最大文字数制限をチェックする
 				case 'text':
-					if ($fieldConfig['PetitCustomFieldConfigField']['max_length']) {
-						$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('maxLength', array('number' => $fieldConfig['PetitCustomFieldConfigField']['max_length'])));
+					if ($fieldConfig['CuCustomFieldDefinition']['max_length']) {
+						$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('maxLength', array('number' => $fieldConfig['CuCustomFieldDefinition']['max_length'])));
 						$validation[$fieldName]	 = $fieldRule;
 					}
 					break;
@@ -331,12 +331,12 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 			}
 
 			// 入力値チェックを設定する
-			if (!empty($fieldConfig['PetitCustomFieldConfigField']['validate'])) {
+			if (!empty($fieldConfig['CuCustomFieldDefinition']['validate'])) {
 
 				switch ($fieldType) {
 					// フィールドタイプがテキストの場合
 					case 'text':
-						foreach ($fieldConfig['PetitCustomFieldConfigField']['validate'] as $key => $rule) {
+						foreach ($fieldConfig['CuCustomFieldDefinition']['validate'] as $key => $rule) {
 							if ($rule == 'HANKAKU_CHECK') {
 								$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('alphaNumeric'));
 								$validation[$fieldName]	 = $fieldRule;
@@ -346,14 +346,14 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 								$validation[$fieldName]	 = $fieldRule;
 							}
 							if ($rule == 'REGEX_CHECK') {
-								$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('regexCheck', array('validate_regex_message' => $fieldConfig['PetitCustomFieldConfigField']['validate_regex_message'])));
+								$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('regexCheck', array('validate_regex_message' => $fieldConfig['CuCustomFieldDefinition']['validate_regex_message'])));
 								$validation[$fieldName]	 = $fieldRule;
 							}
 						}
 						break;
 					// フィールドタイプがテキストエリアの場合
 					case 'textarea':
-						foreach ($fieldConfig['PetitCustomFieldConfigField']['validate'] as $key => $rule) {
+						foreach ($fieldConfig['CuCustomFieldDefinition']['validate'] as $key => $rule) {
 							if ($rule == 'HANKAKU_CHECK') {
 								$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('alphaNumeric'));
 								$validation[$fieldName]	 = $fieldRule;
@@ -363,14 +363,14 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 								$validation[$fieldName]	 = $fieldRule;
 							}
 							if ($rule == 'REGEX_CHECK') {
-								$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('regexCheck', array('validate_regex_message' => $fieldConfig['PetitCustomFieldConfigField']['validate_regex_message'])));
+								$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('regexCheck', array('validate_regex_message' => $fieldConfig['CuCustomFieldDefinition']['validate_regex_message'])));
 								$validation[$fieldName]	 = $fieldRule;
 							}
 						}
 						break;
 					// フィールドタイプがマルチチェックボックスの場合
 					case 'multiple':
-						foreach ($fieldConfig['PetitCustomFieldConfigField']['validate'] as $key => $rule) {
+						foreach ($fieldConfig['CuCustomFieldDefinition']['validate'] as $key => $rule) {
 							if ($rule == 'NONCHECK_CHECK') {
 								$fieldRule				 = Hash::merge($fieldRule, $this->_getValidationRule('notBlank', array('not_empty' => 'multiple', 'not_empty_message' => '必ず1つ以上選択してください。')
 								));
@@ -385,13 +385,13 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 			}
 		}
 
-		$keyValueValidate								 = array('PetitCustomField' => $validation);
+		$keyValueValidate								 = array('CuCustomFieldValue' => $validation);
 		$this->PetitCustomFieldModel->keyValueValidate	 = $keyValueValidate;
 	}
 
 	/**
 	 * 設定可能なバリデーションルールを返す
-	 * 
+	 *
 	 * @param string $rule ルール名
 	 * @param array $options
 	 * @return array
@@ -444,7 +444,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 
 	/**
 	 * blogBlogPostAfterSave
-	 * 
+	 *
 	 * @param CakeEvent $event
 	 */
 	public function blogBlogPostAfterSave(CakeEvent $event)
@@ -452,13 +452,13 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		$Model = $event->subject();
 
 		// カスタムフィールドの入力データがない場合は save 処理を実施しない
-		if (!isset($Model->data['PetitCustomField'])) {
+		if (!isset($Model->data['CuCustomFieldValue'])) {
 			return;
 		}
 
 		if (!$this->throwBlogPost) {
 			$this->setUpModel();
-			if (!$this->PetitCustomFieldModel->saveSection($Model->id, $Model->data, 'PetitCustomField')) {
+			if (!$this->PetitCustomFieldModel->saveSection($Model->id, $Model->data, 'CuCustomFieldValue')) {
 				$this->log(sprintf('ブログ記事ID：%s のカスタムフィールドの保存に失敗', $Model->id));
 			}
 		}
@@ -469,7 +469,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 
 	/**
 	 * blogBlogPostAfterDelete
-	 * 
+	 *
 	 * @param CakeEvent $event
 	 */
 	public function blogBlogPostAfterDelete(CakeEvent $event)
@@ -488,7 +488,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 
 	/**
 	 * blogBlogPostAfterCopy
-	 * 
+	 *
 	 * @param CakeEvent $event
 	 */
 	public function blogBlogPostAfterCopy(CakeEvent $event)
@@ -496,13 +496,13 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		$petitCustomFieldData = $this->PetitCustomFieldModel->getSection($event->data['oldId'], $this->PetitCustomFieldModel->name);
 		if ($petitCustomFieldData) {
 			$saveData[$this->PetitCustomFieldModel->name] = $petitCustomFieldData;
-			$this->PetitCustomFieldModel->saveSection($event->data['id'], $saveData, 'PetitCustomField');
+			$this->PetitCustomFieldModel->saveSection($event->data['id'], $saveData, 'CuCustomFieldValue');
 		}
 	}
 
 	/**
 	 * blogBlogContentBeforeFind
-	 * 
+	 *
 	 * @param CakeEvent $event
 	 * @return array
 	 */
@@ -511,8 +511,8 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		$Model		 = $event->subject();
 		// ブログ設定取得の際にプチ・カスタム設定情報も併せて取得する
 		$association = array(
-			'PetitCustomFieldConfig' => array(
-				'className'	 => 'PetitCustomField.PetitCustomFieldConfig',
+			'CuCustomFieldConfig' => array(
+				'className'	 => 'PetitCustomField.CuCustomFieldConfig',
 				'foreignKey' => 'content_id',
 			)
 		);
@@ -521,7 +521,7 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 
 	/**
 	 * blogBlogContentAfterDelete
-	 * 
+	 *
 	 * @param CakeEvent $event
 	 */
 	public function blogBlogContentAfterDelete(CakeEvent $event)
@@ -529,20 +529,20 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		$Model	 = $event->subject();
 		// ブログ削除時、そのブログが持つプチ・カスタムフィールド設定を削除する
 		$this->setUpModel();
-		$data	 = $this->PetitCustomFieldConfigModel->find('first', array(
-			'conditions' => array('PetitCustomFieldConfig.content_id' => $Model->id),
+		$data	 = $this->CuCustomFieldConfigModel->find('first', array(
+			'conditions' => array('CuCustomFieldConfig.content_id' => $Model->id),
 			'recursive'	 => -1
 		));
 		if ($data) {
-			if (!$this->PetitCustomFieldConfigModel->delete($data['PetitCustomFieldConfig']['id'])) {
-				$this->log('ID:' . $data['PetitCustomFieldConfig']['id'] . 'のプチ・カスタムフィールド設定の削除に失敗しました。');
+			if (!$this->CuCustomFieldConfigModel->delete($data['CuCustomFieldConfig']['id'])) {
+				$this->log('ID:' . $data['CuCustomFieldConfig']['id'] . 'のプチ・カスタムフィールド設定の削除に失敗しました。');
 			}
 		}
 	}
 
 	/**
 	 * 保存するデータの生成
-	 * 
+	 *
 	 * @param Object $Model
 	 * @param int $contentId
 	 * @return array
@@ -550,10 +550,10 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 	private function generateSaveData($Model, $contentId)
 	{
 		$params = Router::getParams();
-		if (ClassRegistry::isKeySet('PetitCustomField.PetitCustomField')) {
-			$this->PetitCustomFieldModel = ClassRegistry::getObject('PetitCustomField.PetitCustomField');
+		if (ClassRegistry::isKeySet('PetitCustomField.CuCustomFieldValue')) {
+			$this->PetitCustomFieldModel = ClassRegistry::getObject('PetitCustomField.CuCustomFieldValue');
 		} else {
-			$this->PetitCustomFieldModel = ClassRegistry::init('PetitCustomField.PetitCustomField');
+			$this->PetitCustomFieldModel = ClassRegistry::init('PetitCustomField.CuCustomFieldValue');
 		}
 
 		$data		 = array();
@@ -574,16 +574,16 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 		switch ($params['action']) {
 			case 'admin_add':
 				// 追加時
-				if (!empty($Model->data['PetitCustomField'])) {
-					$data['PetitCustomField'] = $Model->data['PetitCustomField'];
+				if (!empty($Model->data['CuCustomFieldValue'])) {
+					$data['CuCustomFieldValue'] = $Model->data['CuCustomFieldValue'];
 				}
-				$data['PetitCustomField']['blog_post_id'] = $contentId;
+				$data['CuCustomFieldValue']['blog_post_id'] = $contentId;
 				break;
 
 			case 'admin_edit':
 				// 編集時
-				if (!empty($Model->data['PetitCustomField'])) {
-					$data['PetitCustomField'] = $Model->data['PetitCustomField'];
+				if (!empty($Model->data['CuCustomFieldValue'])) {
+					$data['CuCustomFieldValue'] = $Model->data['CuCustomFieldValue'];
 				}
 				break;
 
@@ -603,12 +603,12 @@ class PetitCustomFieldModelEventListener extends BcModelEventListener
 					// XXX もしカスタムフィールド設定の初期データ作成を行ってない事を考慮して判定している
 					if ($_data) {
 						// コピー元データがある時
-						$data['PetitCustomField']					 = $_data['PetitCustomField'];
-						$data['PetitCustomField']['blog_post_id']	 = $contentId;
-						unset($data['PetitCustomField']['id']);
+						$data['CuCustomFieldValue']					 = $_data['CuCustomFieldValue'];
+						$data['CuCustomFieldValue']['blog_post_id']	 = $contentId;
+						unset($data['CuCustomFieldValue']['id']);
 					} else {
 						// コピー元データがない時
-						$data['PetitCustomField']['blog_post_id'] = $modelId;
+						$data['CuCustomFieldValue']['blog_post_id'] = $modelId;
 					}
 				}
 				break;

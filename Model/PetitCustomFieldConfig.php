@@ -1,35 +1,35 @@
 <?php
 
 /**
- * [Model] PetitCustomFieldConfig
+ * [Model] CuCustomFieldConfig
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
-App::uses('PetitCustomField.PetitCustomFieldAppModel', 'Model');
+App::uses('CuCustomField.CuCustomFieldAppModel', 'Model');
 
-class PetitCustomFieldConfig extends PetitCustomFieldAppModel
+class CuCustomFieldConfig extends CuCustomFieldAppModel
 {
 
 	/**
 	 * ModelName
-	 * 
+	 *
 	 * @var string
 	 */
-	public $name = 'PetitCustomFieldConfig';
+	public $name = 'CuCustomFieldConfig';
 
 	/**
 	 * PluginName
-	 * 
+	 *
 	 * @var string
 	 */
-	public $plugin = 'PetitCustomField';
+	public $plugin = 'CuCustomField';
 
 	/**
 	 * actsAs
-	 * 
+	 *
 	 * @var array
 	 */
 	public $actsAs = array('BcCache');
@@ -41,7 +41,7 @@ class PetitCustomFieldConfig extends PetitCustomFieldAppModel
 	 */
 	public $hasMany = array(
 		'PetitCustomFieldConfigMeta' => array(
-			'className'	 => 'PetitCustomField.PetitCustomFieldConfigMeta',
+			'className'	 => 'CuCustomField.PetitCustomFieldConfigMeta',
 			'foreignKey' => 'petit_custom_field_config_id',
 			'order'		 => array('PetitCustomFieldConfigMeta.position' => 'ASC'),
 			'dependent'	 => true,
@@ -50,12 +50,12 @@ class PetitCustomFieldConfig extends PetitCustomFieldAppModel
 
 	/**
 	 * HABTM
-	 * 
+	 *
 	 * @var array
 	 */
 	public $hasAndBelongsToMany = array(
-		'PetitCustomFieldConfigField' => array(
-			'className'				 => 'PetitCustomField.PetitCustomFieldConfigField',
+		'CuCustomFieldDefinition' => array(
+			'className'				 => 'CuCustomField.CuCustomFieldDefinition',
 			'joinTable'				 => 'petit_custom_field_config_metas',
 			'foreignKey'			 => 'petit_custom_field_config_id',
 			'associationForeignKey'	 => 'field_foreign_id',
@@ -75,7 +75,7 @@ class PetitCustomFieldConfig extends PetitCustomFieldAppModel
 	public function getDefaultValue()
 	{
 		$data = array(
-			'PetitCustomFieldConfig' => array(
+			'CuCustomFieldConfig' => array(
 				'status'	 => false,
 				'form_place' => 'normal',
 			)

@@ -1,15 +1,15 @@
 <?php
 /**
- * [ADMIN] PetitCustomField
+ * [ADMIN] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
 $this->BcBaser->css(array(
-	'//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css', 
-	'PetitCustomField.admin/petit_custom_field',
+	'//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css',
+	'CuCustomField.admin/petit_custom_field',
 ));
 $this->BcListTable->setColumnNumber(9);
 ?>
@@ -30,12 +30,12 @@ $this->BcListTable->setColumnNumber(9);
 	<?php if ($this->BcBaser->isAdminUser()): ?>
 		<div class="bca-main__header-actions">
 			<?php
-			$this->BcBaser->link(__d('baser', '新規追加'), 
+			$this->BcBaser->link(__d('baser', '新規追加'),
 				[
-					'controller' => 'petit_custom_field_config_fields', 
-					'action' => 'add', 
+					'controller' => 'cu_custom_field_definitions',
+					'action' => 'add',
 					$configId
-				], 
+				],
 				[
 				'class' => 'bca-btn',
 				'data-bca-btn-type' => 'add',
@@ -58,9 +58,9 @@ $this->BcListTable->setColumnNumber(9);
 				'desc' => '<i class="bca-icon--desc"></i>' . __d('baser', 'No')
 			],
 			[
-				'escape' => false, 
+				'escape' => false,
 				'class' => 'btn-direction bca-table-listup__a'
-			]); 
+			]);
 			?>
 		</th>
 		<th class="bca-table-listup__thead-th"><?php // カスタムフィールド名 ?>
@@ -84,9 +84,9 @@ $this->BcListTable->setColumnNumber(9);
 <?php if(!empty($datas)): ?>
 	<?php
 	foreach ($datas as $key => $data) {
-			$this->BcBaser->element('petit_custom_field_config_metas/index_row', 
+			$this->BcBaser->element('petit_custom_field_config_metas/index_row',
 				[
-					'data' => $data, 
+					'data' => $data,
 					'count' => ($key + 1)
 			]);
 	}
@@ -111,7 +111,7 @@ $this->BcListTable->setColumnNumber(9);
   </div>
 </div>
 <?php
-if(Configure::read('petitCustomFieldConfig.submenu')) {
+if(Configure::read('cuCustomFieldConfig.submenu')) {
 	$this->BcBaser->element('submenu');
 }
 ?>

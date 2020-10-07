@@ -1,22 +1,22 @@
 <?php
 /**
- * [ADMIN] PetitCustomField
+ * [ADMIN] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
 ?>
-<?php echo $this->BcForm->create('PetitCustomFieldConfig', array('url' => array('action' => 'index'))) ?>
+<?php echo $this->BcForm->create('CuCustomFieldConfig', array('url' => array('action' => 'index'))) ?>
 <p>
 	<span>
-		<?php echo $this->BcForm->label('PetitCustomFieldConfig.content_id', 'ブログ') ?>
-		&nbsp;<?php echo $this->BcForm->input('PetitCustomFieldConfig.content_id', array('type' => 'select', 'options' => $blogContentDatas)) ?>
+		<?php echo $this->BcForm->label('CuCustomFieldConfig.content_id', 'ブログ') ?>
+		&nbsp;<?php echo $this->BcForm->input('CuCustomFieldConfig.content_id', array('type' => 'select', 'options' => $blogContentDatas)) ?>
 	</span>
 	<span>
-		<?php echo $this->BcForm->label('PetitCustomFieldConfig.status', '利用状態') ?>
-		&nbsp;<?php echo $this->BcForm->input('PetitCustomFieldConfig.status', array('type' => 'select', 'options' => $this->BcText->booleanMarkList(), 'empty' => '指定なし')) ?>
+		<?php echo $this->BcForm->label('CuCustomFieldConfig.status', '利用状態') ?>
+		&nbsp;<?php echo $this->BcForm->input('CuCustomFieldConfig.status', array('type' => 'select', 'options' => $this->BcText->booleanMarkList(), 'empty' => '指定なし')) ?>
 	</span>
 </p>
 

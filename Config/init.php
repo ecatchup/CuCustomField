@@ -1,7 +1,7 @@
 <?php
 
 /**
- * [Config] PetitCustomField プラグイン用
+ * [Config] CuCustomField プラグイン用
  * データベース初期化
  */
-$this->Plugin->initDb('PetitCustomField');
+$this->Plugin->initDb('CuCustomField');

@@ -1,27 +1,27 @@
 <?php
 /**
- * [ADMIN] PetitCustomField
+ * [ADMIN] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
 $currentModelName = $this->request->params['models']['PetitCustomFieldConfigMeta']['className'];
 ?>
 <script type="text/javascript">
 	$(window).load(function() {
-		$("#PetitCustomFieldConfigContentId").focus();
+		$("#CuCustomFieldConfigContentId").focus();
 	});
 /**
  * コンテンツを切替えたときに、更新ボタンを有効化する
  */
 $(function(){
-	var beforeContentId = $("#BeforePetitCustomFieldConfigContentId").html();
+	var beforeContentId = $("#BeforeCuCustomFieldConfigContentId").html();
 	$('#BtnSave').attr('disabled', true);
-	
-	$("#PetitCustomFieldConfigContentId").change(function(){
-		if (beforeContentId !== $("#PetitCustomFieldConfigContentId").val()) {
+
+	$("#CuCustomFieldConfigContentId").change(function(){
+		if (beforeContentId !== $("#CuCustomFieldConfigContentId").val()) {
 			$('#BtnSave').attr('disabled', false);
 		} else {
 			$('#BtnSave').attr('disabled', true);
@@ -33,7 +33,7 @@ $(function(){
 <?php echo $this->BcForm->create($currentModelName, array('url' => array('action' => 'edit'))) ?>
 <?php echo $this->BcForm->input("{$currentModelName}.id", array('type' => 'hidden')) ?>
 
-<div id="BeforePetitCustomFieldConfigContentId" style="display: none;"><?php echo $this->BcForm->value('PetitCustomFieldConfig.content_id') ?></div>
+<div id="BeforeCuCustomFieldConfigContentId" style="display: none;"><?php echo $this->BcForm->value('CuCustomFieldConfig.content_id') ?></div>
 <table cellpadding="0" cellspacing="0" class="form-table section">
 	<tr>
 		<th class="col-head"><?php echo $this->BcForm->label($currentModelName .'.id', 'NO') ?></th>
@@ -43,10 +43,10 @@ $(function(){
 	</tr>
 	<tr>
 		<th class="col-head">
-			<?php echo $this->BcForm->label('PetitCustomFieldConfig.content_id', 'このカスタムフィールドを設定中のコンテンツ') ?>
+			<?php echo $this->BcForm->label('CuCustomFieldConfig.content_id', 'このカスタムフィールドを設定中のコンテンツ') ?>
 		</th>
 		<td class="col-input">
-			<?php echo $this->BcForm->input('PetitCustomFieldConfig.content_id', array('type' => 'select', 'options' => $blogContentDatas)) ?>
+			<?php echo $this->BcForm->input('CuCustomFieldConfig.content_id', array('type' => 'select', 'options' => $blogContentDatas)) ?>
 		</td>
 	</tr>
 </table>
@@ -57,15 +57,15 @@ $(function(){
 <?php else: ?>
 	<?php echo $this->BcForm->submit('更　新', array('div' => false, 'class' => 'button btn-red', 'id' => 'BtnSave')) ?>
 	<?php $this->BcBaser->link('削　除',
-		array('action' => 'delete', $this->BcForm->value('PetitCustomField.id')),
+		array('action' => 'delete', $this->BcForm->value('CuCustomFieldValue.id')),
 		array('class' => 'btn-gray button'),
-		sprintf('ID：%s のデータを削除して良いですか？', $this->BcForm->value('PetitCustomField.id')),
+		sprintf('ID：%s のデータを削除して良いですか？', $this->BcForm->value('CuCustomFieldValue.id')),
 		false); ?>
 <?php endif ?>
 </div>
 <?php echo $this->BcForm->end() ?>
 <?php
-if(Configure::read('petitCustomFieldConfig.submenu')) {
-	$this->BcBaser->element('PetitCustomField.submenu');
+if(Configure::read('cuCustomFieldConfig.submenu')) {
+	$this->BcBaser->element('CuCustomField.submenu');
 }
 ?>

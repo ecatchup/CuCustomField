@@ -1,31 +1,31 @@
 <?php
 
 /**
- * [Controller] PetitCustomField
+ * [Controller] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
-App::uses('PetitCustomFieldApp', 'PetitCustomField.Controller');
+App::uses('CuCustomFieldApp', 'CuCustomField.Controller');
 
-class PetitCustomFieldConfigsController extends PetitCustomFieldAppController
+class CuCustomFieldConfigsController extends CuCustomFieldAppController
 {
 
 	/**
 	 * ControllerName
-	 * 
+	 *
 	 * @var string
 	 */
-	public $name = 'PetitCustomFieldConfigs';
+	public $name = 'CuCustomFieldConfigs';
 
 	/**
 	 * Model
-	 * 
+	 *
 	 * @var array
 	 */
-	public $uses = array('PetitCustomField.PetitCustomFieldConfig', 'PetitCustomField.PetitCustomField');
+	public $uses = array('CuCustomField.CuCustomFieldConfig', 'CuCustomField.CuCustomFieldValue');
 
 	/**
 	 * ぱんくずナビ
@@ -34,7 +34,7 @@ class PetitCustomFieldConfigsController extends PetitCustomFieldAppController
 	 */
 	public $crumbs = array(
 		array('name' => 'プラグイン管理', 'url' => array('plugin' => '', 'controller' => 'plugins', 'action' => 'index')),
-		array('name' => 'プチ・カスタムフィールド設定管理', 'url' => array('plugin' => 'petit_custom_field', 'controller' => 'petit_custom_field_configs', 'action' => 'index'))
+		array('name' => 'プチ・カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index'))
 	);
 
 	/**
@@ -55,19 +55,19 @@ class PetitCustomFieldConfigsController extends PetitCustomFieldAppController
 
 	/**
 	 * [ADMIN] プチ・カスタムフィールド設定一覧
-	 * 
+	 *
 	 */
 	public function admin_index()
 	{
 		$this->pageTitle = $this->adminTitle . '一覧';
-		$this->search	 = 'petit_custom_field_configs_index';
-		$this->help		 = 'petit_custom_field_configs_index';
+		$this->search	 = 'cu_custom_field_configs_index';
+		$this->help		 = 'cu_custom_field_configs_index';
 
 		$default = array(
 			'named' => array(
 				'num'		 => $this->siteConfigs['admin_list_num'],
 				'sortmode'	 => 0));
-		$this->setViewConditions('PetitCustomFieldConfig', array('default' => $default));
+		$this->setViewConditions('CuCustomFieldConfig', array('default' => $default));
 
 		$conditions		 = $this->_createAdminIndexConditions($this->request->data);
 		$this->paginate	 = array(
@@ -76,13 +76,13 @@ class PetitCustomFieldConfigsController extends PetitCustomFieldAppController
 			'limit'		 => $this->passedArgs['num']
 		);
 
-		$this->set('datas', $this->paginate('PetitCustomFieldConfig'));
+		$this->set('datas', $this->paginate('CuCustomFieldConfig'));
 		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
 	}
 
 	/**
 	 * [ADMIN] 編集
-	 * 
+	 *
 	 * @param int $id
 	 */
 	public function admin_edit($id = null)
@@ -138,7 +138,7 @@ class PetitCustomFieldConfigsController extends PetitCustomFieldAppController
 	/**
 	 * 各ブログ別のプチ・カスタムフィールド設定データを作成する
 	 * - プチ・カスタムフィールド設定データがないブログ用のデータのみ作成する
-	 * 
+	 *
 	 */
 	public function admin_first()
 	{
@@ -149,14 +149,14 @@ class PetitCustomFieldConfigsController extends PetitCustomFieldAppController
 			if ($this->blogContentDatas) {
 				foreach ($this->blogContentDatas as $key => $blog) {
 
-					$configData = $this->PetitCustomFieldConfig->findByContentId($key);
+					$configData = $this->CuCustomFieldConfig->findByContentId($key);
 					if (!$configData) {
-						$this->request->data['PetitCustomFieldConfig']['content_id'] = $key;
-						$this->request->data['PetitCustomFieldConfig']['status']	 = true;
-						$this->request->data['PetitCustomFieldConfig']['model']		 = 'BlogContent';
-						$this->request->data['PetitCustomFieldConfig']['form_place'] = 'normal';
-						$this->PetitCustomFieldConfig->create($this->request->data);
-						if (!$this->PetitCustomFieldConfig->save($this->request->data, false)) {
+						$this->request->data['CuCustomFieldConfig']['content_id'] = $key;
+						$this->request->data['CuCustomFieldConfig']['status']	 = true;
+						$this->request->data['CuCustomFieldConfig']['model']		 = 'BlogContent';
+						$this->request->data['CuCustomFieldConfig']['form_place'] = 'normal';
+						$this->CuCustomFieldConfig->create($this->request->data);
+						if (!$this->CuCustomFieldConfig->save($this->request->data, false)) {
 							$this->log(sprintf('ブログID：%s の登録に失敗しました。', $key));
 						} else {
 							$count++;
@@ -166,7 +166,7 @@ class PetitCustomFieldConfigsController extends PetitCustomFieldAppController
 			}
 			$message = sprintf('%s 件のプチ・カスタムフィールド設定を登録しました。', $count);
 			$this->setMessage($message);
-			$this->redirect(array('controller' => 'petit_custom_field_configs', 'action' => 'index'));
+			$this->redirect(array('controller' => 'cu_custom_field_configs', 'action' => 'index'));
 		}
 	}
 
@@ -181,28 +181,28 @@ class PetitCustomFieldConfigsController extends PetitCustomFieldAppController
 		$conditions		 = array();
 		$blogContentId	 = '';
 
-		if (isset($data['PetitCustomFieldConfig']['content_id'])) {
-			$blogContentId = $data['PetitCustomFieldConfig']['content_id'];
+		if (isset($data['CuCustomFieldConfig']['content_id'])) {
+			$blogContentId = $data['CuCustomFieldConfig']['content_id'];
 		}
 
 		unset($data['_Token']);
-		unset($data['PetitCustomFieldConfig']['content_id']);
+		unset($data['CuCustomFieldConfig']['content_id']);
 
 		// 条件指定のないフィールドを解除
-		if (!empty($data['PetitCustomFieldConfig'])) {
-			foreach ($data['PetitCustomFieldConfig'] as $key => $value) {
+		if (!empty($data['CuCustomFieldConfig'])) {
+			foreach ($data['CuCustomFieldConfig'] as $key => $value) {
 				if ($value === '') {
-					unset($data['PetitCustomFieldConfig'][$key]);
+					unset($data['CuCustomFieldConfig'][$key]);
 				}
 			}
-			if ($data['PetitCustomFieldConfig']) {
+			if ($data['CuCustomFieldConfig']) {
 				$conditions = $this->postConditions($data);
 			}
 		}
 
 		if ($blogContentId) {
 			$conditions = array(
-				'PetitCustomFieldConfig.content_id' => $blogContentId
+				'CuCustomFieldConfig.content_id' => $blogContentId
 			);
 		}
 

@@ -1,40 +1,40 @@
 <?php
 
 /**
- * [Model] PetitCustomFieldConfig
+ * [Model] CuCustomFieldConfig
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
-App::uses('PetitCustomField.PetitCustomFieldAppModel', 'Model');
+App::uses('CuCustomField.CuCustomFieldAppModel', 'Model');
 
-class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
+class CuCustomFieldDefinition extends CuCustomFieldAppModel
 {
 
 	/**
 	 * ModelName
-	 * 
+	 *
 	 * @var string
 	 */
-	public $name = 'PetitCustomFieldConfigField';
+	public $name = 'CuCustomFieldDefinition';
 
 	/**
 	 * PluginName
-	 * 
+	 *
 	 * @var string
 	 */
-	public $plugin = 'PetitCustomField';
+	public $plugin = 'CuCustomFieldValue';
 
 	/**
 	 * actsAs
-	 * 
+	 *
 	 * @var array
 	 */
 	public $actsAs = array(
 		'BcCache',
-		'PetitCustomField.KeyValue',
+		'CuCustomField.KeyValue',
 	);
 
 	/**
@@ -43,8 +43,8 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 	 * @var array
 	 */
 	public $hasAndBelongsToMany = array(
-		'PetitCustomFieldConfig' => array(
-			'className'				 => 'PetitCustomField.PetitCustomFieldConfig',
+		'CuCustomFieldConfig' => array(
+			'className'				 => 'CuCustomField.CuCustomFieldConfig',
 			'joinTable'				 => 'petit_custom_field_config_metas',
 			'foreignKey'			 => 'field_foreign_id',
 			'associationForeignKey'	 => 'petit_custom_field_config_id',
@@ -58,19 +58,19 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 
 	/**
 	 * constructer
-	 * 
+	 *
 	 */
 	public function __construct($id = false, $table = null, $ds = null)
 	{
 		parent::__construct($id, $table, $ds);
 
 		$validation		 = $this->getDefaultValidate();
-		$this->validate	 = $validation['PetitCustomFieldConfigField'];
+		$this->validate	 = $validation['CuCustomFieldDefinition'];
 	}
 
 	/**
 	 * 保存時の foreign_id
-	 * 
+	 *
 	 * @var int
 	 */
 	public $foreignId = null;
@@ -85,7 +85,7 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 	/**
 	 * KeyValue で利用するバリデーション内容を取得する
 	 * - 通常の validate プロパティにコンストラクタでセットしている
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getDefaultValidate()
@@ -98,11 +98,11 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 	 * KeyValue で利用するバリデーション
 	 * - actAs の validate 指定が空の際に、このプロパティ値が利用される
 	 * - モデル名をキーに指定しているのは、KeyValueBehavior の validateSection への対応のため
-	 * 
+	 *
 	 * @var array
 	 */
 	public $keyValueValidate = array(
-		'PetitCustomFieldConfigField' => array(
+		'CuCustomFieldDefinition' => array(
 			'name'		 => array(
 				'notBlank'			 => array(
 					'rule'		 => array('notBlank'),
@@ -168,7 +168,7 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 
 	/**
 	 * データの重複チェックを行う
-	 * 
+	 *
 	 * @param array $check 対象データ
 	 * @param string $field
 	 * @return boolean
@@ -199,7 +199,7 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 	/**
 	 * 英数チェックアンダースコア: アンダースコアを許容する
 	 * フィールドタイプが wysiwyg の場合、フィールド名にハイフンがあると正常に表示されなくなるためのチェック
-	 * 
+	 *
 	 * @param array $check 対象データ
 	 * @param string $fieldType フィールドタイプ
 	 * @return	boolean
@@ -233,11 +233,11 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 	/**
 	 * KeyValue で利用する初期値の指定
 	 * - actAs の defaults 指定が空の際に、このプロパティ値が利用される
-	 * 
+	 *
 	 * @var array
 	 */
 	public $keyValueDefaults = array(
-		'PetitCustomFieldConfigField' => array(
+		'CuCustomFieldDefinition' => array(
 			'status'	 => 1,
 			'required'	 => 0,
 		),
@@ -246,7 +246,7 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 	/**
 	 * beforeSave
 	 * マルチチェックボックスへの対応：配列で送られた値はシリアライズ化する
-	 * 
+	 *
 	 * @param array $options
 	 * @return boolean
 	 */
@@ -263,7 +263,7 @@ class PetitCustomFieldConfigField extends PetitCustomFieldAppModel
 	/**
 	 * afterFind
 	 * シリアライズされているデータを復元して返す
-	 * 
+	 *
 	 * @param array $results
 	 * @param boolean $primary
 	 */

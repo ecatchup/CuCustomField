@@ -1,18 +1,18 @@
 <?php
 
-class PetitCustomFieldsSchema extends CakeSchema {
+class CuCustomFieldValuesSchema extends CakeSchema {
 
-	public $file = 'petit_custom_fields.php';
+	public $file = 'cu_custom_field_values.php';
 
 	public function before($event = array()) {
 		return true;
 	}
 
 	public function after($event = array()) {
-		
+
 	}
 
-	public $petit_custom_fields = array(
+	public $cu_custom_field_values = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary', 'comment' => 'ID'),
 		'foreign_id' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false, 'comment' => 'メタテーブル用外部キー'),
 		'key' => array('type' => 'string', 'null' => true, 'default' => null, 'comment' => '保存キー'),

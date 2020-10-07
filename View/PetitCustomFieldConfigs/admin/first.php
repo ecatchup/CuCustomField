@@ -1,15 +1,15 @@
 <?php
 /**
- * [ADMIN] PetitCustomField
+ * [ADMIN] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
 ?>
-<?php echo $this->BcForm->create('PetitCustomFieldConfig', array('action' => 'first')) ?>
-<?php echo $this->BcForm->input('PetitCustomFieldConfig.active', array('type' => 'hidden', 'value' => '1')) ?>
+<?php echo $this->BcForm->create('CuCustomFieldConfig', array('action' => 'first')) ?>
+<?php echo $this->BcForm->input('CuCustomFieldConfig.active', array('type' => 'hidden', 'value' => '1')) ?>
 <table cellpadding="0" cellspacing="0" class="form-table section" id="ListTable">
 	<tr>
 		<th class="col-head">

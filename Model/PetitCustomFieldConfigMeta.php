@@ -1,7 +1,7 @@
 <?php
 
 /**
- * [Model] PetitCustomFieldConfig
+ * [Model] PetitCustomFieldConfigMeta
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
@@ -15,21 +15,14 @@ class PetitCustomFieldConfigMeta extends PetitCustomFieldAppModel
 
 	/**
 	 * ModelName
-	 * 
+	 *
 	 * @var string
 	 */
 	public $name = 'PetitCustomFieldConfigMeta';
 
 	/**
-	 * PluginName
-	 * 
-	 * @var string
-	 */
-	public $plugin = 'PetitCustomField';
-
-	/**
 	 * actsAs
-	 * 
+	 *
 	 * @var array
 	 */
 	public $actsAs = array(
@@ -45,15 +38,15 @@ class PetitCustomFieldConfigMeta extends PetitCustomFieldAppModel
 	 * @var array
 	 */
 	public $belongsTo = array(
-		'PetitCustomFieldConfig' => array(
-			'className'	 => 'PetitCustomField.PetitCustomFieldConfig',
+		'CuCustomFieldConfig' => array(
+			'className'	 => 'PetitCustomField.CuCustomFieldConfig',
 			'foreignKey' => 'petit_custom_field_config_id'
 		),
 	);
 
 	/**
 	 * カスタムフィールド設定メタ情報取得の際に、カスタムフィールド設定情報も併せて取得する
-	 * 
+	 *
 	 * @param array $results
 	 * @param boolean $primary
 	 */
@@ -61,24 +54,24 @@ class PetitCustomFieldConfigMeta extends PetitCustomFieldAppModel
 	{
 		parent::afterFind($results, $primary);
 		if ($results) {
-			if (ClassRegistry::isKeySet('PetitCustomField.PetitCustomFieldConfigField')) {
-				$this->PetitCustomFieldConfigFieldModel = ClassRegistry::getObject('PetitCustomField.PetitCustomFieldConfigField');
+			if (ClassRegistry::isKeySet('PetitCustomField.CuCustomFieldDefinition')) {
+				$this->CuCustomFieldDefinitionModel = ClassRegistry::getObject('PetitCustomField.CuCustomFieldDefinition');
 			} else {
-				$this->PetitCustomFieldConfigFieldModel = ClassRegistry::init('PetitCustomField.PetitCustomFieldConfigField');
+				$this->CuCustomFieldDefinitionModel = ClassRegistry::init('PetitCustomField.CuCustomFieldDefinition');
 			}
 
-			$this->PetitCustomFieldConfigFieldModel->Behaviors->KeyValue->KeyValue = $this->PetitCustomFieldConfigFieldModel;
+			$this->CuCustomFieldDefinitionModel->Behaviors->KeyValue->KeyValue = $this->CuCustomFieldDefinitionModel;
 			foreach ($results as $key => $value) {
 				// $data = $this->PetitCustomFieldModel->getSection($Model->id, $this->PetitCustomFieldModel->name);
 				// $data = $this->{$this->modelClass}->getSection($foreignId, $this->modelClass);
 				// getMax等のfindの際にはモデル名をキーとしたデータが入ってこないため判定
 				if (isset($value['PetitCustomFieldConfigMeta'])) {
-					$dataField = $this->PetitCustomFieldConfigFieldModel->getSection($value['PetitCustomFieldConfigMeta']['field_foreign_id'], 'PetitCustomFieldConfigField');
+					$dataField = $this->CuCustomFieldDefinitionModel->getSection($value['PetitCustomFieldConfigMeta']['field_foreign_id'], 'CuCustomFieldDefinition');
 					if ($dataField) {
 						// マルチチェックの初期値の配列化に対応
 						$dataField										 = $this->splitData($dataField);
-						$_dataField['PetitCustomFieldConfigField']		 = $dataField;
-						$results[$key]['PetitCustomFieldConfigField']	 = $_dataField['PetitCustomFieldConfigField'];
+						$_dataField['CuCustomFieldDefinition']		 = $dataField;
+						$results[$key]['CuCustomFieldDefinition']	 = $_dataField['CuCustomFieldDefinition'];
 					}
 				}
 			}

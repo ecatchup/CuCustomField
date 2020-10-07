@@ -1,10 +1,10 @@
 <?php
 /**
- * [ADMIN] PetitCustomField
+ * [ADMIN] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
-$this->BcBaser->element('petit_custom_field_config_fields/index_list');
+$this->BcBaser->element('cu_custom_field_definitions/index_list');

@@ -1,31 +1,31 @@
 <?php
 
 /**
- * [Controller] PetitCustomField
+ * [Controller] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
-App::uses('PetitCustomFieldApp', 'PetitCustomField.Controller');
+App::uses('CuCustomFieldApp', 'CuCustomField.Controller');
 
-class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppController
+class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 {
 
 	/**
 	 * ControllerName
-	 * 
+	 *
 	 * @var string
 	 */
-	public $name = 'PetitCustomFieldConfigFields';
+	public $name = 'CuCustomFieldDefinitions';
 
 	/**
 	 * Model
-	 * 
+	 *
 	 * @var array
 	 */
-	public $uses = array('PetitCustomField.PetitCustomFieldConfigField');
+	public $uses = array('CuCustomField.CuCustomFieldDefinition');
 
 	/**
 	 * ぱんくずナビ
@@ -34,7 +34,7 @@ class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppControll
 	 */
 	public $crumbs = array(
 		array('name' => 'プラグイン管理', 'url' => array('plugin' => '', 'controller' => 'plugins', 'action' => 'index')),
-		array('name' => 'プチ・カスタムフィールド設定管理', 'url' => array('plugin' => 'petit_custom_field', 'controller' => 'petit_custom_field_configs', 'action' => 'index')),
+		array('name' => 'プチ・カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index')),
 	);
 
 	/**
@@ -53,24 +53,24 @@ class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppControll
 		parent::beforeFilter();
 		// カスタムフィールド設定からコンテンツIDを取得してセット
 		if (!empty($this->request->params['pass'][0])) {
-			$configData = $this->PetitCustomFieldConfigField->PetitCustomFieldConfig->find('first', array(
-				'conditions' => array('PetitCustomFieldConfig.id' => $this->request->params['pass'][0]),
+			$configData = $this->CuCustomFieldDefinition->CuCustomFieldConfig->find('first', array(
+				'conditions' => array('CuCustomFieldConfig.id' => $this->request->params['pass'][0]),
 				'recursive'	 => -1,
 			));
-			$this->set('contentId', $configData['PetitCustomFieldConfig']['content_id']);
+			$this->set('contentId', $configData['CuCustomFieldConfig']['content_id']);
 		}
 	}
 
 	/**
 	 * [ADMIN] 編集
-	 * 
+	 *
 	 * @param int $configId
 	 * @param int $foreignId
 	 */
 	public function admin_edit($configId = null, $foreignId = null)
 	{
 		$this->pageTitle = $this->adminTitle . '編集';
-		$this->help		 = 'petit_custom_field_config_fields';
+		$this->help		 = 'cu_custom_field_definitions';
 		$deletable		 = true;
 
 		if (!$configId || !$foreignId) {
@@ -78,20 +78,20 @@ class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppControll
 			$this->redirect(array('action' => 'index'));
 		}
 
-		$this->crumbs[] = array('name' => 'フィールド設定管理', 'url' => array('plugin' => 'petit_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
+		$this->crumbs[] = array('name' => 'フィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
 
 		if (empty($this->request->data)) {
-			// $data = $this->PetitCustomFieldModel->getSection($Model->id, $this->PetitCustomFieldModel->name);
+			// $data = $this->CuCustomFieldValueModel->getSection($Model->id, $this->CuCustomFieldValueModel->name);
 			$data = $this->{$this->modelClass}->getSection($foreignId, $this->modelClass);
 			if ($data) {
 				$this->request->data = array($this->modelClass => $data);
 			}
 		} else {
 			// バリデーション重複チェックのため、foreign_id をモデルのプロパティに持たせる
-			$this->PetitCustomFieldConfigField->foreignId = $foreignId;
-			if ($this->PetitCustomFieldConfigField->validateSection($this->request->data, 'PetitCustomFieldConfigField')) {
-				if ($this->PetitCustomFieldConfigField->saveSection($foreignId, $this->request->data, 'PetitCustomFieldConfigField')) {
-					$message = $this->name . '「' . $this->request->data['PetitCustomFieldConfigField']['name'] . '」を更新しました。';
+			$this->CuCustomFieldDefinition->foreignId = $foreignId;
+			if ($this->CuCustomFieldDefinition->validateSection($this->request->data, 'CuCustomFieldDefinition')) {
+				if ($this->CuCustomFieldDefinition->saveSection($foreignId, $this->request->data, 'CuCustomFieldDefinition')) {
+					$message = $this->name . '「' . $this->request->data['CuCustomFieldDefinition']['name'] . '」を更新しました。';
 					$this->setMessage($message, false, true);
 					$this->redirect(array('controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
 				} else {
@@ -102,7 +102,7 @@ class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppControll
 			}
 		}
 
-		$fieldNameList = $this->PetitCustomFieldConfigField->getControlSource('field_name');
+		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name');
 		$this->set(compact('fieldNameList', 'configId', 'foreignId', 'deletable'));
 		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
 		$this->render('form');
@@ -110,28 +110,28 @@ class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppControll
 
 	/**
 	 * [ADMIN] 編集
-	 * 
+	 *
 	 * @param int $configId
 	 */
 	public function admin_add($configId = null)
 	{
 		$this->pageTitle = $this->adminTitle . '追加';
-		$this->help		 = 'petit_custom_field_config_fields';
+		$this->help		 = 'cu_custom_field_definitions';
 		$deletable		 = false;
 
-		$this->crumbs[]	 = array('name' => 'カスタムフィールド設定管理', 'url' => array('plugin' => 'petit_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
-		$foreignId		 = $this->PetitCustomFieldConfigField->PetitCustomFieldConfigMeta->getMax('field_foreign_id') + 1;
+		$this->crumbs[]	 = array('name' => 'カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
+		$foreignId		 = $this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->getMax('field_foreign_id') + 1;
 
 		if (!$configId) {
 			$this->setMessage('無効な処理です。', true);
-			$this->redirect(array('controller' => 'petit_custom_field_configs', 'action' => 'index'));
+			$this->redirect(array('controller' => 'cu_custom_field_configs', 'action' => 'index'));
 		}
 
 		if (empty($this->request->data)) {
-			$this->request->data = $this->PetitCustomFieldConfigField->defaultValues();
+			$this->request->data = $this->CuCustomFieldDefinition->defaultValues();
 		} else {
-			if ($this->PetitCustomFieldConfigField->validateSection($this->request->data, 'PetitCustomFieldConfigField')) {
-				if ($this->PetitCustomFieldConfigField->saveSection($foreignId, $this->request->data, 'PetitCustomFieldConfigField')) {
+			if ($this->CuCustomFieldDefinition->validateSection($this->request->data, 'CuCustomFieldDefinition')) {
+				if ($this->CuCustomFieldDefinition->saveSection($foreignId, $this->request->data, 'CuCustomFieldDefinition')) {
 
 					// リンクテーブルにデータを追加する
 					$saveData = array(
@@ -141,13 +141,13 @@ class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppControll
 						),
 					);
 					// load しないと順番が振られない。スコープが効かない。
-					$this->PetitCustomFieldConfigField->PetitCustomFieldConfigMeta->Behaviors->load(
-							'PetitCustomField.List', array('scope' => 'petit_custom_field_config_id')
+					$this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->Behaviors->load(
+							'CuCustomField.List', array('scope' => 'petit_custom_field_config_id')
 					);
-					$this->PetitCustomFieldConfigField->PetitCustomFieldConfigMeta->create($saveData);
-					$this->PetitCustomFieldConfigField->PetitCustomFieldConfigMeta->save($saveData);
+					$this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->create($saveData);
+					$this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->save($saveData);
 
-					$message = $this->name . '「' . $this->request->data['PetitCustomFieldConfigField']['name'] . '」の追加が完了しました。';
+					$message = $this->name . '「' . $this->request->data['CuCustomFieldDefinition']['name'] . '」の追加が完了しました。';
 					$this->setMessage($message, false, true);
 					$this->redirect(array('controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
 				} else {
@@ -158,7 +158,7 @@ class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppControll
 			}
 		}
 
-		$fieldNameList = $this->PetitCustomFieldConfigField->getControlSource('field_name');
+		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name');
 		$this->set(compact('fieldNameList', 'configId', 'foreignId', 'deletable'));
 		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
 		$this->render('form');
@@ -166,7 +166,7 @@ class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppControll
 
 	/**
 	 * [ADMIN] 削除
-	 * 
+	 *
 	 * @param int $configId
 	 * @param int $foreignId
 	 */
@@ -178,10 +178,10 @@ class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppControll
 		}
 
 		// 削除前にメッセージ用にカスタムフィールドを取得する
-		$data = $this->PetitCustomFieldConfigField->getSection($foreignId, 'PetitCustomFieldConfigField');
+		$data = $this->CuCustomFieldDefinition->getSection($foreignId, 'CuCustomFieldDefinition');
 
-		if ($this->PetitCustomFieldConfigField->resetSection($foreignId)) {
-			$message = $this->name . '「' . $data['PetitCustomFieldConfigField']['name'] . '」を削除しました。';
+		if ($this->CuCustomFieldDefinition->resetSection($foreignId)) {
+			$message = $this->name . '「' . $data['CuCustomFieldDefinition']['name'] . '」を削除しました。';
 			$this->setMessage($message, false, true);
 			$this->redirect(array('action' => 'index', $configId));
 		} else {
@@ -201,28 +201,28 @@ class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppControll
 		$conditions		 = array();
 		$blogContentId	 = '';
 
-		if (isset($data['PetitCustomFieldConfigField']['content_id'])) {
-			$blogContentId = $data['PetitCustomFieldConfigField']['content_id'];
+		if (isset($data['CuCustomFieldDefinition']['content_id'])) {
+			$blogContentId = $data['CuCustomFieldDefinition']['content_id'];
 		}
 
 		unset($data['_Token']);
-		unset($data['PetitCustomFieldConfigField']['content_id']);
+		unset($data['CuCustomFieldDefinition']['content_id']);
 
 		// 条件指定のないフィールドを解除
-		if (!empty($data['PetitCustomFieldConfigField'])) {
-			foreach ($data['PetitCustomFieldConfigField'] as $key => $value) {
+		if (!empty($data['CuCustomFieldDefinition'])) {
+			foreach ($data['CuCustomFieldDefinition'] as $key => $value) {
 				if ($value === '') {
-					unset($data['PetitCustomFieldConfigField'][$key]);
+					unset($data['CuCustomFieldDefinition'][$key]);
 				}
 			}
-			if ($data['PetitCustomFieldConfigField']) {
+			if ($data['CuCustomFieldDefinition']) {
 				$conditions = $this->postConditions($data);
 			}
 		}
 
 		if ($blogContentId) {
 			$conditions = array(
-				'PetitCustomFieldConfigField.content_id' => $blogContentId
+				'CuCustomFieldDefinition.content_id' => $blogContentId
 			);
 		}
 
@@ -236,7 +236,7 @@ class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppControll
 	/**
 	 * [ADMIN][AJAX] 重複値をチェックする
 	 *   ・foreign_id が異なるものは重複とみなさない
-	 * 
+	 *
 	 */
 	public function admin_ajax_check_duplicate()
 	{
@@ -247,7 +247,7 @@ class PetitCustomFieldConfigFieldsController extends PetitCustomFieldAppControll
 		if (!$this->RequestHandler->isAjax()) {
 			$message = '許可されていないアクセスです。';
 			$this->setMessage($message, true);
-			$this->redirect(array('controller' => 'petit_custom_field_configs', 'action' => 'index'));
+			$this->redirect(array('controller' => 'cu_custom_field_configs', 'action' => 'index'));
 		}
 
 		if ($this->request->data) {

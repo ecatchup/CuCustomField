@@ -1,10 +1,10 @@
 <?php
 /**
- * [ADMIN] PetitCustomField
+ * [ADMIN] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
 ?>
@@ -39,7 +39,7 @@
 	<tbody>
 <?php if(!empty($datas)): ?>
 	<?php foreach($datas as $data): ?>
-		<?php $this->BcBaser->element('petit_custom_field_config_fields/index_row', array('data' => $data)) ?>
+		<?php $this->BcBaser->element('cu_custom_field_definitions/index_row', array('data' => $data)) ?>
 	<?php endforeach; ?>
 <?php else: ?>
 	<tr>

@@ -1,14 +1,14 @@
 <?php
 
 /**
- * [Helper] PetitCustomField
+ * [Helper] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
-class PetitCustomFieldHelper extends AppHelper
+class CuCustomFieldHelper extends AppHelper
 {
 
 	/**
@@ -20,35 +20,35 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * プチ・カスタムフィールド設定情報
-	 * 
+	 *
 	 * @var array
 	 */
 	public $customFieldConfig = array();
 
 	/**
 	 * カスタムフィールドデータ・モデル
-	 * 
+	 *
 	 * @var Object
 	 */
-	public $PetitCustomFieldModel = null;
+	public $CuCustomFieldValueModel = null;
 
 	/**
 	 * カスタムフィールドへの入力データ
-	 * 
+	 *
 	 * @var array
 	 */
 	public $publicFieldData = array();
 
 	/**
 	 * カスタムフィールドのフィールド別設定データ
-	 * 
+	 *
 	 * @var array
 	 */
 	public $publicFieldConfigData = array();
 
 	/**
 	 * カスタムフィールド設定データ
-	 * 
+	 *
 	 * @var array
 	 */
 	public $publicConfigData = array();
@@ -56,7 +56,7 @@ class PetitCustomFieldHelper extends AppHelper
 	/**
 	 * constructor
 	 * - 記事に設定されているカスタムフィールド設定情報を取得する
-	 * 
+	 *
 	 * @param View $View
 	 * @param array $settings
 	 */
@@ -66,19 +66,19 @@ class PetitCustomFieldHelper extends AppHelper
 		$this->customFieldConfig = Configure::read('petitCustomField');
 
 		// 記事に設定されているカスタムフィールド情報を取得する
-		if (ClassRegistry::isKeySet('PetitCustomField.PetitCustomField')) {
-			$this->PetitCustomFieldModel = ClassRegistry::getObject('PetitCustomField.PetitCustomField');
+		if (ClassRegistry::isKeySet('CuCustomField.CuCustomFieldValue')) {
+			$this->CuCustomFieldValueModel = ClassRegistry::getObject('CuCustomField.CuCustomFieldValue');
 		} else {
-			$this->PetitCustomFieldModel = ClassRegistry::init('PetitCustomField.PetitCustomField');
+			$this->CuCustomFieldValueModel = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
 		}
-		$this->publicConfigData		 = $this->PetitCustomFieldModel->publicConfigData;
-		$this->publicFieldConfigData = $this->PetitCustomFieldModel->publicFieldConfigData;
-		$this->publicFieldData		 = $this->PetitCustomFieldModel->publicFieldData;
+		$this->publicConfigData		 = $this->CuCustomFieldValueModel->publicConfigData;
+		$this->publicFieldConfigData = $this->CuCustomFieldValueModel->publicFieldConfigData;
+		$this->publicFieldData		 = $this->CuCustomFieldValueModel->publicFieldData;
 	}
 
 	/**
 	 * フィールド名を指定して、プチカスタムフィールドのフィールド設定内容を取得する
-	 * 
+	 *
 	 * @param string $field
 	 * @param array $options
 	 * @return string
@@ -111,7 +111,7 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * 指定したコンテンツIDのフィールド設定一覧を取得する
-	 * 
+	 *
 	 * @param int $contentId
 	 * @return array
 	 */
@@ -126,7 +126,7 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * 指定したコンテンツIDのフィールド設定内の、指定したフィールド名の設定内容を取得する
-	 * 
+	 *
 	 * @param int $contentId
 	 * @param string $fieldName
 	 * @return array
@@ -145,7 +145,7 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * 指定したコンテンツIDのフィールド設定内の、指定したフィールド名の設定内容の選択リスト一覧を取得する
-	 * 
+	 *
 	 * @param int $contentId
 	 * @param string $fieldName
 	 * @return array
@@ -163,7 +163,7 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * フィールド名を指定して、プチカスタムフィールドのフィールド設定内容を取得する
-	 * 
+	 *
 	 * @param string $field
 	 * @param array $options
 	 * @return string
@@ -171,14 +171,14 @@ class PetitCustomFieldHelper extends AppHelper
 	public function getPdcfDataField($field = '', $options = array())
 	{
 		if (Configure::read('debug') > 0) {
-			trigger_error(deprecatedMessage('ヘルパーメソッド：PetitCustomFieldHelper::getPdcfDataField()', '1.0.0-beta', '1.0.0', '$this->PetitCustomField->getField() を利用してください。'), E_USER_DEPRECATED);
+			trigger_error(deprecatedMessage('ヘルパーメソッド：CuCustomFieldHelper::getPdcfDataField()', '1.0.0-beta', '1.0.0', '$this->CuCustomField->getField() を利用してください。'), E_USER_DEPRECATED);
 		}
 		return $this->getField($field, $options);
 	}
 
 	/**
 	 * フィールド名を指定して、プチカスタムフィールドのデータを取得する
-	 * 
+	 *
 	 * @param array $post
 	 * @param string $field
 	 * @param array $options
@@ -190,7 +190,7 @@ class PetitCustomFieldHelper extends AppHelper
 		$_options	 = array(
 			'novalue'	 => '',
 			'format'	 => 'Y-m-d',
-			'model'		 => 'PetitCustomField',
+			'model'		 => 'CuCustomFieldValue',
 			'separator'	 => ', ',
 		);
 		$options	 = Hash::merge($_options, $options);
@@ -291,7 +291,7 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * フィールド名を指定して、プチカスタムフィールドのデータを取得する
-	 * 
+	 *
 	 * @param array $post
 	 * @param string $field
 	 * @param array $options
@@ -300,7 +300,7 @@ class PetitCustomFieldHelper extends AppHelper
 	public function getPdcfData($post = array(), $field = '', $options = array())
 	{
 		if (Configure::read('debug') > 0) {
-			trigger_error(deprecatedMessage('ヘルパーメソッド：PetitCustomFieldHelper::getPdcfData()', '1.0.0-beta', '1.0.0', '$this->PetitCustomField->get() を利用してください。'), E_USER_DEPRECATED);
+			trigger_error(deprecatedMessage('ヘルパーメソッド：PetitCustomFieldHelper::getPdcfData()', '1.0.0-beta', '1.0.0', '$this->CuCustomField->get() を利用してください。'), E_USER_DEPRECATED);
 		}
 		return $this->get($post, $field, $options);
 	}
@@ -355,7 +355,7 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * フォームのタイプを判定して、タイプ別の入力フォームを生成する
-	 * 
+	 *
 	 * @param array $data
 	 * @param string $section モデル名を指定: 複数モデルのデータの場合、ここで指定したモデル名のデータを利用する
 	 * @param array $options
@@ -506,7 +506,7 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * タイプに応じたフォームの入力形式を出力する
-	 * 
+	 *
 	 * @param string $field
 	 * @param array $options
 	 * @return string
@@ -554,7 +554,7 @@ class PetitCustomFieldHelper extends AppHelper
 	/**
 	 * 配列とキーを指定して値を取得する
 	 * - グループ指定のある配列に対応
-	 * 
+	 *
 	 * @param int $key
 	 * @param array $array
 	 * @param string $noValue
@@ -581,7 +581,7 @@ class PetitCustomFieldHelper extends AppHelper
 	 * テキスト情報を配列形式に変換して返す
 	 * - 改行で分割する
 	 * - 区切り文字で分割する
-	 * 
+	 *
 	 * @param string $str
 	 * @return mixed
 	 */
@@ -618,7 +618,7 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * 各フィールド別の表示判定を行う
-	 * 
+	 *
 	 * @param array $data
 	 * @param array $options
 	 * @return boolean
@@ -631,8 +631,8 @@ class PetitCustomFieldHelper extends AppHelper
 		$options	 = array_merge($_options, $options);
 
 		if ($data) {
-			if (isset($data['PetitCustomFieldConfigField'])) {
-				if ($data['PetitCustomFieldConfigField'][$options['field']]) {
+			if (isset($data['CuCustomFieldDefinition'])) {
+				if ($data['CuCustomFieldDefinition'][$options['field']]) {
 					return true;
 				}
 			} else {
@@ -647,15 +647,15 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * カスタムフィールドが有効になっているか判定する
-	 * 
+	 *
 	 * @param array $data
 	 * @return boolean
 	 */
 	public function judgeStatus($data = array())
 	{
 		if ($data) {
-			if (isset($data['PetitCustomFieldConfigField'])) {
-				if ($data['PetitCustomFieldConfigField']['status']) {
+			if (isset($data['CuCustomFieldDefinition'])) {
+				if ($data['CuCustomFieldDefinition']['status']) {
 					return true;
 				}
 			} else {
@@ -670,7 +670,7 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * カスタムフィールドを持っているか判定する
-	 * 
+	 *
 	 * @param array $data
 	 * @return int
 	 */
@@ -685,7 +685,7 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * 未使用状態を判定する
-	 * 
+	 *
 	 * @param array $data
 	 * @param string $modelName
 	 * @return boolean 未使用状態
@@ -695,10 +695,10 @@ class PetitCustomFieldHelper extends AppHelper
 		if ($modelName) {
 			$data = $data[$modelName];
 		} else {
-			if (isset($data['PetitCustomFieldConfigField'])) {
-				$data = $data['PetitCustomFieldConfigField'];
-			} elseif (isset($data['PetitCustomFieldConfig'])) {
-				$data = $data['PetitCustomFieldConfig'];
+			if (isset($data['CuCustomFieldDefinition'])) {
+				$data = $data['CuCustomFieldDefinition'];
+			} elseif (isset($data['CuCustomFieldConfig'])) {
+				$data = $data['CuCustomFieldConfig'];
 			}
 		}
 		$allowPublish = (int) $data['status'];
@@ -707,21 +707,21 @@ class PetitCustomFieldHelper extends AppHelper
 
 	/**
 	 * KeyValu形式のデータを、['Model']['key'] = value に変換する
-	 * 
+	 *
 	 * @param array $data
 	 * @return array
 	 */
 	public function convertKeyValueToModelData($data = array())
 	{
 		$dataField = array();
-		if (isset($data['PetitCustomFieldConfigField'])) {
-			$dataField[]['PetitCustomFieldConfigField'] = $data['PetitCustomFieldConfigField'];
+		if (isset($data['CuCustomFieldDefinition'])) {
+			$dataField[]['CuCustomFieldDefinition'] = $data['CuCustomFieldDefinition'];
 		}
 
 		$detailArray = array();
 		foreach ($dataField as $value) {
-			$keyArray								 = preg_split('/\./', $value['PetitCustomFieldConfigField']['key'], 2);
-			$detailArray[$keyArray[0]][$keyArray[1]] = $value['PetitCustomFieldConfigField']['value'];
+			$keyArray								 = preg_split('/\./', $value['CuCustomFieldDefinition']['key'], 2);
+			$detailArray[$keyArray[0]][$keyArray[1]] = $value['CuCustomFieldDefinition']['value'];
 		}
 		return $detailArray;
 	}
@@ -741,12 +741,12 @@ class PetitCustomFieldHelper extends AppHelper
 		$options	 = Hash::merge($_options, $options);
 		extract($options);
 
-		$this->BcBaser->element('PetitCustomField.' . $template, array('plugin' => 'petit_custom_field', 'post' => $post));
+		$this->BcBaser->element('PetitCustomField.' . $template, array('plugin' => 'cu_custom_field', 'post' => $post));
 	}
 
 	/**
 	 * 初期値設定用として、キー（値）と名称を表示させた都道府県リストを取得する
-	 * 
+	 *
 	 * @return array
 	 */
 	public function previewPrefList()

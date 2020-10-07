@@ -1,10 +1,10 @@
 <?php
 /**
- * [ADMIN] PetitCustomField
+ * [ADMIN] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
 $this->BcListTable->setColumnNumber(9);
@@ -14,17 +14,17 @@ $this->BcListTable->setColumnNumber(9);
 	<?php if ($this->BcBaser->isAdminUser()): ?>
 		<div class="bca-main__header-actions">
 			<?php
-			$this->BcBaser->link(__d('baser', '新規追加'), 
+			$this->BcBaser->link(__d('baser', '新規追加'),
 				[
-					'controller' => 'petit_custom_field_configs', 
-					'action' => 'add', 
+					'controller' => 'cu_custom_field_configs',
+					'action' => 'add',
 					$this->BcForm->value('FeedConfig.id')
-				], 
+				],
 				[
 					'class' => 'bca-btn',
 					'data-bca-btn-type' => 'add',
 					'data-bca-btn-size' => 'sm'
-				]); 
+				]);
 			?>　
 		</div>
 	<?php endif ?>
@@ -42,9 +42,9 @@ $this->BcListTable->setColumnNumber(9);
 						'desc' => '<i class="bca-icon--desc"></i>' . __d('baser', 'No')
 					],
 					[
-						'escape' => false, 
+						'escape' => false,
 						'class' => 'btn-direction bca-table-listup__a'
-					]); 
+					]);
 				?>
 			</th>
 			<th class="bca-table-listup__thead-th"><?php // content_id ?>
@@ -55,9 +55,9 @@ $this->BcListTable->setColumnNumber(9);
 						'desc' => '<i class="bca-icon--desc"></i>' . __d('baser', 'コンテンツ名')
 					],
 					[
-						'escape' => false, 
+						'escape' => false,
 						'class' => 'btn-direction bca-table-listup__a'
-					]); 
+					]);
 					?>
 			</th>
 			<th class="bca-table-listup__thead-th"><?php // フィールド数 ?>
@@ -65,41 +65,41 @@ $this->BcListTable->setColumnNumber(9);
 			</th>
 			<th class="bca-table-listup__thead-th"><?php // 編集画面フォーム表示位置 ?>
 				<?php
-				echo $this->Paginator->sort('form_place', 
+				echo $this->Paginator->sort('form_place',
 					[
-						'asc' => '<i class="bca-icon--asc"></i>'. __d('baser', '編集画面フォーム表示位置'), 
+						'asc' => '<i class="bca-icon--asc"></i>'. __d('baser', '編集画面フォーム表示位置'),
 						'desc' => '<i class="bca-icon--desc"></i>'. __d('baser', '編集画面フォーム表示位置')
-					], 
+					],
 					[
-						'escape' => false, 
+						'escape' => false,
 						'class' => 'btn-direction bca-table-listup__a'
 					]);
 				?>
 			</th>
 			<th class="bca-table-listup__thead-th"><?php // 投稿日 ?>
 				<?php echo $this->BcListTable->dispatchShowHead() ?>
-				<?php 
-				echo $this->Paginator->sort('created', 
+				<?php
+				echo $this->Paginator->sort('created',
 				[
-					'asc' => '<i class="bca-icon--asc"></i>'. __d('baser', '登録日'), 
+					'asc' => '<i class="bca-icon--asc"></i>'. __d('baser', '登録日'),
 					'desc' => '<i class="bca-icon--desc"></i>'. __d('baser', '登録日')
-				], 
+				],
 				[
-					'escape' => false, 
+					'escape' => false,
 					'class' => 'btn-direction bca-table-listup__a'
-				]); 
+				]);
 				?>
 				<br />
 				<?php
-				echo $this->Paginator->sort('modified', 
+				echo $this->Paginator->sort('modified',
 				[
-					'asc' => '<i class="bca-icon--asc"></i>'. __d('baser', '更新日'), 
+					'asc' => '<i class="bca-icon--asc"></i>'. __d('baser', '更新日'),
 					'desc' => '<i class="bca-icon--desc"></i>'. __d('baser', '更新日')
-				], 
+				],
 					[
-						'escape' => false, 
+						'escape' => false,
 						'class' => 'btn-direction bca-table-listup__a'
-				]); 
+				]);
 				?>
 			</th>
 			<th class="bca-table-listup__thead-th"><?php // アクション ?>
@@ -110,7 +110,7 @@ $this->BcListTable->setColumnNumber(9);
 <tbody class="bca-table-listup__tbody">
 	<?php if (!empty($datas)): ?>
 		<?php foreach ($datas as $data): ?>
-			<?php $this->BcBaser->element('petit_custom_field_configs/index_row', ['data' => $data]) ?>
+			<?php $this->BcBaser->element('cu_custom_field_configs/index_row', ['data' => $data]) ?>
 		<?php endforeach; ?>
 		<?php else: ?>
 			<tr>

@@ -1,15 +1,15 @@
 <?php
 /**
- * [ADMIN] PetitCustomField
+ * [ADMIN] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
 $this->BcBaser->js(array(
-	'admin/libs/jquery.baser_ajax_data_list', 
-	'admin/libs/jquery.baser_ajax_batch', 
+	'admin/libs/jquery.baser_ajax_data_list',
+	'admin/libs/jquery.baser_ajax_batch',
 	'admin/libs/baser_ajax_data_list_config',
 	'admin/libs/baser_ajax_batch_config'
 ));

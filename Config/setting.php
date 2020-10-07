@@ -1,24 +1,24 @@
 <?php
 
 /**
- * [Config] PetitCustomField
+ * [Config] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
 /**
  * システムナビ
  */
-$config['BcApp.adminNavi.petit_custom_field'] = array(
+$config['BcApp.adminNavi.cu_custom_field'] = array(
 	'name'		 => 'プチ・カスタムフィールドプラグイン',
 	'contents'	 => array(
 		array('name'	 => '設定一覧',
 			'url'	 => array(
 				'admin'		 => true,
-				'plugin'	 => 'petit_custom_field',
-				'controller' => 'petit_custom_field_configs',
+				'plugin'	 => 'cu_custom_field',
+				'controller' => 'cu_custom_field_configs',
 				'action'	 => 'index')
 		)
 	)
@@ -26,12 +26,12 @@ $config['BcApp.adminNavi.petit_custom_field'] = array(
 $config['BcApp.adminNavigation'] = [
 	'Plugins' => [
 		'menus' => [
-			'PetitCustomField' => [
-				'title' => 'プチ・カスタムフィールドプラグイン', 
+			'CuCustomField' => [
+				'title' => 'カスタムフィールドプラグイン',
 				'url' => [
-					'admin' => true, 
-					'plugin' => 'petit_custom_field', 
-					'controller' => 'petit_custom_field_configs',
+					'admin' => true,
+					'plugin' => 'cu_custom_field',
+					'controller' => 'cu_custom_field_configs',
 					'action' => 'index',
 				]
 			],
@@ -40,7 +40,7 @@ $config['BcApp.adminNavigation'] = [
 
 /**
  * プチ・カスタムフィールド用設定
- * 
+ *
  */
 $config['petitCustomField'] = array(
 	// フィールドタイプ種別
@@ -93,8 +93,8 @@ $config['petitCustomField'] = array(
 );
 /**
  * プチ・カスタムフィールド管理画面表示用設定
- * 
+ *
  */
-$config['petitCustomFieldConfig'] = array(
+$config['cuCustomFieldConfig'] = array(
 	'submenu' => false
 );

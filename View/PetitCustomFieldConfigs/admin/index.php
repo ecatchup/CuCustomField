@@ -1,15 +1,15 @@
 <?php
 /**
- * [ADMIN] PetitCustomField
+ * [ADMIN] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
 $this->BcBaser->js(array(
-	'admin/libs/jquery.baser_ajax_data_list', 
-	'admin/libs/jquery.baser_ajax_batch', 
+	'admin/libs/jquery.baser_ajax_data_list',
+	'admin/libs/jquery.baser_ajax_batch',
 	'admin/libs/baser_ajax_data_list_config',
 	'admin/libs/baser_ajax_batch_config'
 ));
@@ -21,6 +21,6 @@ $(document).ready(function(){
 });
 </script>
 
-<div id="AjaxBatchUrl" style="display:none"><?php $this->BcBaser->url(array('controller' => 'petit_custom_field_configs', 'action' => 'ajax_batch')) ?></div>
+<div id="AjaxBatchUrl" style="display:none"><?php $this->BcBaser->url(array('controller' => 'cu_custom_field_configs', 'action' => 'ajax_batch')) ?></div>
 <div id="AlertMessage" class="message" style="display:none"></div>
-<div id="DataList"><?php $this->BcBaser->element('petit_custom_field_configs/index_list') ?></div>
+<div id="DataList"><?php $this->BcBaser->element('cu_custom_field_configs/index_list') ?></div>

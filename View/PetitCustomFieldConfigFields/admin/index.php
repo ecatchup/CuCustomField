@@ -8,8 +8,8 @@
  * @license			MIT
  */
 $this->BcBaser->js(array(
-	'admin/jquery.baser_ajax_data_list', 
-	'admin/jquery.baser_ajax_batch', 
+	'admin/jquery.baser_ajax_data_list',
+	'admin/jquery.baser_ajax_batch',
 	'admin/baser_ajax_data_list_config',
 	'admin/baser_ajax_batch_config'
 ));
@@ -21,6 +21,6 @@ $(document).ready(function(){
 });
 </script>
 
-<div id="AjaxBatchUrl" style="display:none"><?php $this->BcBaser->url(array('controller' => 'petit_custom_field_config_fields', 'action' => 'ajax_batch')) ?></div>
+<div id="AjaxBatchUrl" style="display:none"><?php $this->BcBaser->url(array('controller' => 'cu_custom_field_definitions', 'action' => 'ajax_batch')) ?></div>
 <div id="AlertMessage" class="message" style="display:none"></div>
-<div id="DataList"><?php $this->BcBaser->element('petit_custom_field_config_fields/index_list') ?></div>
+<div id="DataList"><?php $this->BcBaser->element('cu_custom_field_definitions/index_list') ?></div>

@@ -1,14 +1,14 @@
 <?php
 
 /**
- * [Controller] PetitCustomField 基底コントローラ
+ * CuCustomFieldAppController
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
-class PetitCustomFieldAppController extends AppController
+class CuCustomFieldAppController extends AppController
 {
 
 	/**
@@ -20,7 +20,7 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * Component
-	 * 
+	 *
 	 * @var     array
 	 */
 	public $components = array('BcAuth', 'Cookie', 'BcAuthConfigure');
@@ -50,7 +50,7 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * ブログコンテンツデータ
-	 * 
+	 *
 	 * @var array
 	 */
 	public $blogContentDatas = array();
@@ -90,7 +90,7 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * [ADMIN] 一覧表示
-	 * 
+	 *
 	 */
 	public function admin_index()
 	{
@@ -132,7 +132,7 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * [ADMIN] 編集
-	 * 
+	 *
 	 * @param int $id
 	 */
 	public function admin_edit($id = null)
@@ -201,9 +201,9 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * データを削除する
-	 * 
+	 *
 	 * @param int $id
-	 * @return boolean 
+	 * @return boolean
 	 */
 	protected function _delete($id)
 	{
@@ -220,7 +220,7 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * [ADMIN] 無効状態にする
-	 * 
+	 *
 	 * @param int $id
 	 */
 	public function admin_unpublish($id)
@@ -239,7 +239,7 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * [ADMIN] 有効状態にする
-	 * 
+	 *
 	 * @param int $id
 	 */
 	public function admin_publish($id)
@@ -258,7 +258,7 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * [ADMIN] 無効状態にする（AJAX）
-	 * 
+	 *
 	 * @param int $id
 	 */
 	public function admin_ajax_unpublish($id)
@@ -277,7 +277,7 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * [ADMIN] 有効状態にする（AJAX）
-	 * 
+	 *
 	 * @param int $id
 	 */
 	public function admin_ajax_publish($id)
@@ -296,10 +296,10 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * ステータスを変更する
-	 * 
+	 *
 	 * @param int $id
 	 * @param boolean $status
-	 * @return boolean 
+	 * @return boolean
 	 */
 	protected function _changeStatus($id, $status)
 	{
@@ -322,7 +322,7 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * [ADMIN] 並び順を上げる
-	 * 
+	 *
 	 * @param int $id
 	 */
 	public function admin_move_up($id)
@@ -352,8 +352,8 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * [ADMIN] 並び順を下げる
-	 * 
-	 * @param int $id 
+	 *
+	 * @param int $id
 	 */
 	public function admin_move_down($id)
 	{
@@ -382,7 +382,7 @@ class PetitCustomFieldAppController extends AppController
 
 	/**
 	 * [ADMIN] ListBehavior利用中のデータ並び順を割り振る
-	 * 
+	 *
 	 */
 	function admin_reposition()
 	{
