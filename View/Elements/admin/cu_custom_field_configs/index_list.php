@@ -9,26 +9,7 @@
  */
 $this->BcListTable->setColumnNumber(9);
 ?>
-<div class="bca-data-list__top">
-	<!-- 新規追加ボタン -->
-	<?php if ($this->BcBaser->isAdminUser()): ?>
-		<div class="bca-main__header-actions">
-			<?php
-			$this->BcBaser->link(__d('baser', '新規追加'),
-				[
-					'controller' => 'cu_custom_field_configs',
-					'action' => 'add',
-					$this->BcForm->value('FeedConfig.id')
-				],
-				[
-					'class' => 'bca-btn',
-					'data-bca-btn-type' => 'add',
-					'data-bca-btn-size' => 'sm'
-				]);
-			?>　
-		</div>
-	<?php endif ?>
-</div>
+
 
 <!-- list -->
 <table class="list-table bca-table-listup" id="ListTable">

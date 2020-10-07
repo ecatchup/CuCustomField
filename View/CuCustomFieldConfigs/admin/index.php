@@ -13,6 +13,12 @@ $this->BcBaser->js(array(
 	'admin/libs/baser_ajax_data_list_config',
 	'admin/libs/baser_ajax_batch_config'
 ));
+if ($this->BcBaser->isAdminUser()) {
+	$this->BcAdmin->addAdminMainBodyHeaderLinks([
+		'url' => ['action' => 'add'],
+		'title' => __d('baser', '新規設定追加'),
+	]);
+}
 ?>
 <script type="text/javascript">
 $(document).ready(function(){

@@ -3,13 +3,17 @@
 /**
  * [Controller] CuCustomField
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * @copyright        Copyright, Catchup, Inc.
+ * @link            https://catchup.co.jp
+ * @package            CuCustomField
+ * @license            MIT
  */
 App::uses('CuCustomFieldApp', 'CuCustomField.Controller');
 
+/**
+ * Class CuCustomFieldConfigsController
+ * @var Bcmessage $BcMessage
+ */
 class CuCustomFieldConfigsController extends CuCustomFieldAppController
 {
 
@@ -18,17 +22,10 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 	 *
 	 * @var array
 	 */
-	public $uses = array('CuCustomField.CuCustomFieldConfig', 'CuCustomField.CuCustomFieldValue');
-
-	/**
-	 * ぱんくずナビ
-	 *
-	 * @var string
-	 */
-	public $crumbs = array(
-		array('name' => 'プラグイン管理', 'url' => array('plugin' => '', 'controller' => 'plugins', 'action' => 'index')),
-		array('name' => 'カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index'))
-	);
+	public $uses = [
+		'CuCustomField.CuCustomFieldConfig',
+		'CuCustomField.CuCustomFieldValue'
+	];
 
 	/**
 	 * 管理画面タイトル
@@ -53,24 +50,24 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 	public function admin_index()
 	{
 		$this->pageTitle = $this->adminTitle . '一覧';
-		$this->search	 = 'cu_custom_field_configs_index';
-		$this->help		 = 'cu_custom_field_configs_index';
+		$this->search = 'cu_custom_field_configs_index';
+		$this->help = 'cu_custom_field_configs_index';
 
-		$default = array(
-			'named' => array(
-				'num'		 => $this->siteConfigs['admin_list_num'],
-				'sortmode'	 => 0));
-		$this->setViewConditions('CuCustomFieldConfig', array('default' => $default));
+		$default = [
+			'named' => [
+				'num' => $this->siteConfigs['admin_list_num'],
+				'sortmode' => 0]];
+		$this->setViewConditions('CuCustomFieldConfig', ['default' => $default]);
 
-		$conditions		 = $this->_createAdminIndexConditions($this->request->data);
-		$this->paginate	 = array(
+		$conditions = $this->_createAdminIndexConditions($this->request->data);
+		$this->paginate = [
 			'conditions' => $conditions,
-			'fields'	 => array(),
-			'limit'		 => $this->passedArgs['num']
-		);
+			'fields' => [],
+			'limit' => $this->passedArgs['num']
+		];
 
 		$this->set('datas', $this->paginate('CuCustomFieldConfig'));
-		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
+		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 	}
 
 	/**
@@ -96,20 +93,20 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 		if ($this->request->is('post')) {
 			if ($this->{$this->modelClass}->save($this->request->data)) {
 				$message = $this->name . 'を追加しました。';
-				$this->setMessage($message, false, true);
-				$this->redirect(array('action' => 'index'));
+				$this->BcMessage->setSuccess($message);
+				$this->redirect(['action' => 'index']);
 			} else {
-				$this->setMessage('入力エラーです。内容を修正して下さい。', true);
+				$this->BcMessage->setError('入力エラーです。内容を修正して下さい。');
 			}
 		} else {
-			$this->request->data							 = $this->{$this->modelClass}->getDefaultValue();
+			$this->request->data = $this->{$this->modelClass}->getDefaultValue();
 			$this->request->data[$this->modelClass]['model'] = 'BlogContent';
 		}
 
 		// 設定データがあるブログは選択リストから除外する
 		$dataList = $this->{$this->modelClass}->find('all');
 		if ($dataList) {
-			foreach ($dataList as $data) {
+			foreach($dataList as $data) {
 				unset($this->blogContentDatas[$data[$this->modelClass]['content_id']]);
 			}
 		}
@@ -140,13 +137,13 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 		if ($this->request->data) {
 			$count = 0;
 			if ($this->blogContentDatas) {
-				foreach ($this->blogContentDatas as $key => $blog) {
+				foreach($this->blogContentDatas as $key => $blog) {
 
 					$configData = $this->CuCustomFieldConfig->findByContentId($key);
 					if (!$configData) {
 						$this->request->data['CuCustomFieldConfig']['content_id'] = $key;
-						$this->request->data['CuCustomFieldConfig']['status']	 = true;
-						$this->request->data['CuCustomFieldConfig']['model']		 = 'BlogContent';
+						$this->request->data['CuCustomFieldConfig']['status'] = true;
+						$this->request->data['CuCustomFieldConfig']['model'] = 'BlogContent';
 						$this->request->data['CuCustomFieldConfig']['form_place'] = 'normal';
 						$this->CuCustomFieldConfig->create($this->request->data);
 						if (!$this->CuCustomFieldConfig->save($this->request->data, false)) {
@@ -159,7 +156,7 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 			}
 			$message = sprintf('%s 件のカスタムフィールド設定を登録しました。', $count);
 			$this->setMessage($message);
-			$this->redirect(array('controller' => 'cu_custom_field_configs', 'action' => 'index'));
+			$this->redirect(['controller' => 'cu_custom_field_configs', 'action' => 'index']);
 		}
 	}
 
@@ -171,8 +168,8 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 	 */
 	protected function _createAdminIndexConditions($data)
 	{
-		$conditions		 = array();
-		$blogContentId	 = '';
+		$conditions = [];
+		$blogContentId = '';
 
 		if (isset($data['CuCustomFieldConfig']['content_id'])) {
 			$blogContentId = $data['CuCustomFieldConfig']['content_id'];
@@ -183,7 +180,7 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 
 		// 条件指定のないフィールドを解除
 		if (!empty($data['CuCustomFieldConfig'])) {
-			foreach ($data['CuCustomFieldConfig'] as $key => $value) {
+			foreach($data['CuCustomFieldConfig'] as $key => $value) {
 				if ($value === '') {
 					unset($data['CuCustomFieldConfig'][$key]);
 				}
@@ -194,15 +191,15 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 		}
 
 		if ($blogContentId) {
-			$conditions = array(
+			$conditions = [
 				'CuCustomFieldConfig.content_id' => $blogContentId
-			);
+			];
 		}
 
 		if ($conditions) {
 			return $conditions;
 		} else {
-			return array();
+			return [];
 		}
 	}
 

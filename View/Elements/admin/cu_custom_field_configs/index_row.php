@@ -35,7 +35,7 @@ $class=' class="'.implode(' ', $classies).'"';
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--hasCustomField"><?php // フィールド数 ?>
 		<?php
 		if (!$this->CuCustomField->hasCustomField($data)) {
-			$this->BcBaser->link(__d('baser', '新規追加'),
+			$this->BcBaser->link(__d('baser', 'フィールド作成'),
 				[
 					'controller' => 'cu_custom_field_definitions',
 					'action' => 'add',

@@ -3,10 +3,10 @@
 /**
  * CuCustomFieldAppController
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * @copyright        Copyright, Catchup, Inc.
+ * @link            https://catchup.co.jp
+ * @package            CuCustomField
+ * @license            MIT
  */
 class CuCustomFieldAppController extends AppController
 {
@@ -16,30 +16,30 @@ class CuCustomFieldAppController extends AppController
 	 *
 	 * @var array
 	 */
-	public $helpers = array('Blog.Blog');
+	public $helpers = ['Blog.Blog'];
 
 	/**
 	 * Component
 	 *
 	 * @var     array
 	 */
-	public $components = array('BcAuth', 'Cookie', 'BcAuthConfigure');
+	public $components = ['BcAuth', 'Cookie', 'BcAuthConfigure'];
 
 	/**
 	 * サブメニューエレメント
 	 *
 	 * @var array
 	 */
-	public $subMenuElements = array('petit_custom_field');
+	public $subMenuElements = ['petit_custom_field'];
 
 	/**
 	 * ぱんくずナビ
 	 *
 	 * @var string
 	 */
-	public $crumbs = array(
-		array('name' => 'プラグイン管理', 'url' => array('plugin' => '', 'controller' => 'plugins', 'action' => 'index'))
-	);
+	public $crumbs = [
+		['name' => 'プラグイン管理', 'url' => ['plugin' => '', 'controller' => 'plugins', 'action' => 'index']]
+	];
 
 	/**
 	 * 管理画面タイトル
@@ -53,11 +53,10 @@ class CuCustomFieldAppController extends AppController
 	 *
 	 * @var array
 	 */
-	public $blogContentDatas = array();
+	public $blogContentDatas = [];
 
 	/**
-	 * beforeFilter
-	 *
+	 * Before Filter
 	 */
 	public function beforeFilter()
 	{
@@ -68,23 +67,17 @@ class CuCustomFieldAppController extends AppController
 		} else {
 			$ContentModel = ClassRegistry::init('Content');
 		}
-		$this->blogContentDatas = $ContentModel->find('list', array(
-			'fields' => array(
+		$this->blogContentDatas = $ContentModel->find('list', [
+			'fields' => [
 				'entity_id',
 				'title',
-			),
-			'conditions' => array(
+			],
+			'conditions' => [
 				'plugin' => 'Blog',
 				'type' => 'BlogContent',
-			),
+			],
 			'recursive' => -1,
-		));
-//		if (ClassRegistry::isKeySet('Blog.BlogContent')) {
-//			$BlogContentModel = ClassRegistry::getObject('Blog.BlogContent');
-//		} else {
-//			$BlogContentModel = ClassRegistry::init('Blog.BlogContent');
-//		}
-//		$this->blogContentDatas = $BlogContentModel->find('list', array('recursive' => -1));
+		]);
 		$this->set('customFieldConfig', Configure::read('cuCustomField'));
 	}
 
@@ -94,20 +87,20 @@ class CuCustomFieldAppController extends AppController
 	 */
 	public function admin_index()
 	{
-		$default = array(
-			'named' => array(
-				'num'		 => $this->siteConfigs['admin_list_num'],
-				'sortmode'	 => 0));
-		$this->setViewConditions($this->modelClass, array('default' => $default));
+		$default = [
+			'named' => [
+				'num' => $this->siteConfigs['admin_list_num'],
+				'sortmode' => 0]];
+		$this->setViewConditions($this->modelClass, ['default' => $default]);
 
-		$conditions		 = $this->_createAdminIndexConditions($this->request->data);
-		$this->paginate	 = array(
+		$conditions = $this->_createAdminIndexConditions($this->request->data);
+		$this->paginate = [
 			'conditions' => $conditions,
-			'fields'	 => array(),
-			'limit'		 => $this->passedArgs['num']
-		);
+			'fields' => [],
+			'limit' => $this->passedArgs['num']
+		];
 		$this->set('datas', $this->paginate($this->modelClass));
-		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
+		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 	}
 
 	/**
@@ -120,13 +113,13 @@ class CuCustomFieldAppController extends AppController
 			if ($this->{$this->modelClass}->save($this->request->data)) {
 				$message = $this->name . '「' . $this->request->data[$this->modelClass]['name'] . '」を追加しました。';
 				$this->setMessage($message, false, true);
-				$this->redirect(array('action' => 'index'));
+				$this->redirect(['action' => 'index']);
 			} else {
 				$this->setMessage('入力エラーです。内容を修正してください。', true);
 			}
 		}
 
-		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
+		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');
 	}
 
@@ -139,23 +132,23 @@ class CuCustomFieldAppController extends AppController
 	{
 		if (!$id) {
 			$this->setMessage('無効な処理です。', true);
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 
 		if (empty($this->request->data)) {
-			$this->{$this->modelClass}->id	 = $id;
-			$this->request->data			 = $this->{$this->modelClass}->read();
+			$this->{$this->modelClass}->id = $id;
+			$this->request->data = $this->{$this->modelClass}->read();
 		} else {
 			if ($this->{$this->modelClass}->save($this->request->data)) {
 				$message = $this->name . ' ID:' . $this->request->data[$this->modelClass]['id'] . '」を更新しました。';
 				$this->setMessage($message, false, true);
-				$this->redirect(array('action' => 'index'));
+				$this->redirect(['action' => 'index']);
 			} else {
 				$this->setMessage('入力エラーです。内容を修正して下さい。', true);
 			}
 		}
 
-		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
+		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');
 	}
 
@@ -168,17 +161,17 @@ class CuCustomFieldAppController extends AppController
 	{
 		if (!$id) {
 			$this->setMessage('無効な処理です。', true);
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 
 		if ($this->{$this->modelClass}->delete($id)) {
 			$message = $this->name . ' ID:' . $id . ' を削除しました。';
 			$this->setMessage($message, false, true);
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		} else {
 			$this->setMessage('データベース処理中にエラーが発生しました。', true);
 		}
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 	/**
@@ -227,14 +220,14 @@ class CuCustomFieldAppController extends AppController
 	{
 		if (!$id) {
 			$this->setMessage('無効な処理です。', true);
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 		if ($this->_changeStatus($id, false)) {
 			$this->setMessage($this->name . ' ID:' . $id . 'を「無効」状態に変更しました。', false, true);
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 		$this->setMessage('処理に失敗しました。', true);
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 	/**
@@ -246,14 +239,14 @@ class CuCustomFieldAppController extends AppController
 	{
 		if (!$id) {
 			$this->setMessage('無効な処理です。', true);
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 		if ($this->_changeStatus($id, true)) {
 			$this->setMessage($this->name . ' ID:' . $id . 'を「有効」状態に変更しました。', false, true);
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 		$this->setMessage('処理に失敗しました。', true);
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 	/**
@@ -303,11 +296,11 @@ class CuCustomFieldAppController extends AppController
 	 */
 	protected function _changeStatus($id, $status)
 	{
-		$data								 = $this->{$this->modelClass}->find('first', array(
-			'conditions' => array('id' => $id),
-			'recursive'	 => -1
-		));
-		$data[$this->modelClass]['status']	 = $status;
+		$data = $this->{$this->modelClass}->find('first', [
+			'conditions' => ['id' => $id],
+			'recursive' => -1
+		]);
+		$data[$this->modelClass]['status'] = $status;
 		if ($status) {
 			$data[$this->modelClass]['status'] = true;
 		} else {
@@ -331,7 +324,7 @@ class CuCustomFieldAppController extends AppController
 
 		if (!$id) {
 			$this->setMessage('無効なIDです。', true);
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 
 		if ($this->{$this->modelClass}->Behaviors->enabled('List')) {
@@ -339,7 +332,7 @@ class CuCustomFieldAppController extends AppController
 				$message = $this->name . ' ID:' . $id . ' ' . $this->pageTitle . 'ました。';
 				$this->setMessage($message, false, true);
 				clearViewCache();
-				$this->redirect(array('action' => 'index'));
+				$this->redirect(['action' => 'index']);
 			} else {
 				$this->setMessage('データベース処理中にエラーが発生しました。', true);
 			}
@@ -347,7 +340,7 @@ class CuCustomFieldAppController extends AppController
 			$this->setMessage('ListBehaviorが無効のモデルです。', true);
 		}
 		$this->render(false);
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 	/**
@@ -361,7 +354,7 @@ class CuCustomFieldAppController extends AppController
 
 		if (!$id) {
 			$this->setMessage('無効なIDです。', true);
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 
 		if ($this->{$this->modelClass}->Behaviors->enabled('List')) {
@@ -369,7 +362,7 @@ class CuCustomFieldAppController extends AppController
 				$message = $this->name . ' ID:' . $id . ' ' . $this->pageTitle . 'ました。';
 				$this->setMessage($message, false, true);
 				clearViewCache();
-				$this->redirect(array('action' => 'index'));
+				$this->redirect(['action' => 'index']);
 			} else {
 				$this->setMessage('データベース処理中にエラーが発生しました。', true);
 			}
@@ -377,7 +370,7 @@ class CuCustomFieldAppController extends AppController
 			$this->setMessage('ListBehaviorが無効のモデルです。', true);
 		}
 		$this->render(false);
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 	/**
@@ -390,14 +383,14 @@ class CuCustomFieldAppController extends AppController
 			if ($this->{$this->modelClass}->fixListOrder()) {
 				$message = $this->name . ' データに並び順（position）を割り振りました。';
 				$this->setMessage($message, false, true);
-				$this->redirect(array('action' => 'index'));
+				$this->redirect(['action' => 'index']);
 			} else {
 				$this->setMessage('データベース処理中にエラーが発生しました。', true);
 			}
 		} else {
 			$this->setMessage('ListBehaviorが無効のモデルです。', true);
 		}
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
 	}
 
 }
