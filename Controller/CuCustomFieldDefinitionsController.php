@@ -266,7 +266,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 
 			if ($this->request->data[$this->modelClass]['foreign_id']) {
 				$conditions = Hash::merge($conditions, array(
-							'NOT' => array($this->modelClass . '.foreign_id' => $this->request->data[$this->modelClass]['foreign_id']),
+							'NOT' => array($this->modelClass . '.config_id' => $this->request->data[$this->modelClass]['foreign_id']),
 				));
 			}
 

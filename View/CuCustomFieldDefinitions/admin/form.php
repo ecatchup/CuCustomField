@@ -7,8 +7,8 @@
  * @package			PetitCustomField
  * @license			MIT
  */
-$this->BcBaser->css('PetitCustomField.admin/petit_custom_field', array('inline' => false));
-$this->BcBaser->js(array('PetitCustomField.admin/petit_custom_field'));
+$this->BcBaser->css('CuCustomField.admin/cu_custom_field', array('inline' => false));
+$this->BcBaser->js(array('CuCustomField.admin/cu_custom_field'));
 $currentModelName = $this->request->params['models']['CuCustomFieldDefinition']['className'];
 ?>
 <script type="text/javascript">
