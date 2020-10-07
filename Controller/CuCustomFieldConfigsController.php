@@ -14,13 +14,6 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 {
 
 	/**
-	 * ControllerName
-	 *
-	 * @var string
-	 */
-	public $name = 'CuCustomFieldConfigs';
-
-	/**
 	 * Model
 	 *
 	 * @var array
@@ -34,7 +27,7 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 	 */
 	public $crumbs = array(
 		array('name' => 'プラグイン管理', 'url' => array('plugin' => '', 'controller' => 'plugins', 'action' => 'index')),
-		array('name' => 'プチ・カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index'))
+		array('name' => 'カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index'))
 	);
 
 	/**
@@ -42,7 +35,7 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 	 *
 	 * @var string
 	 */
-	public $adminTitle = 'プチ・カスタムフィールド設定';
+	public $adminTitle = 'カスタムフィールド設定';
 
 	/**
 	 * beforeFilter
@@ -54,7 +47,7 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 	}
 
 	/**
-	 * [ADMIN] プチ・カスタムフィールド設定一覧
+	 * [ADMIN] カスタムフィールド設定一覧
 	 *
 	 */
 	public function admin_index()
@@ -136,8 +129,8 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 	}
 
 	/**
-	 * 各ブログ別のプチ・カスタムフィールド設定データを作成する
-	 * - プチ・カスタムフィールド設定データがないブログ用のデータのみ作成する
+	 * 各ブログ別のカスタムフィールド設定データを作成する
+	 * - カスタムフィールド設定データがないブログ用のデータのみ作成する
 	 *
 	 */
 	public function admin_first()
@@ -164,7 +157,7 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 					}
 				}
 			}
-			$message = sprintf('%s 件のプチ・カスタムフィールド設定を登録しました。', $count);
+			$message = sprintf('%s 件のカスタムフィールド設定を登録しました。', $count);
 			$this->setMessage($message);
 			$this->redirect(array('controller' => 'cu_custom_field_configs', 'action' => 'index'));
 		}

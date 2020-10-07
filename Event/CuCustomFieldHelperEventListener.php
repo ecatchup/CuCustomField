@@ -1,14 +1,14 @@
 <?php
 
 /**
- * [HelperEventListener] PetitCustomField
+ * [HelperEventListener] CuCustomField
  *
  * @copyright		Copyright, Catchup, Inc.
  * @link			https://catchup.co.jp
- * @package			PetitCustomField
+ * @package			CuCustomField
  * @license			MIT
  */
-class PetitCustomFieldHelperEventListener extends BcHelperEventListener
+class CuCustomFieldHelperEventListener extends BcHelperEventListener
 {
 
 	/**
@@ -44,7 +44,7 @@ class PetitCustomFieldHelperEventListener extends BcHelperEventListener
 
 	/**
 	 * formAfterCreate
-	 * - ブログ記事追加・編集画面にプチ・カスタムフィールド編集欄を追加する
+	 * - ブログ記事追加・編集画面にカスタムフィールド編集欄を追加する
 	 * - 記事編集画面の上部に追加する
 	 *
 	 * @param CakeEvent $event
@@ -80,8 +80,8 @@ class PetitCustomFieldHelperEventListener extends BcHelperEventListener
 		}
 
 		if ($View->request->data['CuCustomFieldConfig']['form_place'] === 'top') {
-			// ブログ記事追加画面にプチ・カスタムフィールド編集欄を追加する
-			$event->data['out']	 = $event->data['out'] . $View->element('PetitCustomField.petit_custom_field_form');
+			// ブログ記事追加画面にカスタムフィールド編集欄を追加する
+			$event->data['out']	 = $event->data['out'] . $View->element('CuCustomField.petit_custom_field_form');
 			$this->isDisplay	 = true;
 		}
 
@@ -90,7 +90,7 @@ class PetitCustomFieldHelperEventListener extends BcHelperEventListener
 
 	/**
 	 * formAfterForm
-	 * - ブログ記事追加・編集画面にプチ・カスタムフィールド編集欄を追加する
+	 * - ブログ記事追加・編集画面にカスタムフィールド編集欄を追加する
 	 * - 記事編集画面の下部に追加する
 	 *
 	 * @param CakeEvent $event
@@ -129,8 +129,8 @@ class PetitCustomFieldHelperEventListener extends BcHelperEventListener
 		}
 
 		if ($View->request->data['CuCustomFieldConfig']['form_place'] === 'normal') {
-			// ブログ記事追加画面にプチ・カスタムフィールド編集欄を追加する
-			echo $View->element('PetitCustomField.petit_custom_field_form');
+			// ブログ記事追加画面にカスタムフィールド編集欄を追加する
+			echo $View->element('CuCustomField.cu_custom_field_form');
 		}
 	}
 

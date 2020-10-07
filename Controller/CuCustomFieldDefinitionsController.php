@@ -14,13 +14,6 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 {
 
 	/**
-	 * ControllerName
-	 *
-	 * @var string
-	 */
-	public $name = 'CuCustomFieldDefinitions';
-
-	/**
 	 * Model
 	 *
 	 * @var array
@@ -34,7 +27,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	 */
 	public $crumbs = array(
 		array('name' => 'プラグイン管理', 'url' => array('plugin' => '', 'controller' => 'plugins', 'action' => 'index')),
-		array('name' => 'プチ・カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index')),
+		array('name' => 'カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index')),
 	);
 
 	/**

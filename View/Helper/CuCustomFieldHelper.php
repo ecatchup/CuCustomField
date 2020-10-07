@@ -19,7 +19,7 @@ class CuCustomFieldHelper extends AppHelper
 	public $helpers = array('BcForm', 'Blog.Blog', 'BcBaser', 'BcTime', 'BcText');
 
 	/**
-	 * プチ・カスタムフィールド設定情報
+	 * カスタムフィールド設定情報
 	 *
 	 * @var array
 	 */
@@ -63,7 +63,7 @@ class CuCustomFieldHelper extends AppHelper
 	public function __construct(View $View, $settings = array())
 	{
 		parent::__construct($View, $settings);
-		$this->customFieldConfig = Configure::read('petitCustomField');
+		$this->customFieldConfig = Configure::read('cuCustomField');
 
 		// 記事に設定されているカスタムフィールド情報を取得する
 		if (ClassRegistry::isKeySet('CuCustomField.CuCustomFieldValue')) {
@@ -727,7 +727,7 @@ class CuCustomFieldHelper extends AppHelper
 	}
 
 	/**
-	 * プチ・カスタムフィールド一覧を表示する
+	 * カスタムフィールド一覧を表示する
 	 *
 	 * @param array $post
 	 * @param array $options

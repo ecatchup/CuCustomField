@@ -14,27 +14,15 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 {
 
 	/**
-	 * ModelName
-	 *
-	 * @var string
-	 */
-	public $name = 'CuCustomFieldDefinition';
-
-	/**
-	 * PluginName
-	 *
-	 * @var string
-	 */
-	public $plugin = 'CuCustomFieldValue';
-
-	/**
 	 * actsAs
 	 *
 	 * @var array
 	 */
 	public $actsAs = array(
 		'BcCache',
-		'CuCustomField.KeyValue',
+		'CuCustomField.KeyValue' => [
+			'foreignKeyField' => 'config_id'
+		],
 	);
 
 	/**
@@ -183,7 +171,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 		$conditions	 = array(
 			$this->alias . '.' . 'key'	 => $this->alias . '.' . $field,
 			$this->alias . '.' . 'value' => $check[key($check)],
-			'NOT'						 => array($this->alias . '.foreign_id' => $this->foreignId),
+			'NOT'						 => array($this->alias . '.config_id' => $this->foreignId),
 		);
 		$ret		 = $this->find('first', array(
 			'conditions' => $conditions,

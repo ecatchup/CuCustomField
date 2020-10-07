@@ -85,7 +85,7 @@ class CuCustomFieldAppController extends AppController
 //			$BlogContentModel = ClassRegistry::init('Blog.BlogContent');
 //		}
 //		$this->blogContentDatas = $BlogContentModel->find('list', array('recursive' => -1));
-		$this->set('customFieldConfig', Configure::read('petitCustomField'));
+		$this->set('customFieldConfig', Configure::read('cuCustomField'));
 	}
 
 	/**

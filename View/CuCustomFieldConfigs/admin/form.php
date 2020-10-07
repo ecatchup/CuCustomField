@@ -73,7 +73,7 @@ if (count($blogContentDatas) > 0) {
 				<?php echo $this->BcBaser->img('admin/icn_help.png', array('id' => 'helpCuCustomFieldConfigStatus', 'class' => 'btn help', 'alt' => 'ヘルプ')) ?>
 				<div id="helptextCuCustomFieldConfigStatus" class="helptext">
 					<ul>
-						<li>ブログ記事でのプチ・カスタムフィールドの利用の有無を指定します。</li>
+						<li>ブログ記事でのカスタムフィールドの利用の有無を指定します。</li>
 					</ul>
 				</div>
 			</th>

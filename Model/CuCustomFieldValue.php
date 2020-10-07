@@ -14,26 +14,14 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 {
 
 	/**
-	 * ModelName
-	 *
-	 * @var string
-	 */
-	public $name = 'CuCustomFieldValue';
-
-	/**
-	 * PluginName
-	 *
-	 * @var string
-	 */
-	public $plugin = 'CuCustomFieldValue';
-
-	/**
 	 * actsAs
 	 *
 	 * @var array
 	 */
 	public $actsAs = array(
-		'CuCustomField.KeyValue',
+		'CuCustomField.KeyValue' => [
+			'foreignKeyField' => 'relate_id'
+		]
 	);
 
 	/**

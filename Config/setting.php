@@ -12,7 +12,7 @@
  * システムナビ
  */
 $config['BcApp.adminNavi.cu_custom_field'] = array(
-	'name'		 => 'プチ・カスタムフィールドプラグイン',
+	'name'		 => 'カスタムフィールドプラグイン',
 	'contents'	 => array(
 		array('name'	 => '設定一覧',
 			'url'	 => array(
@@ -39,10 +39,10 @@ $config['BcApp.adminNavigation'] = [
 ]];
 
 /**
- * プチ・カスタムフィールド用設定
+ * カスタムフィールド用設定
  *
  */
-$config['petitCustomField'] = array(
+$config['cuCustomField'] = array(
 	// フィールドタイプ種別
 	'field_type'		 => array(
 		'基本'	 => array(
@@ -92,7 +92,7 @@ $config['petitCustomField'] = array(
 	),
 );
 /**
- * プチ・カスタムフィールド管理画面表示用設定
+ * カスタムフィールド管理画面表示用設定
  *
  */
 $config['cuCustomFieldConfig'] = array(

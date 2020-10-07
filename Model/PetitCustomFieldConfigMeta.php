@@ -8,17 +8,10 @@
  * @package			PetitCustomField
  * @license			MIT
  */
-App::uses('PetitCustomField.PetitCustomFieldAppModel', 'Model');
+App::uses('CuCustomField.CuCustomFieldAppModel', 'Model');
 
-class PetitCustomFieldConfigMeta extends PetitCustomFieldAppModel
+class PetitCustomFieldConfigMeta extends CuCustomFieldAppModel
 {
-
-	/**
-	 * ModelName
-	 *
-	 * @var string
-	 */
-	public $name = 'PetitCustomFieldConfigMeta';
 
 	/**
 	 * actsAs
@@ -27,7 +20,7 @@ class PetitCustomFieldConfigMeta extends PetitCustomFieldAppModel
 	 */
 	public $actsAs = array(
 		'BcCache',
-		'PetitCustomField.List' => array(
+		'CuCustomField.List' => array(
 			'scope' => 'petit_custom_field_config_id',
 		),
 	);
@@ -39,7 +32,7 @@ class PetitCustomFieldConfigMeta extends PetitCustomFieldAppModel
 	 */
 	public $belongsTo = array(
 		'CuCustomFieldConfig' => array(
-			'className'	 => 'PetitCustomField.CuCustomFieldConfig',
+			'className'	 => 'CuCustomField.CuCustomFieldConfig',
 			'foreignKey' => 'petit_custom_field_config_id'
 		),
 	);
@@ -52,12 +45,13 @@ class PetitCustomFieldConfigMeta extends PetitCustomFieldAppModel
 	 */
 	public function afterFind($results, $primary = false)
 	{
+
 		parent::afterFind($results, $primary);
 		if ($results) {
-			if (ClassRegistry::isKeySet('PetitCustomField.CuCustomFieldDefinition')) {
-				$this->CuCustomFieldDefinitionModel = ClassRegistry::getObject('PetitCustomField.CuCustomFieldDefinition');
+			if (ClassRegistry::isKeySet('CuCustomField.CuCustomFieldDefinition')) {
+				$this->CuCustomFieldDefinitionModel = ClassRegistry::getObject('CuCustomField.CuCustomFieldDefinition');
 			} else {
-				$this->CuCustomFieldDefinitionModel = ClassRegistry::init('PetitCustomField.CuCustomFieldDefinition');
+				$this->CuCustomFieldDefinitionModel = ClassRegistry::init('CuCustomField.CuCustomFieldDefinition');
 			}
 
 			$this->CuCustomFieldDefinitionModel->Behaviors->KeyValue->KeyValue = $this->CuCustomFieldDefinitionModel;

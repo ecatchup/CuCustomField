@@ -14,13 +14,6 @@ class PetitCustomFieldConfigMetasController extends CuCustomFieldAppController
 {
 
 	/**
-	 * ControllerName
-	 *
-	 * @var string
-	 */
-	public $name = 'PetitCustomFieldConfigMetas';
-
-	/**
 	 * Model
 	 *
 	 * @var array
@@ -34,7 +27,7 @@ class PetitCustomFieldConfigMetasController extends CuCustomFieldAppController
 	 */
 	public $crumbs = array(
 		array('name' => 'プラグイン管理', 'url' => array('plugin' => '', 'controller' => 'plugins', 'action' => 'index')),
-		array('name' => 'プチ・カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index')),
+		array('name' => 'カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index')),
 	);
 
 	/**
@@ -54,7 +47,7 @@ class PetitCustomFieldConfigMetasController extends CuCustomFieldAppController
 	}
 
 	/**
-	 * [ADMIN] プチ・カスタムフィールド設定一覧
+	 * [ADMIN] カスタムフィールド設定一覧
 	 *
 	 * @param int $configId
 	 */
@@ -66,7 +59,7 @@ class PetitCustomFieldConfigMetasController extends CuCustomFieldAppController
 		$this->crumbs[] = array('name' => 'フィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
 
 		// フィールド一覧の最大件数を取得し、ページネーション件数に設定する
-		$max = $this->CuCustomFieldDefinition->getMax('foreign_id');
+		$max = $this->CuCustomFieldDefinition->getMax('config_id');
 		if (!$max) {
 			$max = $this->siteConfigs['admin_list_num'];
 		}

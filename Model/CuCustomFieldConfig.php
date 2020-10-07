@@ -14,20 +14,6 @@ class CuCustomFieldConfig extends CuCustomFieldAppModel
 {
 
 	/**
-	 * ModelName
-	 *
-	 * @var string
-	 */
-	public $name = 'CuCustomFieldConfig';
-
-	/**
-	 * PluginName
-	 *
-	 * @var string
-	 */
-	public $plugin = 'CuCustomField';
-
-	/**
 	 * actsAs
 	 *
 	 * @var array

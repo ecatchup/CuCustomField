@@ -8,9 +8,9 @@
  * @package			PetitCustomField
  * @license			MIT
  */
-$title			 = 'プチ・カスタムフィールドプラグイン';
+$title			 = 'カスタムフィールドプラグイン';
 $description	 = 'ブログ記事に入力欄を設定できます。';
-$author			 = 'catchup';
+$author			 = 'Catchup, inc.';
 $url			 = 'https://catchup.co.jp';
 $adminLink		 = array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index');
 $installMessage	 = 'ブログ記事の投稿画面に入力欄が追加されます。';
