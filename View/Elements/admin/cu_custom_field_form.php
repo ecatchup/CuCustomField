@@ -110,7 +110,7 @@ $formPlace = $this->request->data('CuCustomFieldConfig.form_place');
 							<?php echo nl2br($valueFieldConfig['CuCustomFieldDefinition']['append']) ?>
 						<?php endif ?>
 
-						<?php echo $this->BcForm->error("PetitCustomField.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}") ?>
+						<?php echo $this->BcForm->error("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}") ?>
 						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'description'))): ?>
 							<br /><small><?php echo nl2br($valueFieldConfig['CuCustomFieldDefinition']['description']) ?></small>
 						<?php endif ?>
@@ -120,7 +120,7 @@ $formPlace = $this->request->data('CuCustomFieldConfig.form_place');
 				<?php // デフォルトのフィールド ?>
 				<tr>
 					<th class="col-head bca-form-table__label">
-						<?php echo $this->BcForm->label("PetitCustomField.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}", $valueFieldConfig['CuCustomFieldDefinition']['name']) ?>
+						<?php echo $this->BcForm->label("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}", $valueFieldConfig['CuCustomFieldDefinition']['name']) ?>
 						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'required'))): ?>&nbsp;<span class="required bca-label" data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span><?php endif ?>
 					</th>
 					<td class="col-input bca-form-table__input">
@@ -128,7 +128,7 @@ $formPlace = $this->request->data('CuCustomFieldConfig.form_place');
 							<?php echo nl2br($valueFieldConfig['CuCustomFieldDefinition']['prepend']) ?>
 						<?php endif ?>
 
-						<?php echo $this->CuCustomField->input("PetitCustomField.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}",
+						<?php echo $this->CuCustomField->input("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}",
 							$this->CuCustomField->getFormOption($valueFieldConfig, 'CuCustomFieldDefinition')
 						) ?>
 
@@ -136,7 +136,7 @@ $formPlace = $this->request->data('CuCustomFieldConfig.form_place');
 							<?php echo nl2br($valueFieldConfig['CuCustomFieldDefinition']['append']) ?>
 						<?php endif ?>
 
-						<?php echo $this->BcForm->error("PetitCustomField.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}") ?>
+						<?php echo $this->BcForm->error("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}") ?>
 						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'description'))): ?>
 							<br /><small><?php echo nl2br($valueFieldConfig['CuCustomFieldDefinition']['description']) ?></small>
 						<?php endif ?>

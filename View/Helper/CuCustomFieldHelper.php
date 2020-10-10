@@ -300,7 +300,7 @@ class CuCustomFieldHelper extends AppHelper
 	public function getPdcfData($post = array(), $field = '', $options = array())
 	{
 		if (Configure::read('debug') > 0) {
-			trigger_error(deprecatedMessage('ヘルパーメソッド：PetitCustomFieldHelper::getPdcfData()', '1.0.0-beta', '1.0.0', '$this->CuCustomField->get() を利用してください。'), E_USER_DEPRECATED);
+			trigger_error(deprecatedMessage('ヘルパーメソッド：CuCustomFieldHelper::getPdcfData()', '1.0.0-beta', '1.0.0', '$this->CuCustomField->get() を利用してください。'), E_USER_DEPRECATED);
 		}
 		return $this->get($post, $field, $options);
 	}
@@ -334,7 +334,7 @@ class CuCustomFieldHelper extends AppHelper
 			}
 		}
 
-		return $this->BcBaser->getElement('PetitCustomField.petit_custom_google_maps', $data);
+		return $this->BcBaser->getElement('CuCustomField.cu_custom_google_maps', $data);
 	}
 
 	/**
@@ -733,15 +733,15 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $options
 	 * @return void
 	 */
-	public function showPetitCustomField($post = array(), $options = array())
+	public function showCuCustomField($post = array(), $options = array())
 	{
 		$_options	 = array(
-			'template' => 'petit_custom_field_block'
+			'template' => 'cu_custom_field_block'
 		);
 		$options	 = Hash::merge($_options, $options);
 		extract($options);
 
-		$this->BcBaser->element('PetitCustomField.' . $template, array('plugin' => 'cu_custom_field', 'post' => $post));
+		$this->BcBaser->element('CuCustomField.' . $template, array('plugin' => 'cu_custom_field', 'post' => $post));
 	}
 
 	/**

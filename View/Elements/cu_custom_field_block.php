@@ -12,8 +12,8 @@
  * カスタムフィールドに入力した内容を反映できます。
  * 1フィールド毎に表示したい場合は、以下のソースが例となります。
  *
- * フィールドのラベル名を表示する: $this->CuCustomField->getPdcfData($post, 'example_field_name');
- * フィールドの入力内容を表示する: $this->CuCustomField->getPdcfDataField('example_field_name');
+ * フィールドのラベル名を表示する: $this->CuCustomField->get($post, 'example_field_name');
+ * フィールドの入力内容を表示する: $this->CuCustomField->get('example_field_name');
  *
  */
 $this->BcBaser->css('PetitCustomField.petit_custom_field');
