@@ -677,8 +677,8 @@ class CuCustomFieldHelper extends AppHelper
 	public function hasCustomField($data = array())
 	{
 		$count = 0;
-		if ($data['PetitCustomFieldConfigMeta']) {
-			$count = count($data['PetitCustomFieldConfigMeta']);
+		if ($data['CuCustomFieldDefinition']) {
+			$count = count($data['CuCustomFieldDefinition']);
 		}
 		return $count;
 	}

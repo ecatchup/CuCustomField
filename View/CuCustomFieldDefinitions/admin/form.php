@@ -47,17 +47,29 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 <?php if ($this->request->action == 'admin_add'): ?>
 	<?php echo $this->BcForm->create('CuCustomFieldDefinition', ['url' => ['action' => 'add', $configId]]) ?>
 <?php else: ?>
-	<?php echo $this->BcForm->create('CuCustomFieldDefinition', ['url' => ['action' => 'edit', $configId, $foreignId]]) ?>
+	<?php echo $this->BcForm->create('CuCustomFieldDefinition', ['url' => ['action' => 'edit', $configId, $this->request->data['CuCustomFieldDefinition']['id']]]) ?>
 <?php endif ?>
+<?php echo $this->BcForm->hidden('CuCustomFieldDefinition.config_id') ?>
 
 <div id="AjaxCheckDuplicateUrl" class="display-none">
 	<?php $this->BcBaser->url(['controller' => 'cu_custom_field_definitions', 'action' => 'ajax_check_duplicate']) ?>
 </div>
 
-<div id="ForeignId" class="display-none"><?php echo $foreignId ?></div>
+<div id="ForeignId" class="display-none"><?php echo $this->request->data['CuCustomFieldDefinition']['id'] ?></div>
 
 <section id="CuCustomFieldDefinitionTable" class="bca-section" data-bca-section-type='form-group'>
 	<table id="CuCustomFieldDefinitionTable1" class="form-table bca-form-table">
+<?php if ($this->request->action == 'admin_edit'): ?>
+		<tr>
+			<th class="col-head bca-form-table__label">
+				<?php echo $this->BcForm->label('CuCustomFieldDefinition.id', 'ID') ?>
+			</th>
+			<td class="col-input bca-form-table__input" colspan="3">
+				<?php echo $this->BcForm->value('CuCustomFieldDefinition.id') ?>
+				<?php echo $this->BcForm->hidden('CuCustomFieldDefinition.id') ?>
+			</td>
+		</tr>
+<?php endif ?>
 		<tr id="Row<?php echo $currentModelName . Inflector::camelize('field_name'); ?>">
 			<th class="col-head bca-form-table__label">
 				<?php echo $this->BcForm->label('CuCustomFieldDefinition.field_name', 'フィールド定義名') ?>&nbsp;<span
@@ -161,46 +173,36 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 	</table>
 </section>
 
-<?php if ($this->BcBaser->siteConfig['admin_theme'] == 'admin-third'): ?>
-	<!-- button -->
-	<div class="submit bca-actions">
-		<div class="bca-actions__main">
-			<?php $this->BcBaser->link('一覧に戻る',
-				['controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId],
-				['class' => 'bca-btn  bca-actions__item', 'data-bca-btn-type' => 'back-to-list']
-			) ?>
-			<?php
-			echo $this->BcForm->button(__d('baser', '保存'),
-				[
-					'div' => false,
-					'class' => 'button bca-btn bca-actions__item',
-					'data-bca-btn-type' => 'save',
-					'data-bca-btn-size' => 'lg',
-					'data-bca-btn-width' => 'lg',
-				]);
-			?>
+
+<!-- button -->
+<div class="submit bca-actions">
+	<div class="bca-actions__main">
+		<?php $this->BcBaser->link('一覧に戻る',
+			['controller' => 'cu_custom_field_definitions', 'action' => 'index', $configId],
+			['class' => 'bca-btn  bca-actions__item', 'data-bca-btn-type' => 'back-to-list']
+		) ?>
+		<?php
+		echo $this->BcForm->button(__d('baser', '保存'),
+			[
+				'div' => false,
+				'class' => 'button bca-btn bca-actions__item',
+				'data-bca-btn-type' => 'save',
+				'data-bca-btn-size' => 'lg',
+				'data-bca-btn-width' => 'lg',
+			]);
+		?>
+	</div>
+	<?php if ($this->action == 'admin_edit'): ?>
+		<div class="bca-actions__sub">
+			<?php $this->BcBaser->link(__d('baser', '削除'), ['action' => 'delete', $configId, $this->request->data['CuCustomFieldDefinition']['id']], [
+				'class' => 'submit-token button bca-btn bca-actions__item',
+				'data-bca-btn-type' => 'delete',
+				'data-bca-btn-size' => 'sm'
+			], sprintf('ID：%s のデータを削除して良いですか？', $this->BcForm->value('CuCustomFieldDefinition.name'))) ?>
 		</div>
-		<?php if ($this->action == 'admin_edit'): ?>
-			<div class="bca-actions__sub">
-				<?php $this->BcBaser->link(__d('baser', '削除'), ['action' => 'delete', $configId, $foreignId], [
-					'class' => 'submit-token button bca-btn bca-actions__item',
-					'data-bca-btn-type' => 'delete',
-					'data-bca-btn-size' => 'sm'
-				], sprintf('ID：%s のデータを削除して良いですか？', $this->BcForm->value('CuCustomFieldDefinition.name'))) ?>
-			</div>
-		<?php endif ?>
-	</div>
-<?php else: ?>
-	<div class="submit">
-		<?php echo $this->BcForm->submit('保　存', ['div' => false, 'class' => 'button btn-red', 'id' => 'BtnSave']) ?>
-		<?php if ($deletable): ?>
-			<?php $this->BcBaser->link('削　除',
-				['action' => 'delete', $configId, $foreignId],
-				['class' => 'btn-gray button', 'id' => 'BtnDelete'],
-				sprintf('ID：%s のデータを削除して良いですか？', $this->BcForm->value('CuCustomFieldDefinition.name'))); ?>
-		<?php endif ?>
-	</div>
-<?php endif ?>
+	<?php endif ?>
+</div>
+
 
 <?php echo $this->BcForm->end() ?>
 <?php

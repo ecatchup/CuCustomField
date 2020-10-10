@@ -3,10 +3,10 @@
 /**
  * [Model] CuCustomFieldConfig
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * @copyright        Copyright, Catchup, Inc.
+ * @link            https://catchup.co.jp
+ * @package            CuCustomField
+ * @license            MIT
  */
 App::uses('CuCustomField.CuCustomFieldAppModel', 'Model');
 
@@ -18,31 +18,16 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 *
 	 * @var array
 	 */
-	public $actsAs = array(
-		'BcCache',
-		'CuCustomField.KeyValue' => [
-			'foreignKeyField' => 'config_id'
-		],
-	);
+	public $actsAs = [
+		'BcCache'
+	];
 
-	/**
-	 * HABTM
-	 *
-	 * @var array
-	 */
-	public $hasAndBelongsToMany = array(
-		'CuCustomFieldConfig' => array(
-			'className'				 => 'CuCustomField.CuCustomFieldConfig',
-			'joinTable'				 => 'petit_custom_field_config_metas',
-			'foreignKey'			 => 'field_foreign_id',
-			'associationForeignKey'	 => 'petit_custom_field_config_id',
-			'conditions'			 => '',
-			'order'					 => '',
-			'limit'					 => '',
-			'unique'				 => true,
-			'finderQuery'			 => '',
-			'deleteQuery'			 => ''
-	));
+/**
+ * belongsTo
+ * @var array
+ */
+	public $belongsTo = ['CuCustomFieldConfig' => [ 'className' => 'CuCustomField.CuCustomFieldConfig',
+			'foreignKey' => 'config_id']];
 
 	/**
 	 * constructer
@@ -52,8 +37,8 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	{
 		parent::__construct($id, $table, $ds);
 
-		$validation		 = $this->getDefaultValidate();
-		$this->validate	 = $validation['CuCustomFieldDefinition'];
+		$validation = $this->getDefaultValidate();
+		$this->validate = $validation['CuCustomFieldDefinition'];
 	}
 
 	/**
@@ -68,7 +53,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 *
 	 * @var array
 	 */
-	public $validate = array();
+	public $validate = [];
 
 	/**
 	 * KeyValue で利用するバリデーション内容を取得する
@@ -89,70 +74,70 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 *
 	 * @var array
 	 */
-	public $keyValueValidate = array(
-		'CuCustomFieldDefinition' => array(
-			'name'		 => array(
-				'notBlank'			 => array(
-					'rule'		 => array('notBlank'),
-					'message'	 => 'カスタムフィールド名を入力してください。',
-					'required'	 => true,
-				),
-				'maxLength'			 => array(
-					'rule'		 => array('maxLength', 255),
-					'message'	 => '255文字以内で入力してください。',
-				),
-				'duplicateKeyValue'	 => array(
-					'rule'		 => array('duplicateKeyValue', 'name'),
-					'message'	 => '入力内容は既に使用されています。変更してください。',
-				),
-			),
-			'label_name' => array(
-				'notBlank'	 => array(
-					'rule'		 => array('notBlank'),
-					'message'	 => 'ラベル名を入力してください。',
-					'required'	 => true,
-				),
-				'maxLength'	 => array(
-					'rule'		 => array('maxLength', 255),
-					'message'	 => '255文字以内で入力してください。',
-				),
-			),
-			'field_name' => array(
-				'notBlank'				 => array(
-					'rule'		 => array('notBlank'),
-					'message'	 => 'フィールド名を入力してください。',
-					'required'	 => true,
-				),
-				'maxLength'				 => array(
-					'rule'		 => array('maxLength', 255),
-					'message'	 => '255文字以内で入力してください。',
-				),
-				'alphaNumericPlus'		 => array(
-					'rule'		 => array('alphaNumericPlus'),
-					'message'	 => '半角英数で入力してください。',
-				),
-				'duplicateKeyValue'		 => array(
-					'rule'		 => array('duplicateKeyValue', 'field_name'),
-					'message'	 => '入力内容は既に使用されています。変更してください。',
-				),
+	public $keyValueValidate = [
+		'CuCustomFieldDefinition' => [
+			'name' => [
+				'notBlank' => [
+					'rule' => ['notBlank'],
+					'message' => 'カスタムフィールド名を入力してください。',
+					'required' => true,
+				],
+				'maxLength' => [
+					'rule' => ['maxLength', 255],
+					'message' => '255文字以内で入力してください。',
+				],
+				'duplicateKeyValue' => [
+					'rule' => ['duplicateKeyValue', 'name'],
+					'message' => '入力内容は既に使用されています。変更してください。',
+				],
+			],
+			'label_name' => [
+				'notBlank' => [
+					'rule' => ['notBlank'],
+					'message' => 'ラベル名を入力してください。',
+					'required' => true,
+				],
+				'maxLength' => [
+					'rule' => ['maxLength', 255],
+					'message' => '255文字以内で入力してください。',
+				],
+			],
+			'field_name' => [
+				'notBlank' => [
+					'rule' => ['notBlank'],
+					'message' => 'フィールド名を入力してください。',
+					'required' => true,
+				],
+				'maxLength' => [
+					'rule' => ['maxLength', 255],
+					'message' => '255文字以内で入力してください。',
+				],
+				'alphaNumericPlus' => [
+					'rule' => ['alphaNumericPlus'],
+					'message' => '半角英数で入力してください。',
+				],
+				'duplicateKeyValue' => [
+					'rule' => ['duplicateKeyValue', 'field_name'],
+					'message' => '入力内容は既に使用されています。変更してください。',
+				],
 				// フィールドタイプが wysiwyg の場合はチェックするバリデーション
-				'alphaNumericUnderscore' => array(
-					'rule'		 => array('alphaNumericUnderscore', 'field_type'),
-					'message'	 => '半角英数とアンダースコアで入力してください。',
-				),
-				array(
-					'rule'		 => array('notInList', array('day')),
-					'message'	 => 'フィールド名に利用できない文字列です。変更してください。',
-				),
-			),
-			'field_type' => array(
-				'notBlank' => array(
-					'rule'		 => array('notBlank'),
-					'message'	 => 'フィールドタイプを選択してください。',
-				),
-			),
-		),
-	);
+				'alphaNumericUnderscore' => [
+					'rule' => ['alphaNumericUnderscore', 'field_type'],
+					'message' => '半角英数とアンダースコアで入力してください。',
+				],
+				[
+					'rule' => ['notInList', ['day']],
+					'message' => 'フィールド名に利用できない文字列です。変更してください。',
+				],
+			],
+			'field_type' => [
+				'notBlank' => [
+					'rule' => ['notBlank'],
+					'message' => 'フィールドタイプを選択してください。',
+				],
+			],
+		],
+	];
 
 	/**
 	 * データの重複チェックを行う
@@ -168,15 +153,15 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 		}
 
 		//$conditions = array($this->alias . '.' . key($check) => $check[key($check)]);
-		$conditions	 = array(
-			$this->alias . '.' . 'key'	 => $this->alias . '.' . $field,
+		$conditions = [
+			$this->alias . '.' . 'key' => $this->alias . '.' . $field,
 			$this->alias . '.' . 'value' => $check[key($check)],
-			'NOT'						 => array($this->alias . '.config_id' => $this->foreignId),
-		);
-		$ret		 = $this->find('first', array(
+			'NOT' => [$this->alias . '.config_id' => $this->foreignId],
+		];
+		$ret = $this->find('first', [
 			'conditions' => $conditions,
-			'recursive'	 => -1,
-		));
+			'recursive' => -1,
+		]);
 		if ($ret) {
 			return false;
 		} else {
@@ -190,7 +175,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 *
 	 * @param array $check 対象データ
 	 * @param string $fieldType フィールドタイプ
-	 * @return	boolean
+	 * @return    boolean
 	 */
 	public function alphaNumericUnderscore($check, $fieldType)
 	{
@@ -224,12 +209,12 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 *
 	 * @var array
 	 */
-	public $keyValueDefaults = array(
-		'CuCustomFieldDefinition' => array(
-			'status'	 => 1,
-			'required'	 => 0,
-		),
-	);
+	public $keyValueDefaults = [
+		'CuCustomFieldDefinition' => [
+			'status' => 1,
+			'required' => 0,
+		],
+	];
 
 	/**
 	 * beforeSave
@@ -238,12 +223,13 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 * @param array $options
 	 * @return boolean
 	 */
-	public function beforeSave($options = array())
+	public function beforeSave($options = [])
 	{
 		parent::beforeSave($options);
-		if (is_array($this->data[$this->alias]['value'])) {
-			$serializeData						 = serialize($this->data[$this->alias]['value']);
-			$this->data[$this->alias]['value']	 = $serializeData;
+		foreach($this->data[$this->alias] as $key => $value) {
+			if (is_array($value)) {
+				$this->data[$this->alias][$key] = serialize($value);
+			}
 		}
 		return true;
 	}
@@ -270,16 +256,16 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 */
 	public function getControlSource($field)
 	{
-		switch ($field) {
+		switch($field) {
 			case 'field_name':
-				$conditions						 = array(
+				$conditions = [
 					$this->alias . '.' . 'key' => $this->alias . '.' . $field,
-				);
-				$controlSources['field_name']	 = $this->find('list', array(
+				];
+				$controlSources['field_name'] = $this->find('list', [
 					'conditions' => $conditions,
-					'fields'	 => array($this->alias . '.id', $this->alias . '.value'),
-					'order'		 => array('value' => 'ASC'),
-				));
+					'fields' => [$this->alias . '.id', $this->alias . '.value'],
+					'order' => ['value' => 'ASC'],
+				]);
 				break;
 		}
 		if (isset($controlSources[$field])) {

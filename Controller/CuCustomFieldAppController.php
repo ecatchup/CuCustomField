@@ -82,28 +82,6 @@ class CuCustomFieldAppController extends AppController
 	}
 
 	/**
-	 * [ADMIN] 一覧表示
-	 *
-	 */
-	public function admin_index()
-	{
-		$default = [
-			'named' => [
-				'num' => $this->siteConfigs['admin_list_num'],
-				'sortmode' => 0]];
-		$this->setViewConditions($this->modelClass, ['default' => $default]);
-
-		$conditions = $this->_createAdminIndexConditions($this->request->data);
-		$this->paginate = [
-			'conditions' => $conditions,
-			'fields' => [],
-			'limit' => $this->passedArgs['num']
-		];
-		$this->set('datas', $this->paginate($this->modelClass));
-		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
-	}
-
-	/**
 	 * [ADMIN] 新規登録
 	 *
 	 */
@@ -311,66 +289,6 @@ class CuCustomFieldAppController extends AppController
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * [ADMIN] 並び順を上げる
-	 *
-	 * @param int $id
-	 */
-	public function admin_move_up($id)
-	{
-		$this->pageTitle = $this->adminTitle . '並び順繰り上げ';
-
-		if (!$id) {
-			$this->setMessage('無効なIDです。', true);
-			$this->redirect(['action' => 'index']);
-		}
-
-		if ($this->{$this->modelClass}->Behaviors->enabled('List')) {
-			if ($this->{$this->modelClass}->moveUp($id)) {
-				$message = $this->name . ' ID:' . $id . ' ' . $this->pageTitle . 'ました。';
-				$this->setMessage($message, false, true);
-				clearViewCache();
-				$this->redirect(['action' => 'index']);
-			} else {
-				$this->setMessage('データベース処理中にエラーが発生しました。', true);
-			}
-		} else {
-			$this->setMessage('ListBehaviorが無効のモデルです。', true);
-		}
-		$this->render(false);
-		$this->redirect(['action' => 'index']);
-	}
-
-	/**
-	 * [ADMIN] 並び順を下げる
-	 *
-	 * @param int $id
-	 */
-	public function admin_move_down($id)
-	{
-		$this->pageTitle = $this->adminTitle . '並び順を繰り下げ';
-
-		if (!$id) {
-			$this->setMessage('無効なIDです。', true);
-			$this->redirect(['action' => 'index']);
-		}
-
-		if ($this->{$this->modelClass}->Behaviors->enabled('List')) {
-			if ($this->{$this->modelClass}->moveDown($id)) {
-				$message = $this->name . ' ID:' . $id . ' ' . $this->pageTitle . 'ました。';
-				$this->setMessage($message, false, true);
-				clearViewCache();
-				$this->redirect(['action' => 'index']);
-			} else {
-				$this->setMessage('データベース処理中にエラーが発生しました。', true);
-			}
-		} else {
-			$this->setMessage('ListBehaviorが無効のモデルです。', true);
-		}
-		$this->render(false);
-		$this->redirect(['action' => 'index']);
 	}
 
 	/**

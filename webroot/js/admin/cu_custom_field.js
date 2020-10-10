@@ -11,7 +11,7 @@
  */
 $(function(){
 
-    $("#CuCustomFieldDefinitionName").focus();
+    $("#CuCustomFieldDefinitionFieldName").focus();
 
 	$fieldType = $("#CuCustomFieldDefinitionFieldType").val();
 	cuCustomFieldCefinitionFieldTypeChangeHandler($fieldType);

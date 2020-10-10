@@ -26,32 +26,13 @@ class CuCustomFieldConfig extends CuCustomFieldAppModel
 	 * @var array
 	 */
 	public $hasMany = [
-		'PetitCustomFieldConfigMeta' => [
-			'className' => 'CuCustomField.PetitCustomFieldConfigMeta',
-			'foreignKey' => 'petit_custom_field_config_id',
-			'order' => ['PetitCustomFieldConfigMeta.position' => 'ASC'],
+		'CuCustomFieldDefinition' => [
+			'className' => 'CuCustomField.CuCustomFieldDefinition',
+			'foreignKey' => 'config_id',
+			'order' => ['CuCustomFieldDefinition.sort' => 'ASC'],
 			'dependent' => true,
 		],
 	];
-
-	/**
-	 * HABTM
-	 *
-	 * @var array
-	 */
-	public $hasAndBelongsToMany = [
-		'CuCustomFieldDefinition' => [
-			'className' => 'CuCustomField.CuCustomFieldDefinition',
-			'joinTable' => 'petit_custom_field_config_metas',
-			'foreignKey' => 'petit_custom_field_config_id',
-			'associationForeignKey' => 'field_foreign_id',
-			'conditions' => '',
-			'order' => '',
-			'limit' => '',
-			'unique' => true,
-			'finderQuery' => '',
-			'deleteQuery' => ''
-		]];
 
 	/**
 	 * 初期値を取得する

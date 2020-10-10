@@ -10,6 +10,10 @@
  */
 App::uses('CuCustomFieldApp', 'CuCustomField.Controller');
 
+/**
+ * Class CuCustomFieldDefinitionsController
+ * @property CuCustomFieldDefinition $CuCustomFieldDefinition
+ */
 class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 {
 
@@ -54,49 +58,73 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		}
 	}
 
+
+	/**
+	 * [ADMIN] フィールド定義一覧
+	 *
+	 * @param int $configId
+	 */
+	public function admin_index($configId)
+	{
+
+		if (!$configId) {
+			$this->BcMessage->setError('無効な処理です。');
+			$this->notFound();
+		}
+
+		$this->pageTitle = $this->adminTitle . '一覧';
+		$this->help = 'cu_custom_field_metas_index';
+
+		$this->setViewConditions('CuCustomFieldDefinition', ['default' => [
+			'named' => [
+				'num' => $this->siteConfigs['admin_list_num']
+			]]]);
+
+		$conditions = $this->_createAdminIndexConditions($configId, $this->request->data);
+
+		$this->paginate = [
+			'conditions' => $conditions,
+			'fields' => [],
+			'limit' => $this->siteConfigs['admin_list_num'],
+			'order' => 'CuCustomFieldDefinition.sort ASC',
+		];
+		$this->set('datas', $this->paginate('CuCustomFieldDefinition'));
+		$this->set('configId', $configId);
+		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
+	}
+
 	/**
 	 * [ADMIN] 編集
 	 *
 	 * @param int $configId
-	 * @param int $foreignId
+	 * @param int $id
 	 */
-	public function admin_edit($configId = null, $foreignId = null)
+	public function admin_edit($configId = null, $id = null)
 	{
 		$this->pageTitle = $this->adminTitle . '編集';
 		$this->help = 'cu_custom_field_definitions';
 		$deletable = true;
 
-		if (!$configId || !$foreignId) {
-			$this->setMessage('無効な処理です。', true);
+		if (!$configId || !$id) {
+			$this->BcMessage->setError('無効な処理です。');
 			$this->redirect(['action' => 'index']);
 		}
 
-		$this->crumbs[] = ['name' => 'フィールド定義管理', 'url' => ['plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId]];
-
 		if (empty($this->request->data)) {
-			// $data = $this->CuCustomFieldValueModel->getSection($Model->id, $this->CuCustomFieldValueModel->name);
-			$data = $this->{$this->modelClass}->getSection($foreignId, $this->modelClass);
-			if ($data) {
-				$this->request->data = [$this->modelClass => $data];
-			}
+			$this->request->data = $this->CuCustomFieldDefinition->find('first', ['conditions' => ['CuCustomFieldDefinition.id' => $id]]);
 		} else {
-			// バリデーション重複チェックのため、foreign_id をモデルのプロパティに持たせる
-			$this->CuCustomFieldDefinition->foreignId = $foreignId;
-			if ($this->CuCustomFieldDefinition->validateSection($this->request->data, 'CuCustomFieldDefinition')) {
-				if ($this->CuCustomFieldDefinition->saveSection($foreignId, $this->request->data, 'CuCustomFieldDefinition')) {
-					$message = $this->name . '「' . $this->request->data['CuCustomFieldDefinition']['name'] . '」を更新しました。';
-					$this->setMessage($message, false, true);
-					$this->redirect(['controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId]);
-				} else {
-					$this->setMessage('入力エラーです。内容を修正して下さい。', true);
-				}
+			$this->CuCustomFieldDefinition->set($this->request->data);
+			if ($this->CuCustomFieldDefinition->save()) {
+				$message = 'フィールド定義「' . $this->request->data['CuCustomFieldDefinition']['name'] . '」を更新しました。';
+				$this->BcMessage->setSuccess($message);
+				$this->redirect(['action' => 'index', $configId]);
 			} else {
-				$this->setMessage('入力エラーです。内容を修正して下さい。', true);
+				$this->BcMessage->setError('入力エラーです。内容を修正して下さい。');
 			}
 		}
 
 		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name');
-		$this->set(compact('fieldNameList', 'configId', 'foreignId', 'deletable'));
+		$this->set(compact('fieldNameList', 'configId', 'deletable'));
 		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');
 	}
@@ -112,47 +140,29 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		$this->help = 'cu_custom_field_definitions';
 		$deletable = false;
 
-		$this->crumbs[] = ['name' => 'カスタムフィールド定義管理', 'url' => ['plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId]];
-		$foreignId = $this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->getMax('field_foreign_id') + 1;
-
 		if (!$configId) {
-			$this->setMessage('無効な処理です。', true);
+			$this->BcMessage->setError('無効な処理です。');
 			$this->redirect(['controller' => 'cu_custom_field_configs', 'action' => 'index']);
 		}
 
 		if (empty($this->request->data)) {
-			$this->request->data = $this->CuCustomFieldDefinition->defaultValues();
+			$this->request->data = ['CuCustomFieldDefinition' => ['config_id' => $configId]];
 		} else {
-			if ($this->CuCustomFieldDefinition->validateSection($this->request->data, 'CuCustomFieldDefinition')) {
-				if ($this->CuCustomFieldDefinition->saveSection($foreignId, $this->request->data, 'CuCustomFieldDefinition')) {
-
-					// リンクテーブルにデータを追加する
-					$saveData = [
-						'PetitCustomFieldConfigMeta' => [
-							'petit_custom_field_config_id' => $configId,
-							'field_foreign_id' => $foreignId,
-						],
-					];
-					// load しないと順番が振られない。スコープが効かない。
-					$this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->Behaviors->load(
-						'CuCustomField.List', ['scope' => 'petit_custom_field_config_id']
-					);
-					$this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->create($saveData);
-					$this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->save($saveData);
-
-					$message = $this->name . '「' . $this->request->data['CuCustomFieldDefinition']['name'] . '」の追加が完了しました。';
-					$this->setMessage($message, false, true);
-					$this->redirect(['controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId]);
-				} else {
-					$this->setMessage('入力エラーです。内容を修正して下さい。', true);
-				}
+			$this->request->data['CuCustomFieldDefinition']['sort'] = (int) $this->CuCustomFieldDefinition->getMax('sort', [
+				'CuCustomFieldDefinition.config_id' => $configId
+			]) + 1;
+			$this->CuCustomFieldDefinition->create($this->request->data);
+			if ($this->CuCustomFieldDefinition->save()) {
+				$message = 'フィールド定義「' . $this->request->data['CuCustomFieldDefinition']['name'] . '」の追加が完了しました。';
+				$this->BcMessage->setSuccess($message);
+				$this->redirect(['action' => 'index', $configId]);
 			} else {
-				$this->setMessage('入力エラーです。内容を修正して下さい。', true);
+				$this->BcMessage->setError('入力エラーです。内容を修正して下さい。');
 			}
 		}
 
 		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name');
-		$this->set(compact('fieldNameList', 'configId', 'foreignId', 'deletable'));
+		$this->set(compact('fieldNameList', 'configId', 'deletable'));
 		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');
 	}
@@ -163,24 +173,109 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	 * @param int $configId
 	 * @param int $foreignId
 	 */
-	public function admin_delete($configId = null, $foreignId = null)
+	public function admin_delete($configId = null, $id = null)
 	{
-		if (!$configId || !$foreignId) {
-			$this->setMessage('無効な処理です。', true);
+		if (!$configId || !$id) {
+			$this->BcMessage->setError('無効な処理です。');
 			$this->redirect(['action' => 'index']);
 		}
 
 		// 削除前にメッセージ用にカスタムフィールドを取得する
-		$data = $this->CuCustomFieldDefinition->getSection($foreignId, 'CuCustomFieldDefinition');
+		$data = $this->CuCustomFieldDefinition->read($id);
 
-		if ($this->CuCustomFieldDefinition->resetSection($foreignId)) {
+		if ($this->CuCustomFieldDefinition->delete($id)) {
 			$message = $this->name . '「' . $data['CuCustomFieldDefinition']['name'] . '」を削除しました。';
-			$this->setMessage($message, false, true);
+			$this->BcMessage->setSuccess($message);
 			$this->redirect(['action' => 'index', $configId]);
 		} else {
-			$this->setMessage('データベース処理中にエラーが発生しました。', true);
+			$this->BcMessage->setError('データベース処理中にエラーが発生しました。');
 		}
 		$this->redirect(['action' => 'index', $configId]);
+	}
+
+	/**
+	 * [ADMIN] 削除処理　(ajax)
+	 *
+	 * @param int $configId
+	 * @param int $id
+	 */
+	public function admin_ajax_delete($configId = null, $id = null)
+	{
+		if (!$configId || !$id) {
+			$this->ajaxError(500, '無効な処理です。');
+		}
+		// 削除実行
+		if ($this->CuCustomFieldDefinition->delete($id)) {
+			clearViewCache();
+			exit(true);
+		}
+		exit();
+	}
+
+
+	/**
+	 * [ADMIN] 無効状態にする（AJAX）
+	 *
+	 * @param int $configId
+	 * @param int $id
+	 */
+	public function admin_ajax_unpublish($configId = null, $id = null)
+	{
+		if (!$configId || !$id) {
+			$this->ajaxError(500, '無効な処理です。');
+		}
+		if ($this->_changeStatus($configId, $id, false)) {
+			clearViewCache();
+			exit(true);
+		} else {
+			$this->ajaxError(500, $this->{$this->modelClass}->validationErrors);
+		}
+		exit();
+	}
+
+	/**
+	 * [ADMIN] 有効状態にする（AJAX）
+	 *
+	 * @param int $configId
+	 * @param int $id
+	 */
+	public function admin_ajax_publish($configId = null, $id = null)
+	{
+		if (!$configId || !$id) {
+			$this->ajaxError(500, '無効な処理です。');
+		}
+		if ($this->_changeStatus($configId, $id, true)) {
+			clearViewCache();
+			exit(true);
+		} else {
+			$this->ajaxError(500, $this->{$this->modelClass}->validationErrors);
+		}
+		exit();
+	}
+
+
+	/**
+	 * ステータスを変更する
+	 *
+	 * @param int $configId
+	 * @param int $id
+	 * @param boolean $status
+	 * @return boolean
+	 */
+	protected function _changeStatus($configId = null, $id = null, $status = false)
+	{
+		$data = $this->CuCustomFieldDefinition->find('first', [
+			'conditions' => ['id' => $id],
+			'recursive' => -1
+		]);
+
+		$data['CuCustomFieldDefinition']['status'] = $status;
+		$this->CuCustomFieldDefinition->set($data);
+		if ($this->CuCustomFieldDefinition->save()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -189,41 +284,57 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	 * @param array $data
 	 * @return array $conditions
 	 */
-	protected function _createAdminIndexConditions($data)
+	protected function _createAdminIndexConditions($configId, $data)
 	{
-		$conditions = [];
-		$blogContentId = '';
-
-		if (isset($data['CuCustomFieldDefinition']['content_id'])) {
-			$blogContentId = $data['CuCustomFieldDefinition']['content_id'];
-		}
-
-		unset($data['_Token']);
-		unset($data['CuCustomFieldDefinition']['content_id']);
-
-		// 条件指定のないフィールドを解除
-		if (!empty($data['CuCustomFieldDefinition'])) {
-			foreach($data['CuCustomFieldDefinition'] as $key => $value) {
-				if ($value === '') {
-					unset($data['CuCustomFieldDefinition'][$key]);
-				}
-			}
-			if ($data['CuCustomFieldDefinition']) {
-				$conditions = $this->postConditions($data);
-			}
-		}
-
-		if ($blogContentId) {
-			$conditions = [
-				'CuCustomFieldDefinition.content_id' => $blogContentId
-			];
-		}
-
+		$conditions = ['config_id' => $configId];
 		if ($conditions) {
 			return $conditions;
 		} else {
 			return [];
 		}
+	}
+
+
+	/**
+	 * [ADMIN] 並び順を上げる
+	 *
+	 * @param int $configId
+	 * @param int $id
+	 */
+	public function admin_move_up($configId, $id)
+	{
+		if (!$id || !$configId) {
+			$this->BcMessage->setError('無効な処理です。');
+			$this->redirect(['action' => 'index']);
+		}
+
+		if ($this->CuCustomFieldDefinition->changeSort($id, -1, ['CuCustomFieldDefinition.config_id' => $configId])) {
+			$this->BcMessage->setSuccess('フィールド定義の並び順を繰り上げました。');
+		} else {
+			$this->BcMessage->setError('データベース処理中にエラーが発生しました。');
+		}
+		$this->redirect(['action' => 'index', $configId]);
+	}
+
+	/**
+	 * [ADMIN] 並び順を下げる
+	 *
+	 * @param int $configId
+	 * @param int $id
+	 */
+	public function admin_move_down($configId = null, $id = null, $toBottom = '')
+	{
+		if (!$id || !$configId) {
+			$this->BcMessage->setError('無効な処理です。');
+			$this->redirect(['action' => 'index']);
+		}
+
+		if ($this->CuCustomFieldDefinition->changeSort($id, 1, ['CuCustomFieldDefinition.config_id' => $configId])) {
+			$this->BcMessage->setSuccess('フィールド定義の並び順を繰り下げました。');
+		} else {
+			$this->BcMessage->setError('データベース処理中にエラーが発生しました。');
+		}
+		$this->redirect(['action' => 'index', $configId]);
 	}
 
 	/**

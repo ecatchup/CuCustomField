@@ -7,47 +7,106 @@
  * @package			CuCustomField
  * @license			MIT
  */
-?>
-<?php $this->BcBaser->element('pagination') ?>
 
-<table cellpadding="0" cellspacing="0" class="list-table sort-table" id="ListTable">
-	<thead>
-		<tr><th style="width: 50px;">操作</th>
-			<th><?php echo $this->Paginator->sort('id', array(
-					'asc' => $this->BcBaser->getImg('admin/blt_list_down.png', array('alt' => '昇順', 'title' => '昇順')).' NO',
-					'desc' => $this->BcBaser->getImg('admin/blt_list_up.png', array('alt' => '降順', 'title' => '降順')).' NO'),
-					array('escape' => false, 'class' => 'btn-direction')) ?>
-			</th>
-			<th>
-				<?php echo $this->Paginator->sort('content_id', array(
-					'asc' => $this->BcBaser->getImg('admin/blt_list_down.png', array('alt' => '昇順', 'title' => '昇順')).' ブログ名',
-					'desc' => $this->BcBaser->getImg('admin/blt_list_up.png', array('alt' => '降順', 'title' => '降順')).' ブログ名'),
-					array('escape' => false, 'class' => 'btn-direction')) ?>
-			</th>
-			<th><?php echo $this->Paginator->sort('created', array(
-					'asc' => $this->BcBaser->getImg('admin/blt_list_down.png', array('alt' => '昇順', 'title' => '昇順')).' 登録日',
-					'desc' => $this->BcBaser->getImg('admin/blt_list_up.png', array('alt' => '降順', 'title' => '降順')).' 登録日'),
-					array('escape' => false, 'class' => 'btn-direction')) ?>
-				<br />
-				<?php echo $this->Paginator->sort('modified', array(
-					'asc' => $this->BcBaser->getImg('admin/blt_list_down.png', array('alt' => '昇順', 'title' => '昇順')).' 更新日',
-					'desc' => $this->BcBaser->getImg('admin/blt_list_up.png', array('alt' => '降順', 'title' => '降順')).' 更新日'),
-					array('escape' => false, 'class' => 'btn-direction')) ?>
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-<?php if(!empty($datas)): ?>
-	<?php foreach($datas as $data): ?>
-		<?php $this->BcBaser->element('cu_custom_field_definitions/index_row', array('data' => $data)) ?>
-	<?php endforeach; ?>
-<?php else: ?>
+/**
+ * @var BcAppView $this
+ * @var int $contentId
+ * @var array $blogContentDatas
+ */
+$this->BcBaser->css(array(
+	'//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css',
+	'CuCustomField.admin/cu_custom_field',
+));
+$this->BcListTable->setColumnNumber(9);
+$contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
+?>
+
+
+<p>
+	<?php $this->BcBaser->link($contentName .' 設定に移動',
+		['admin' => true, 'plugin' => 'blog', 'controller' => 'blog_contents', 'action' => 'edit', $contentId],
+		['class' => 'bca-btn']
+	) ?>
+	&nbsp;&nbsp;
+	<?php $this->BcBaser->link($contentName . ' 記事一覧に移動',
+		['admin' => true, 'plugin' => 'blog', 'controller' => 'blog_posts',	'action' => 'index', $contentId],
+		['class' => 'bca-btn']
+	) ?>
+</p>
+
+<!-- list -->
+<table class="list-table bca-table-listup" id="ListTable">
+<thead class="bca-table-listup__thead">
 	<tr>
-		<td colspan="4"><p class="no-data">データがありません。</p></td>
+		<th class="bca-table-listup__thead-th"><?php // No ?>
+		<?php
+		echo $this->Paginator->sort('no',
+			[
+				'asc' => '<i class="bca-icon--asc"></i>' . __d('baser', 'No'),
+				'desc' => '<i class="bca-icon--desc"></i>' . __d('baser', 'No')
+			],
+			[
+				'escape' => false,
+				'class' => 'btn-direction bca-table-listup__a'
+			]);
+			?>
+		</th>
+		<th class="bca-table-listup__thead-th"><?php // カスタムフィールド名 ?>
+			フィールド定義名
+		</th>
+		<th class="bca-table-listup__thead-th"><?php // フィールド名 ?>
+			フィールド名
+		</th>
+		<th class="bca-table-listup__thead-th"><?php // フィールドタイプ ?>
+			フィールドタイプ
+		</th>
+		<th class="bca-table-listup__thead-th"><?php // 必須設定 ?>
+			必須設定
+		</th>
+		<th class="bca-table-listup__thead-th"><?php // アクション ?>
+			<?php echo __d('baser', 'アクション') ?>
+		</th>
 	</tr>
+</thead>
+<tbody class="bca-table-listup__tbody">
+<?php if(!empty($datas)): ?>
+	<?php
+	foreach ($datas as $key => $data) {
+			$this->BcBaser->element('cu_custom_field_definitions/index_row',
+				[
+					'data' => $data,
+					'count' => ($key + 1)
+			]);
+	}
+	?>
+<?php else: ?>
+		<tr>
+			<td colspan="<?php echo $this->BcListTable->getColumnNumber() ?>" class="bca-table-listup__tbody-td">
+				<p class="no-data"><?php echo __d('baser', 'データが見つかりませんでした。') ?></p>
+			</td>
+		</tr>
 <?php endif; ?>
-	</tbody>
+</tbody>
 </table>
 
-<!-- list-num -->
-<?php $this->BcBaser->element('list_num') ?>
+
+<div class="bca-data-list__bottom">
+  <div class="bca-data-list__sub">
+    <?php $this->BcBaser->element('pagination') ?>
+  </div>
+</div>
+
+<?php
+if(Configure::read('cuCustomFieldConfig.submenu')) {
+	$this->BcBaser->element('submenu');
+}
+?>
+
+<section class="bca-actions">
+	<div class="bca-actions__main">
+	<?php $this->BcBaser->link('カスタムフィールド設定一覧に戻る',
+		['controller' => 'cu_custom_field_configs', 'action' => 'index'],
+		['class' => 'bca-btn  bca-actions__item', 'data-bca-btn-type' => 'back-to-list']
+	) ?>
+	</div>
+</section>

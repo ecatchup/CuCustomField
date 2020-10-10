@@ -12,7 +12,7 @@
  * システムナビ
  */
 $config['BcApp.adminNavi.cu_custom_field'] = array(
-	'name'		 => 'カスタムフィールドプラグイン',
+	'name'		 => 'カスタムフィールド',
 	'contents'	 => array(
 		array('name'	 => '設定一覧',
 			'url'	 => array(
@@ -27,13 +27,14 @@ $config['BcApp.adminNavigation'] = [
 	'Plugins' => [
 		'menus' => [
 			'CuCustomField' => [
-				'title' => 'カスタムフィールドプラグイン',
+				'title' => 'カスタムフィールド',
 				'url' => [
 					'admin' => true,
 					'plugin' => 'cu_custom_field',
 					'controller' => 'cu_custom_field_configs',
 					'action' => 'index',
-				]
+				],
+				'currentRegex' => '/\/cu_custom_field\/.+?/s'
 			],
 		]
 ]];

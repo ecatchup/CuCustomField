@@ -47,7 +47,7 @@ $class=' class="'.implode(' ', $classies).'"';
 					'data-bca-btn-size' => 'sm'
 				]);
 		} else {
-			echo count($data['PetitCustomFieldConfigMeta']);
+			echo count($data['CuCustomFieldDefinition']);
 		}
 		?>
 	</td>
@@ -68,7 +68,6 @@ $class=' class="'.implode(' ', $classies).'"';
 		$this->BcBaser->link('',
 			[
 				'action' => 'ajax_unpublish',
-				$data['CuCustomFieldConfig']['id'],
 				$data['CuCustomFieldConfig']['id']
 			],
 			[
@@ -81,7 +80,6 @@ $class=' class="'.implode(' ', $classies).'"';
 		$this->BcBaser->link('',
 			[
 				'action' => 'ajax_publish',
-				$data['CuCustomFieldConfig']['id'],
 				$data['CuCustomFieldConfig']['id']
 			],
 			[
@@ -93,9 +91,8 @@ $class=' class="'.implode(' ', $classies).'"';
 		//フィールド管理
 		$this->BcBaser->link('',
 			[
-				'controller' => 'petit_custom_field_config_metas',
+				'controller' => 'cu_custom_field_definitions',
 				'action' => 'index',
-				$data['CuCustomFieldConfig']['id'],
 				$data['CuCustomFieldConfig']['id']
 			],
 			[
@@ -108,7 +105,6 @@ $class=' class="'.implode(' ', $classies).'"';
 		$this->BcBaser->link('',
 			[
 				'action' => 'edit',
-				$data['CuCustomFieldConfig']['id'],
 				$data['CuCustomFieldConfig']['id']
 			],
 			[
@@ -121,7 +117,6 @@ $class=' class="'.implode(' ', $classies).'"';
 		$this->BcBaser->link('',
 			[
 				'action' => 'ajax_delete',
-				$data['CuCustomFieldConfig']['id'],
 				$data['CuCustomFieldConfig']['id']
 			],
 			[
