@@ -83,13 +83,17 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 
 		$conditions = $this->_createAdminIndexConditions($configId, $this->request->data);
 
-		$this->paginate = [
-			'conditions' => $conditions,
-			'fields' => [],
-			'limit' => $this->siteConfigs['admin_list_num'],
-			'order' => 'CuCustomFieldDefinition.sort ASC',
-		];
-		$this->set('datas', $this->paginate('CuCustomFieldDefinition'));
+		$list = $this->CuCustomFieldDefinition->generateTreeList($conditions);
+		$definitions = [];
+		foreach ($list as $key => $value) {
+			$definition = $this->CuCustomFieldDefinition->find('first', ['conditions' => ['CuCustomFieldDefinition.id' => $key]]);
+			if (preg_match("/^([_]+)/i", $value, $matches)) {
+				$prefix = str_replace('_', '   ', $matches[1]);
+				$definition['CuCustomFieldDefinition']['name'] = $prefix . '└&nbsp;' . $definition['CuCustomFieldDefinition']['name'];
+			}
+			$definitions[] = $definition;
+		}
+		$this->set('datas', $definitions);
 		$this->set('configId', $configId);
 		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 	}
@@ -124,7 +128,8 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 			}
 		}
 
-		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name', $configId);
+		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name');
+		$this->set('loops', [null => '指定しない'] + $this->CuCustomFieldDefinition->getLoopList($configId));
 		$this->set(compact('fieldNameList', 'configId', 'deletable'));
 		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');
@@ -163,6 +168,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		}
 
 		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name');
+		$this->set('loops', [null => '指定しない'] + $this->CuCustomFieldDefinition->getLoopList($configId));
 		$this->set(compact('fieldNameList', 'configId', 'deletable'));
 		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');

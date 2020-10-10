@@ -15,9 +15,13 @@
  * @var int $configId
  * @var array $fieldNameList
  */
+$id = null;
+if(!empty($this->request->data['CuCustomFieldDefinition']['id'])) {
+	$id = $this->request->data['CuCustomFieldDefinition']['id'];
+}
 $this->BcBaser->css('CuCustomField.admin/cu_custom_field', ['inline' => false]);
 $this->BcBaser->js('CuCustomField.admin/cu_custom_field', true, ['id' => 'CuCustomFieldDefinitionScript',
-	'data-id' => $this->request->data['CuCustomFieldDefinition']['id'],
+	'data-id' => $id,
 	'data-config-id' => $configId
 ]);
 $currentModelName = $this->request->params['models']['CuCustomFieldDefinition']['className'];
@@ -109,20 +113,6 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 				</div>
 			</td>
 		</tr>
-		<tr id="Row<?php echo $currentModelName . Inflector::camelize('label_name'); ?>">
-			<th class="col-head bca-form-table__label">
-				<?php echo $this->BcForm->label('CuCustomFieldDefinition.label_name', '表示用ラベル') ?>&nbsp;<span
-					class="required bca-label" data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span>
-			</th>
-			<td class="col-input bca-form-table__input" colspan="3">
-				<?php echo $this->BcForm->input('CuCustomFieldDefinition.label_name',
-					['type' => 'text', 'size' => 60, 'maxlength' => 255, 'counter' => true, 'placeholder' => 'Webサイトで表示するタイトルを入力してください']) ?>
-				<?php echo $this->BcForm->error('CuCustomFieldDefinition.label_name') ?>
-				<div id="CheckValueResultLabelName" class="display-none">
-					<div class="error-message duplicate-error-message">同じラベル名が存在します。変更してください。</div>
-				</div>
-			</td>
-		</tr>
 		<tr id="Row<?php echo $currentModelName . Inflector::camelize('field_type'); ?>">
 			<th class="col-head bca-form-table__label">
 				<?php echo $this->BcForm->label('CuCustomFieldDefinition.field_type', 'フィールドタイプ') ?>&nbsp;<span
@@ -147,22 +137,14 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 				<?php echo $this->BcForm->error('CuCustomFieldDefinition.status') ?>
 			</td>
 		</tr>
-		<tr id="Row<?php echo $currentModelName . Inflector::camelize('status'); ?>">
-			<th class="col-head bca-form-table__label">
-				<?php echo $this->BcForm->label('CuCustomFieldDefinition.required', '必須設定') ?>
-			</th>
-			<td class="col-input bca-form-table__input"
-				id="Row<?php echo $currentModelName . Inflector::camelize('required'); ?>">
-				<?php echo $this->BcForm->input('CuCustomFieldDefinition.required', ['type' => 'checkbox', 'label' => '必須入力とする']) ?>
-				<?php echo $this->BcForm->error('CuCustomFieldDefinition.required') ?>
-			</td>
-		</tr>
 	</table>
 </section>
 
-<section class="bca-section" data-bca-section-type='form-group'>
+<section class="bca-section">
 	<h2 class="bca-main__heading" data-bca-heading-size="lg">フィールド表示設定</h2>
 	<table id="CuCustomFieldDefinitionTable2" class="form-table bca-form-table">
+		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/parent_id', ['currentModelName' => $currentModelName]) ?>
+		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/required', ['currentModelName' => $currentModelName]) ?>
 		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/prepend', ['currentModelName' => $currentModelName]) ?>
 		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/append', ['currentModelName' => $currentModelName]) ?>
 		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/description', ['currentModelName' => $currentModelName]) ?>
@@ -175,6 +157,7 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/google_maps', ['currentModelName' => $currentModelName]) ?>
 		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/text_etc', ['currentModelName' => $currentModelName]) ?>
 		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/textarea_etc', ['currentModelName' => $currentModelName, 'customFieldConfig' => $customFieldConfig]) ?>
+		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/checkbox_etc', ['currentModelName' => $currentModelName]) ?>
 	</table>
 </section>
 

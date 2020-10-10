@@ -189,11 +189,11 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 				}
 
 				// PetitCustomFieldConfigMeta::afterFind で KeyValue のモデル情報が CuCustomFieldConfig に切り替わる
-				$fieldConfigField = $this->CuCustomFieldConfigModel->PetitCustomFieldConfigMeta->find('all', array(
+				$fieldConfigField = $this->CuCustomFieldConfigModel->CuCustomFieldDefinition->find('all', array(
 					'conditions' => array(
-						'PetitCustomFieldConfigMeta.petit_custom_field_config_id' => $configData['CuCustomFieldConfig']['id']
+						'CuCustomFieldDefinition.config_id' => $configData['CuCustomFieldConfig']['id']
 					),
-					'order'		 => 'PetitCustomFieldConfigMeta.position ASC',
+					'order'		 => 'CuCustomFieldDefinition.sort ASC',
 					'recursive'	 => -1,
 				));
 				if ($contentId) {

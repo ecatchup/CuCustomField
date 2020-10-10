@@ -19,7 +19,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 * @var array
 	 */
 	public $actsAs = [
-		'BcCache'
+		'Tree', 'BcCache'
 	];
 
 /**
@@ -94,11 +94,6 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 				],
 			],
 			'label_name' => [
-				'notBlank' => [
-					'rule' => ['notBlank'],
-					'message' => 'ラベル名を入力してください。',
-					'required' => true,
-				],
 				'maxLength' => [
 					'rule' => ['maxLength', 255],
 					'message' => '255文字以内で入力してください。',
@@ -270,6 +265,17 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * ループリストを取得する
+	 * @return array|null
+	 */
+	public function getLoopList($configId) {
+		return $this->find('list', ['conditions' => [
+			'CuCustomFieldDefinition.field_type' => 'loop',
+			'CuCustomFieldDefinition.config_id' => $configId
+		]]);
 	}
 
 }

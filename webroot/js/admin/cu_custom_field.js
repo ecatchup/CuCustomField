@@ -1,340 +1,326 @@
 /**
  * [ADMIN] PetitCustomField
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			PetitCustomField
- * @license			MIT
+ * @copyright        Copyright, Catchup, Inc.
+ * @link            https://catchup.co.jp
+ * @package            PetitCustomField
+ * @license            MIT
  */
 /**
  * プチカスタムフィールド用のJS処理
  */
-$(function(){
+$(function () {
 
     $("#CuCustomFieldDefinitionFieldName").focus();
 
-	$fieldType = $("#CuCustomFieldDefinitionFieldType").val();
-	cuCustomFieldCefinitionFieldTypeChangeHandler($fieldType);
-	// タイプを選択すると入力するフィールドが切り替わる
-	$("#CuCustomFieldDefinitionFieldType").change(function(){
-		cuCustomFieldCefinitionFieldTypeChangeHandler($("#CuCustomFieldDefinitionFieldType").val());
-	});
+    $fieldType = $("#CuCustomFieldDefinitionFieldType").val();
+    cuCustomFieldDefinitionFieldTypeChangeHandler($fieldType);
 
-	// カスタムフィールド名の入力時、ラベル名が空の場合は名称を自動で入力する
-	$("#CuCustomFieldDefinitionName").change(function(){
-		$labelName = $("#CuCustomFieldDefinitionLabelName");
-		var labelNameValue = $labelName.val();
-		if(!labelNameValue){
-			$labelName.val($("#CuCustomFieldDefinitionName").val());
-		}
-	});
+    // タイプを選択すると入力するフィールドが切り替わる
+    $("#CuCustomFieldDefinitionFieldType").change(function () {
+        cuCustomFieldDefinitionFieldTypeChangeHandler($("#CuCustomFieldDefinitionFieldType").val());
+    });
 
-	// 利用中フィールド名一覧を表示する
-	$('#show_field_name_list').change(function() {
-		if ($(this).prop('checked')) {
-			$('#FieldNameList').show('slow');
-		} else {
-			$('#FieldNameList').hide();
-		}
-	});
+    // カスタムフィールド名の入力時、ラベル名が空の場合は名称を自動で入力する
+    $("#CuCustomFieldDefinitionName").change(function () {
+        $labelName = $("#CuCustomFieldDefinitionLabelName");
+        var labelNameValue = $labelName.val();
+        if (!labelNameValue) {
+            $labelName.val($("#CuCustomFieldDefinitionName").val());
+        }
+    });
 
-	// カスタムフィールド名、ラベル名、フィールド名の入力時、リアルタイムで重複チェックを行う
-	$("#CuCustomFieldDefinitionName").keyup(checkDuplicateValueChengeHandler);
-	$("#CuCustomFieldDefinitionLabelName").keyup(checkDuplicateValueChengeHandler);
-	$("#CuCustomFieldDefinitionFieldName").keyup(checkDuplicateValueChengeHandler);
-	// 重複があればメッセージを表示する
-	function checkDuplicateValueChengeHandler() {
-		var fieldId = this.id;
-		var options = {};
-		// 本来であれば編集時のみ必要な値だが、actionによる条件分岐でビュー側に値を設定しなかった場合、
-		// Controllerでの取得値が文字列での null となってしまうため、常に設定し取得している
-		var id = $("#CuCustomFieldDefinitionScript").attr('data-id');
-		var configId = $("#CuCustomFieldDefinitionScript").attr('data-config-id');
+    // 利用中フィールド名一覧を表示する
+    $('#show_field_name_list').change(function () {
+        if ($(this).prop('checked')) {
+            $('#FieldNameList').show('slow');
+        } else {
+            $('#FieldNameList').hide();
+        }
+    });
 
-		switch (fieldId) {
-			case 'CuCustomFieldDefinitionName':
-				options = {
-				    "data[CuCustomFieldDefinition][id]": id,
-					"data[CuCustomFieldDefinition][config_id]": configId,
-					"data[CuCustomFieldDefinition][name]": $("#CuCustomFieldDefinitionName").val()
-				};
-				break;
-			case 'CuCustomFieldDefinitionLabelName':
-				options = {
-				    "data[CuCustomFieldDefinition][id]": id,
-					"data[CuCustomFieldDefinition][config_id]": configId,
-					"data[CuCustomFieldDefinition][label_name]": $("#CuCustomFieldDefinitionLabelName").val()
-				};
-				break;
-			case 'CuCustomFieldDefinitionFieldName':
-				options = {
-				    "data[CuCustomFieldDefinition][id]": id,
-					"data[CuCustomFieldDefinition][config_id]": configId,
-					"data[CuCustomFieldDefinition][field_name]": $("#CuCustomFieldDefinitionFieldName").val()
-				};
-				break;
-		}
-		$.ajax({
-			type: "POST",
-			data: options,
-			url: $("#AjaxCheckDuplicateUrl").html(),
-			dataType: "html",
-			cache: false,
-			success: function(result, status, xhr) {
-				if(status === 'success') {
-					if(!result) {
-						if (fieldId === 'CuCustomFieldDefinitionName') {
-							$('#CheckValueResultName').show('fast');
-						}
-						if (fieldId === 'CuCustomFieldDefinitionLabelName') {
-							$('#CheckValueResultLabelName').show('fast');
-						}
-						if (fieldId === 'CuCustomFieldDefinitionFieldName') {
-							$('#CheckValueResultFieldName').show('fast');
-						}
-					} else {
-						if (fieldId === 'CuCustomFieldDefinitionName') {
-							$('#CheckValueResultName').hide('fast');
-						}
-						if (fieldId === 'CuCustomFieldDefinitionLabelName') {
-							$('#CheckValueResultLabelName').hide('fast');
-						}
-						if (fieldId === 'CuCustomFieldDefinitionFieldName') {
-							$('#CheckValueResultFieldName').hide('fast');
-						}
-					}
-				}
-			}
-		});
-	}
+    // カスタムフィールド名、ラベル名、フィールド名の入力時、リアルタイムで重複チェックを行う
+    $("#CuCustomFieldDefinitionName").keyup(checkDuplicateValueChengeHandler);
+    $("#CuCustomFieldDefinitionFieldName").keyup(checkDuplicateValueChengeHandler);
 
-	// 編集画面のときのみ実行する（削除ボタンの有無で判定）
-	if ($('#BtnDelete').html()) {
-		$('#BeforeFieldName').hide();
-		$("#BtnSave").click(function(){
-			$beforeFieldName = $('#BeforeFieldName').html();
-			$inputFieldName = $('#CuCustomFieldDefinitionFieldName').val();
-			if ($beforeFieldName !== $inputFieldName) {
-				if(!confirm('フィールド名を変更した場合、これまでの記事でこのフィールドに入力していた内容は引き継がれません。\n本当によろしいですか？')) {
-					$('#BeforeFieldNameComment').css('visibility', 'visible');
-					$('#BeforeFieldName').show();
-					return false;
-				}
-			}
-		});
-	}
+    // 重複があればメッセージを表示する
+    function checkDuplicateValueChengeHandler() {
+        var fieldId = this.id;
+        var options = {};
+        // 本来であれば編集時のみ必要な値だが、actionによる条件分岐でビュー側に値を設定しなかった場合、
+        // Controllerでの取得値が文字列での null となってしまうため、常に設定し取得している
+        var id = $("#CuCustomFieldDefinitionScript").attr('data-id');
+        var configId = $("#CuCustomFieldDefinitionScript").attr('data-config-id');
 
-	// 正規表現チェックのチェック時に、専用の入力欄を表示する
-	$('#CuCustomFieldDefinitionValidateREGEXCHECK').change(function() {
-		$value = $(this).prop('checked');
-		if ($value) {
-			$('#CuCustomFieldDefinitionValidateRegexBox').show('slow');
-		} else {
-			$('#CuCustomFieldDefinitionValidateRegexBox').hide('high');
-		}
-	});
+        switch (fieldId) {
+            case 'CuCustomFieldDefinitionName':
+                options = {
+                    "data[CuCustomFieldDefinition][id]": id,
+                    "data[CuCustomFieldDefinition][config_id]": configId,
+                    "data[CuCustomFieldDefinition][name]": $("#CuCustomFieldDefinitionName").val()
+                };
+                break;
+            case 'CuCustomFieldDefinitionFieldName':
+                options = {
+                    "data[CuCustomFieldDefinition][id]": id,
+                    "data[CuCustomFieldDefinition][config_id]": configId,
+                    "data[CuCustomFieldDefinition][field_name]": $("#CuCustomFieldDefinitionFieldName").val()
+                };
+                break;
+        }
+        $.ajax({
+            type: "POST",
+            data: options,
+            url: $("#AjaxCheckDuplicateUrl").html(),
+            dataType: "html",
+            cache: false,
+            success: function (result, status, xhr) {
+                if (status === 'success') {
+                    if (!result) {
+                        if (fieldId === 'CuCustomFieldDefinitionName') {
+                            $('#CheckValueResultName').show('fast');
+                        }
+                        if (fieldId === 'CuCustomFieldDefinitionFieldName') {
+                            $('#CheckValueResultFieldName').show('fast');
+                        }
+                    } else {
+                        if (fieldId === 'CuCustomFieldDefinitionName') {
+                            $('#CheckValueResultName').hide('fast');
+                        }
+                        if (fieldId === 'CuCustomFieldDefinitionFieldName') {
+                            $('#CheckValueResultFieldName').hide('fast');
+                        }
+                    }
+                }
+            }
+        });
+    }
 
-	// 正規表現入力欄が空欄になった際はメッセージを表示して入力促す
-	$('#CuCustomFieldDefinitionValidateRegex').change(function() {
-		if (!$(this).val()) {
-			$('#CheckValueResultValidateRegex').show('slow');
-		} else {
-			$('#CheckValueResultValidateRegex').hide();
-		}
-	});
+    // 編集画面のときのみ実行する（削除ボタンの有無で判定）
+    if ($('#BtnDelete').html()) {
+        $('#BeforeFieldName').hide();
+        $("#BtnSave").click(function () {
+            $beforeFieldName = $('#BeforeFieldName').html();
+            $inputFieldName = $('#CuCustomFieldDefinitionFieldName').val();
+            if ($beforeFieldName !== $inputFieldName) {
+                if (!confirm('フィールド名を変更した場合、これまでの記事でこのフィールドに入力していた内容は引き継がれません。\n本当によろしいですか？')) {
+                    $('#BeforeFieldNameComment').css('visibility', 'visible');
+                    $('#BeforeFieldName').show();
+                    return false;
+                }
+            }
+        });
+    }
 
-	// submit時の処理
-	$("#BtnSave").click(function(){
-		// 都道府県の選択値対応表は送らないようにする
-		$('#CuCustomFieldDefinitionPreviewPrefList').attr('disabled', 'disabled');
+    // 正規表現チェックのチェック時に、専用の入力欄を表示する
+    $('#CuCustomFieldDefinitionValidateREGEXCHECK').change(function () {
+        $value = $(this).prop('checked');
+        if ($value) {
+            $('#CuCustomFieldDefinitionValidateRegexBox').show('slow');
+        } else {
+            $('#CuCustomFieldDefinitionValidateRegexBox').hide('high');
+        }
+    });
 
-		// 正規表現チェックが有効の場合に、正規表現入力欄が空の場合は submit させない
-		$validateRegexCheck = $('#CuCustomFieldDefinitionValidateREGEXCHECK');
-		if ($validateRegexCheck.prop('checked')) {
-			$validateRegex = $('#CuCustomFieldDefinitionValidateRegex').val();
-			if (!$validateRegex) {
-				alert('正規表現入力欄が未入力です。');
-				return false;
-			}
-		}
-	});
+    // 正規表現入力欄が空欄になった際はメッセージを表示して入力促す
+    $('#CuCustomFieldDefinitionValidateRegex').change(function () {
+        if (!$(this).val()) {
+            $('#CheckValueResultValidateRegex').show('slow');
+        } else {
+            $('#CheckValueResultValidateRegex').hide();
+        }
+    });
 
-/**
- * タイプの値によってフィールドの表示設定を行う
- *
- * @param {string} value フィールドタイプ
- */
-	function cuCustomFieldCefinitionFieldTypeChangeHandler(value){
-		$configTable1 = $('#CuCustomFieldDefinitionTable1');
-		$configTable2 = $('#CuCustomFieldDefinitionTable2');
+    // submit時の処理
+    $("#BtnSave").click(function () {
+        // 都道府県の選択値対応表は送らないようにする
+        $('#CuCustomFieldDefinitionPreviewPrefList').attr('disabled', 'disabled');
 
-		// 管理システム表示設定の「初期値」、「入力欄前に表示」、「入力欄後に表示」、「このフィールドの説明文」行以外の行
-		// この４つの行はほとんどのフィールドタイプで表示されるので、除外した行を取得
-		$hideTrs = $configTable2.find('tr').not('#RowCuCustomFieldDefinitionPrepend, '
-			+ '#RowCuCustomFieldDefinitionAppend, #RowCuCustomFieldDefinitionDescription, '
-			+ '#RowCuCustomFieldDefinitionDefaultValue');
+        // 正規表現チェックが有効の場合に、正規表現入力欄が空の場合は submit させない
+        $validateRegexCheck = $('#CuCustomFieldDefinitionValidateREGEXCHECK');
+        if ($validateRegexCheck.prop('checked')) {
+            $validateRegex = $('#CuCustomFieldDefinitionValidateRegex').val();
+            if (!$validateRegex) {
+                alert('正規表現入力欄が未入力です。');
+                return false;
+            }
+        }
+    });
 
-		$defaultValue = $("#RowCuCustomFieldDefinitionDefaultValue");
-			$previewPrefList = $("#PreviewPrefList");
-		$validateGroup = $("#RowCuCustomFieldDefinitionValidateGroup");
-			$validateHankaku = $("#CuCustomFieldDefinitionValidateHANKAKUCHECK");
-			$validateNumeric = $("#CuCustomFieldDefinitionValidateNUMERICCHECK");
-			$validateNonCheckCheck = $("#CuCustomFieldDefinitionValidateNONCHECKCHECK");
-			$validateRegex = $('#CuCustomFieldDefinitionValidateREGEXCHECK');
-				$validateRegexBox = $('#CuCustomFieldDefinitionValidateRegexBox');
-		$sizeGroup = $("#RowCuCustomFieldDefinitionSizeGroup");
-			$size = $("#RowCuCustomFieldDefinitionSize");
-			$maxLength = $("#RowCuCustomFieldDefinitionMaxLenght");
-			$counter = $("#RowCuCustomFieldDefinitionCounter");
-		$placeholder = $("#RowCuCustomFieldDefinitionPlaceholder");
-		$rowsGroup = $("#RowCuCustomFieldDefinitionRowsGroup");
-			$rows = $("#CuCustomFieldDefinitionRows");
-			$cols = $("#CuCustomFieldDefinitionCols");
-			$editorToolType = $("#RowCuCustomFieldDefinitionEditorToolType");
-		$choices = $("#RowCuCustomFieldDefinitionChoices");
-		$separator = $("#RowCuCustomFieldDefinitionSeparator");
-		$autoConvert = $("#RowCuCustomFieldDefinitionAutoConvert");
-		$googlemapsGroup = $("#RowCuCustomFieldDefinitionGoogleMapsGroup");
+    /**
+     * タイプの値によってフィールドの表示設定を行う
+     *
+     * @param {string} value フィールドタイプ
+     */
+    function cuCustomFieldDefinitionFieldTypeChangeHandler(value) {
+        $configTable1 = $('#CuCustomFieldDefinitionTable1');
+        $configTable2 = $('#CuCustomFieldDefinitionTable2');
 
-		switch (value){
-			case 'text':
-				$hideTrs.hide('fast');
-				$previewPrefList.hide();
-				$defaultValue.show();
+        // 管理システム表示設定の「初期値」、「入力欄前に表示」、「入力欄後に表示」、「このフィールドの説明文」行以外の行
+        // この４つの行はほとんどのフィールドタイプで表示されるので、除外した行を取得
+        $hideTrs = $configTable2.find('tr').not('#RowCuCustomFieldDefinitionPrepend, '
+            + '#RowCuCustomFieldDefinitionAppend, #RowCuCustomFieldDefinitionDescription, '
+            + '#RowCuCustomFieldDefinitionDefaultValue, #RowCuCustomFieldDefinitionLabelName');
 
-				// バリデーション項目
-				$validateGroup.show('slow');
-					$validateHankaku.parent().show('slow');
-					$validateNumeric.parent().show('slow');
-					$validateNonCheckCheck.parent().hide('fast');
-					$validateRegex.parent().show('slow');
-						// 正規表現チェックが有効に指定されている場合は、専用の入力欄を表示する
-						if ($validateRegex.prop('checked')) {
-							$validateRegexBox.show('fast');
-						}
+        $defaultValue = $("#RowCuCustomFieldDefinitionDefaultValue");
+        $previewPrefList = $("#PreviewPrefList");
+        $validateGroup = $("#RowCuCustomFieldDefinitionValidateGroup");
+        $validateHankaku = $("#CuCustomFieldDefinitionValidateHANKAKUCHECK");
+        $validateNumeric = $("#CuCustomFieldDefinitionValidateNUMERICCHECK");
+        $validateNonCheckCheck = $("#CuCustomFieldDefinitionValidateNONCHECKCHECK");
+        $validateRegex = $('#CuCustomFieldDefinitionValidateREGEXCHECK');
+        $validateRegexBox = $('#CuCustomFieldDefinitionValidateRegexBox');
+        $sizeGroup = $("#RowCuCustomFieldDefinitionSizeGroup");
+        $size = $("#RowCuCustomFieldDefinitionSize");
+        $maxLength = $("#RowCuCustomFieldDefinitionMaxLenght");
+        $labelName = $("#RowCuCustomFieldDefinitionLabelName");
+        $counter = $("#RowCuCustomFieldDefinitionCounter");
+        $placeholder = $("#RowCuCustomFieldDefinitionPlaceholder");
+        $rowsGroup = $("#RowCuCustomFieldDefinitionRowsGroup");
+        $rows = $("#CuCustomFieldDefinitionRows");
+        $cols = $("#CuCustomFieldDefinitionCols");
+        $editorToolType = $("#RowCuCustomFieldDefinitionEditorToolType");
+        $choices = $("#RowCuCustomFieldDefinitionChoices");
+        $separator = $("#RowCuCustomFieldDefinitionSeparator");
+        $autoConvert = $("#RowCuCustomFieldDefinitionAutoConvert");
+        $googlemapsGroup = $("#RowCuCustomFieldDefinitionGoogleMapsGroup");
+        $parentId = $("#RowCuCustomFieldDefinitionParentId");
+        $required = $("#RowCuCustomFieldDefinitionRequired");
 
-				$sizeGroup.show('slow');
-					$size.show('slow');
-					$maxLength.show('slow');
-					$counter.show('slow');
-				$placeholder.show('slow');
-				$autoConvert.show('slow');
-				break;
+        $hideTrs.hide();
+        $previewPrefList.hide();
+        $defaultValue.hide();
+        $labelName.hide();
+        $parentId.show();
+        $required.show();
 
-			case 'textarea':
-				$hideTrs.hide('fast');
-				$previewPrefList.hide();
-				$defaultValue.show();
+        switch (value) {
+            case 'text':
+                $defaultValue.show();
 
-				// バリデーション項目
-				$validateGroup.show('slow');
-					$validateHankaku.parent().show('slow');
-					$validateNumeric.parent().show('slow');
-					$validateNonCheckCheck.parent().hide('fast');
-					$validateRegex.parent().show('slow');
-						// 正規表現チェックが有効に指定されている場合は、専用の入力欄を表示する
-						if ($validateRegex.prop('checked')) {
-							$validateRegexBox.show('fast');
-						}
+                // バリデーション項目
+                $validateGroup.show('slow');
+                $validateHankaku.parent().show('slow');
+                $validateNumeric.parent().show('slow');
+                $validateNonCheckCheck.parent().hide('fast');
+                $validateRegex.parent().show('slow');
+                // 正規表現チェックが有効に指定されている場合は、専用の入力欄を表示する
+                if ($validateRegex.prop('checked')) {
+                    $validateRegexBox.show('fast');
+                }
 
-				$sizeGroup.show('slow');
-					$size.hide('fast');
-					$maxLength.hide('fast');
-					$counter.show('slow');
+                $sizeGroup.show('slow');
+                $size.show('slow');
+                $maxLength.show('slow');
+                $counter.show('slow');
+                $placeholder.show('slow');
+                $autoConvert.show('slow');
+                break;
 
-				$placeholder.show('slow');
+            case 'textarea':
+                $defaultValue.show();
 
-				$rowsGroup.show('slow');
-					$rows.show('slow');
-						$rows.attr('placeholder', '3');
-					$cols.show('slow');
-						$cols.attr('placeholder', '40');
-					$editorToolType.hide('fast');
+                // バリデーション項目
+                $validateGroup.show('slow');
+                $validateHankaku.parent().show('slow');
+                $validateNumeric.parent().show('slow');
+                $validateNonCheckCheck.parent().hide('fast');
+                $validateRegex.parent().show('slow');
+                // 正規表現チェックが有効に指定されている場合は、専用の入力欄を表示する
+                if ($validateRegex.prop('checked')) {
+                    $validateRegexBox.show('fast');
+                }
 
-				$autoConvert.show('slow');
-				break;
+                $sizeGroup.show('slow');
+                $size.hide('fast');
+                $maxLength.hide('fast');
+                $counter.show('slow');
 
-			case 'date':
-			case 'datetime':
-				$hideTrs.hide('fast');
-				$previewPrefList.hide();
-				$defaultValue.show();
-				break;
+                $placeholder.show('slow');
 
-			case 'select':
-				$hideTrs.hide('fast');
-				$previewPrefList.hide();
-				$defaultValue.show();
+                $rowsGroup.show('slow');
+                $rows.show('slow');
+                $rows.attr('placeholder', '3');
+                $cols.show('slow');
+                $cols.attr('placeholder', '40');
+                $editorToolType.hide('fast');
 
-				$choices.show('slow');
-				break;
+                $autoConvert.show('slow');
+                $labelName.hide();
+                break;
 
-			case 'radio':
-				$hideTrs.hide('fast');
-				$previewPrefList.hide();
-				$defaultValue.show();
+            case 'date':
+            case 'datetime':
+                $defaultValue.show();
+                break;
 
-				$choices.show('slow');
-				$separator.show('slow');
-				break;
+            case 'select':
+                $defaultValue.show();
+                $choices.show('slow');
+                $labelName.hide();
+                break;
 
-			case 'checkbox':
-				$hideTrs.hide('fast');
-				$previewPrefList.hide();
-				$defaultValue.show();
+            case 'radio':
+                $defaultValue.show();
 
-				// バリデーション項目
-				$validateGroup.hide('fast');
-					$validateHankaku.parent().hide('fast');
-					$validateNumeric.parent().hide('fast');
-					$validateNonCheckCheck.parent().show('fast');
-					$validateRegex.parent().hide('fast');
-						$validateRegexBox.hide('fast');
+                $choices.show('slow');
+                $separator.show('slow');
+                $labelName.hide();
+                break;
 
-				break;
+            case 'checkbox':
+                $defaultValue.show();
+                $labelName.show();
 
-			case 'multiple':
-				$hideTrs.hide('fast');
-				$previewPrefList.hide();
-				$defaultValue.show();
+                // バリデーション項目
+                $validateGroup.hide('fast');
+                $validateHankaku.parent().hide('fast');
+                $validateNumeric.parent().hide('fast');
+                $validateNonCheckCheck.parent().show('fast');
+                $validateRegex.parent().hide('fast');
+                $validateRegexBox.hide('fast');
 
-				// バリデーション項目
-				$validateGroup.show('slow');
-					$validateHankaku.parent().hide('fast');
-					$validateNumeric.parent().hide('fast');
-					$validateNonCheckCheck.parent().show('slow');
-					$validateRegex.parent().hide('fast');
-						$validateRegexBox.hide('fast');
+                break;
 
-				$choices.show('slow');
-				break;
+            case 'multiple':
+                $defaultValue.show();
 
-			case 'pref':
-				$hideTrs.hide('fast');
-				$previewPrefList.show();
-				$defaultValue.show();
-				break;
+                // バリデーション項目
+                $validateGroup.show('slow');
+                $validateHankaku.parent().hide('fast');
+                $validateNumeric.parent().hide('fast');
+                $validateNonCheckCheck.parent().show('slow');
+                $validateRegex.parent().hide('fast');
+                $validateRegexBox.hide('fast');
 
-			case 'wysiwyg':
-				$hideTrs.hide('fast');
-				$previewPrefList.hide();
-				$defaultValue.hide();
+                $choices.show('slow');
+                break;
 
-				$rowsGroup.show('slow');
-					$rows.show('slow');
-						$rows.attr('placeholder', '200px');
-					$cols.show('slow');
-						$cols.attr('placeholder', '100%');
-					$editorToolType.show('slow');
-				break;
+            case 'pref':
+                $previewPrefList.show();
+                $defaultValue.show();
+                break;
 
-			case 'googlemaps':
-				$hideTrs.hide('fast');
-				$previewPrefList.hide();
-				$defaultValue.hide();
+            case 'wysiwyg':
+                $rowsGroup.show('slow');
+                $rows.show('slow');
+                $rows.attr('placeholder', '200px');
+                $cols.show('slow');
+                $cols.attr('placeholder', '100%');
+                $editorToolType.show('slow');
+                break;
 
-				$googlemapsGroup.show('slow');
-				break;
-		}
-	}
+            case 'googlemaps':
+
+                $googlemapsGroup.show('slow');
+                break;
+
+            case 'loop':
+                $parentId.hide();
+                $required.hide();
+                $("#CuCustomFieldDefinitionParentId").val('');
+                $("#CuCustomFieldDefinitionRequired").attr('checked', false);
+                break;
+        }
+    }
 });

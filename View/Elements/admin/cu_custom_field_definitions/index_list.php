@@ -89,13 +89,6 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 </tbody>
 </table>
 
-
-<div class="bca-data-list__bottom">
-  <div class="bca-data-list__sub">
-    <?php $this->BcBaser->element('pagination') ?>
-  </div>
-</div>
-
 <?php
 if(Configure::read('cuCustomFieldConfig.submenu')) {
 	$this->BcBaser->element('submenu');

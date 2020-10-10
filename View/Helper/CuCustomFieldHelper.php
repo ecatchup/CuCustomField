@@ -216,7 +216,7 @@ class CuCustomFieldHelper extends AppHelper
 				// 記事データには存在するが、記事に設定中のフィールド一覧にないものは利用しないために判定
 				if (!empty($fieldConfig[$field])) {
 					$fieldType = $fieldConfig[$field]['field_type'];
-					switch ($fieldType) {
+					switch($fieldType) {
 						case 'text':
 							$data = $fieldValue;
 							break;
@@ -226,21 +226,21 @@ class CuCustomFieldHelper extends AppHelper
 							break;
 
 						case 'date':
-							$data		 = $this->BcTime->format($options['format'], $fieldValue, $invalid	 = false, $userOffset	 = null);
+							$data = $this->BcTime->format($options['format'], $fieldValue, $invalid = false, $userOffset = null);
 							break;
 
 						case 'datetime':
-							$data		 = $this->BcTime->format($options['format'], $fieldValue, $invalid	 = false, $userOffset	 = null);
+							$data = $this->BcTime->format($options['format'], $fieldValue, $invalid = false, $userOffset = null);
 							break;
 
 						case 'select':
-							$selector	 = $this->textToArray($fieldConfig[$field]['choices']);
-							$data		 = $this->arrayValue($fieldValue, $selector, $options['novalue']);
+							$selector = $this->textToArray($fieldConfig[$field]['choices']);
+							$data = $this->arrayValue($fieldValue, $selector, $options['novalue']);
 							break;
 
 						case 'radio':
-							$selector	 = $this->textToArray($fieldConfig[$field]['choices']);
-							$data		 = $this->arrayValue($fieldValue, $selector, $options['novalue']);
+							$selector = $this->textToArray($fieldConfig[$field]['choices']);
+							$data = $this->arrayValue($fieldValue, $selector, $options['novalue']);
 							break;
 
 						case 'checkbox':
@@ -252,11 +252,11 @@ class CuCustomFieldHelper extends AppHelper
 							break;
 
 						case 'multiple':
-							$selector	 = $this->textToArray($fieldConfig[$field]['choices']);
-							$checked	 = array();
+							$selector = $this->textToArray($fieldConfig[$field]['choices']);
+							$checked = [];
 							if (!empty($fieldValue)) {
 								if (is_array($fieldValue)) {
-									foreach ($fieldValue as $check) {
+									foreach($fieldValue as $check) {
 										$checked[] = $this->arrayValue($check, $selector);
 									}
 								} else {
@@ -267,8 +267,8 @@ class CuCustomFieldHelper extends AppHelper
 							break;
 
 						case 'pref':
-							$selector	 = $this->BcText->prefList();
-							$data		 = $this->arrayValue($fieldValue, $selector, $options['novalue']);
+							$selector = $this->BcText->prefList();
+							$data = $this->arrayValue($fieldValue, $selector, $options['novalue']);
 							break;
 
 						case 'wysiwyg':
