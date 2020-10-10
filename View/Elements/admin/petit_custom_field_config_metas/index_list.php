@@ -7,44 +7,36 @@
  * @package			CuCustomField
  * @license			MIT
  */
+
+/**
+ * @var BcAppView $this
+ * @var int $contentId
+ * @var array $blogContentDatas
+ */
 $this->BcBaser->css(array(
 	'//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css',
 	'CuCustomField.admin/petit_custom_field',
 ));
 $this->BcListTable->setColumnNumber(9);
+$contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 ?>
-<h3>
-<?php $this->BcBaser->link($this->BcText->arrayValue($contentId, $blogContentDatas) .' ブログ設定編集はこちら', array(
-	'admin' => true, 'plugin' => 'blog', 'controller' => 'blog_contents',
-	'action' => 'edit', $contentId
-)) ?>
-&nbsp;&nbsp;&nbsp;&nbsp;
-<?php $this->BcBaser->link('≫記事一覧こちら', array(
-	'admin' => true, 'plugin' => 'blog', 'controller' => 'blog_posts',
-	'action' => 'index', $contentId
-)) ?>
-</h3>
 
-<div class="bca-data-list__top">
-	<!-- 一括処理 -->
-	<?php if ($this->BcBaser->isAdminUser()): ?>
-		<div class="bca-main__header-actions">
-			<?php
-			$this->BcBaser->link(__d('baser', '新規追加'),
-				[
-					'controller' => 'cu_custom_field_definitions',
-					'action' => 'add',
-					$configId
-				],
-				[
-				'class' => 'bca-btn',
-				'data-bca-btn-type' => 'add',
-				'data-bca-btn-size' => 'sm'
-			]);
-			?>　
-		</div>
-	<?php endif ?>
-</div>
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<p>
+	<?php $this->BcBaser->link($contentName .' 設定に移動',
+		['admin' => true, 'plugin' => 'blog', 'controller' => 'blog_contents', 'action' => 'edit', $contentId],
+		['class' => 'bca-btn']
+	) ?>
+	&nbsp;&nbsp;
+	<?php $this->BcBaser->link($contentName . ' 記事一覧に移動',
+		['admin' => true, 'plugin' => 'blog', 'controller' => 'blog_posts',	'action' => 'index', $contentId],
+		['class' => 'bca-btn']
+	) ?>
+</p>
 
 <!-- list -->
 <table class="list-table bca-table-listup" id="ListTable">
@@ -64,7 +56,7 @@ $this->BcListTable->setColumnNumber(9);
 			?>
 		</th>
 		<th class="bca-table-listup__thead-th"><?php // カスタムフィールド名 ?>
-			カスタムフィールド名<br /><small>ラベル名</small>
+			フィールド定義名
 		</th>
 		<th class="bca-table-listup__thead-th"><?php // フィールド名 ?>
 			フィールド名
@@ -73,7 +65,7 @@ $this->BcListTable->setColumnNumber(9);
 			フィールドタイプ
 		</th>
 		<th class="bca-table-listup__thead-th"><?php // 必須設定 ?>
-			必須設定<br /><small>変換処理</small>
+			必須設定
 		</th>
 		<th class="bca-table-listup__thead-th"><?php // アクション ?>
 			<?php echo __d('baser', 'アクション') ?>
@@ -104,14 +96,21 @@ $this->BcListTable->setColumnNumber(9);
 
 <div class="bca-data-list__bottom">
   <div class="bca-data-list__sub">
-    <!-- pagination -->
     <?php $this->BcBaser->element('pagination') ?>
-    <!-- list-num -->
-    <?php //$this->BcBaser->element('list_num') ?>
   </div>
 </div>
+
 <?php
 if(Configure::read('cuCustomFieldConfig.submenu')) {
 	$this->BcBaser->element('submenu');
 }
 ?>
+
+<section class="bca-actions">
+	<div class="bca-actions__main">
+	<?php $this->BcBaser->link('カスタムフィールド設定一覧に戻る',
+		['controller' => 'cu_custom_field_configs', 'action' => 'index'],
+		['class' => 'bca-btn  bca-actions__item', 'data-bca-btn-type' => 'back-to-list']
+	) ?>
+	</div>
+</section>

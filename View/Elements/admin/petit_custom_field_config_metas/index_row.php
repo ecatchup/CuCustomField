@@ -33,8 +33,6 @@ $class=' class="'.implode(' ', $classies).'"';
 					'title' => '編集'
 				]);
 		?>
-		<br />
-		<small><?php echo $data['CuCustomFieldDefinition']['label_name'] ?></small>
 	</td>
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--hasCustomField"><?php // フィールド名 ?>
 		<?php echo $data['CuCustomFieldDefinition']['field_name'] ?>
@@ -53,11 +51,6 @@ $class=' class="'.implode(' ', $classies).'"';
 			echo '<p class="annotation-text"><small>必須入力</small></p>';
 		}
 		?>
-		<small>
-			<?php
-			echo $this->CuCustomField->arrayValue($data['CuCustomFieldDefinition']['auto_convert'], $customFieldConfig['auto_convert'], '未登録');
-			?>
-		</small>
 	</td>
 	<?php echo $this->BcListTable->dispatchShowRow($data) ?>
 	<td class="row-tools bca-table-listup__tbody-td bca-table-listup__tbody-td--actions"><?php // アクション ?>

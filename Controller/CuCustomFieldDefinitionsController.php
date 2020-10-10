@@ -27,7 +27,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	 */
 	public $crumbs = array(
 		array('name' => 'プラグイン管理', 'url' => array('plugin' => '', 'controller' => 'plugins', 'action' => 'index')),
-		array('name' => 'カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index')),
+		array('name' => 'カスタムフィールド定義管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index')),
 	);
 
 	/**
@@ -35,7 +35,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	 *
 	 * @var string
 	 */
-	public $adminTitle = 'フィールド設定';
+	public $adminTitle = 'フィールド定義';
 
 	/**
 	 * beforeFilter
@@ -44,7 +44,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	public function beforeFilter()
 	{
 		parent::beforeFilter();
-		// カスタムフィールド設定からコンテンツIDを取得してセット
+		// カスタムフィールド定義からコンテンツIDを取得してセット
 		if (!empty($this->request->params['pass'][0])) {
 			$configData = $this->CuCustomFieldDefinition->CuCustomFieldConfig->find('first', array(
 				'conditions' => array('CuCustomFieldConfig.id' => $this->request->params['pass'][0]),
@@ -71,7 +71,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 			$this->redirect(array('action' => 'index'));
 		}
 
-		$this->crumbs[] = array('name' => 'フィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
+		$this->crumbs[] = array('name' => 'フィールド定義管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
 
 		if (empty($this->request->data)) {
 			// $data = $this->CuCustomFieldValueModel->getSection($Model->id, $this->CuCustomFieldValueModel->name);
@@ -112,7 +112,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		$this->help		 = 'cu_custom_field_definitions';
 		$deletable		 = false;
 
-		$this->crumbs[]	 = array('name' => 'カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
+		$this->crumbs[]	 = array('name' => 'カスタムフィールド定義管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
 		$foreignId		 = $this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->getMax('field_foreign_id') + 1;
 
 		if (!$configId) {

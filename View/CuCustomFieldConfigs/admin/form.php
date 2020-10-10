@@ -28,17 +28,17 @@ if (count($blogContentDatas) > 0) {
 <?php endif ?>
 
 <?php if ($this->request->params['action'] != 'admin_add'): ?>
-	<h2>
-		<?php $this->BcBaser->link($blogContentDatas[$this->request->data['CuCustomFieldConfig']['content_id']] . ' ブログ設定編集はこちら', [
-			'admin' => true, 'plugin' => 'blog', 'controller' => 'blog_contents',
-			'action' => 'edit', $this->request->data['CuCustomFieldConfig']['content_id']
-		]) ?>
-		&nbsp;&nbsp;&nbsp;&nbsp;
-		<?php $this->BcBaser->link('≫記事一覧こちら', [
-			'admin' => true, 'plugin' => 'blog', 'controller' => 'blog_posts',
-			'action' => 'index', $this->request->data['CuCustomFieldConfig']['content_id']
-		]) ?>
-	</h2>
+<p>
+	<?php $this->BcBaser->link($blogContentDatas[$this->request->data['CuCustomFieldConfig']['content_id']] . ' 設定に移動',
+		['admin' => true, 'plugin' => 'blog', 'controller' => 'blog_contents', 'action' => 'edit', $this->request->data['CuCustomFieldConfig']['content_id']],
+		['class' => 'bca-btn']
+	) ?>
+	&nbsp;&nbsp;
+	<?php $this->BcBaser->link($blogContentDatas[$this->request->data['CuCustomFieldConfig']['content_id']] . ' 記事一覧に移動',
+		['admin' => true, 'plugin' => 'blog', 'controller' => 'blog_posts', 'action' => 'index', $this->request->data['CuCustomFieldConfig']['content_id']],
+		['class' => 'bca-btn']
+	) ?>
+</p>
 <?php endif ?>
 
 <div id="CuCustomFieldConfigTable" class="section">

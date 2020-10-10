@@ -81,7 +81,7 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 
 		if ($View->request->data['CuCustomFieldConfig']['form_place'] === 'top') {
 			// ブログ記事追加画面にカスタムフィールド編集欄を追加する
-			$event->data['out']	 = $event->data['out'] . $View->element('CuCustomField.petit_custom_field_form');
+			$event->data['out']	 = $event->data['out'] . $View->element('CuCustomField.cu_custom_field_form');
 			$this->isDisplay	 = true;
 		}
 

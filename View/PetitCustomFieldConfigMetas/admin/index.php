@@ -7,13 +7,26 @@
  * @package			CuCustomField
  * @license			MIT
  */
+
+/**
+ * @var BcAppView $this
+ * @var int $configId 設定ID
+ */
 $this->BcBaser->js(array(
 	'admin/libs/jquery.baser_ajax_data_list',
 	'admin/libs/jquery.baser_ajax_batch',
 	'admin/libs/baser_ajax_data_list_config',
 	'admin/libs/baser_ajax_batch_config'
 ));
+if ($this->BcBaser->isAdminUser()) {
+	$this->BcAdmin->addAdminMainBodyHeaderLinks([
+		'url' => ['controller' => 'cu_custom_field_definitions', 'action' => 'add', $configId],
+		'title' => __d('baser', '新規フィールド定義追加'),
+	]);
+}
 ?>
+
+
 <script type="text/javascript">
 $(document).ready(function(){
 	$.baserAjaxDataList.init();

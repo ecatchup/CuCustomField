@@ -7,13 +7,17 @@
  * @package			CuCustomField
  * @license			MIT
  */
+
+/**
+ * @var BcAppView $this
+ * @var array $fieldConfigField
+ */
 $formPlace = $this->request->data('CuCustomFieldConfig.form_place');
 ?>
 <?php if ($formPlace !== 'top'): ?></table><?php endif ?>
 
-<h3 id="textCuCustomFieldTable">カスタム項目</h3>
 <?php if ($fieldConfigField): ?>
-<table cellpadding="0" cellspacing="0" class="form-table section bca-form-table" id="CuCustomFieldTable">
+<table class="form-table section bca-form-table" id="CuCustomFieldTable">
 	<?php foreach ($fieldConfigField as $keyFieldConfig => $valueFieldConfig): ?>
 
 		<?php if ($this->CuCustomField->judgeStatus($valueFieldConfig)): ?>
@@ -63,7 +67,7 @@ $formPlace = $this->request->data('CuCustomFieldConfig.form_place');
 				<tr>
 					<th class="col-head bca-form-table__label" colspan="2">
 						<?php echo $this->BcForm->label("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}", $valueFieldConfig['CuCustomFieldDefinition']['name']) ?>
-						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'required'))): ?>&nbsp;<span class="required">*</span><?php endif ?>
+						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'required'))): ?>&nbsp;<span class="required bca-label" data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span><?php endif ?>
 					</th>
 				</tr>
 				<tr>
@@ -91,7 +95,7 @@ $formPlace = $this->request->data('CuCustomFieldConfig.form_place');
 				<tr>
 					<th class="col-head bca-form-table__label">
 						<?php echo $this->BcForm->label("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}", $valueFieldConfig['CuCustomFieldDefinition']['name']) ?>
-						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'required'))): ?>&nbsp;<span class="required">*</span><?php endif ?>
+						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'required'))): ?>&nbsp;<span class="required bca-label" data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span><?php endif ?>
 					</th>
 					<td class="col-input bca-form-table__input">
 						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'prepend'))): ?>
@@ -117,7 +121,7 @@ $formPlace = $this->request->data('CuCustomFieldConfig.form_place');
 				<tr>
 					<th class="col-head bca-form-table__label">
 						<?php echo $this->BcForm->label("PetitCustomField.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}", $valueFieldConfig['CuCustomFieldDefinition']['name']) ?>
-						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'required'))): ?>&nbsp;<span class="required">*</span><?php endif ?>
+						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'required'))): ?>&nbsp;<span class="required bca-label" data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span><?php endif ?>
 					</th>
 					<td class="col-input bca-form-table__input">
 						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, array('field' => 'prepend'))): ?>
@@ -142,15 +146,14 @@ $formPlace = $this->request->data('CuCustomFieldConfig.form_place');
 		<?php endif ?>
 
 	<?php endforeach ?>
-<?php if ($formPlace !== 'normal'): ?></table><?php endif ?>
+	<?php if ($formPlace !== 'normal'): ?></table><?php endif ?>
 <?php else: ?>
 <ul>
 	<li>利用可能なフィールドがありません。不要な場合は
 		<?php $this->BcBaser->link('カスタムフィールド設定',
 			array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action'=>'edit', $this->request->data['CuCustomFieldConfig']['id']),
 			array(),
-			'カスタムフィールド設定画面へ移動して良いですか？編集中の内容は保存されません。',
-			false); ?>
+			'カスタムフィールド設定画面へ移動して良いですか？編集中の内容は保存されません。'); ?>
 		より無効設定ができます。
 	</li>
 </ul>

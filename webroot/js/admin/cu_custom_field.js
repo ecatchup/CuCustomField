@@ -10,6 +10,9 @@
  * プチカスタムフィールド用のJS処理
  */
 $(function(){
+
+    $("#CuCustomFieldDefinitionName").focus();
+
 	$fieldType = $("#CuCustomFieldDefinitionFieldType").val();
 	cuCustomFieldCefinitionFieldTypeChangeHandler($fieldType);
 	// タイプを選択すると入力するフィールドが切り替わる

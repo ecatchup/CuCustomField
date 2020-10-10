@@ -27,7 +27,7 @@ class PetitCustomFieldConfigMetasController extends CuCustomFieldAppController
 	 */
 	public $crumbs = array(
 		array('name' => 'プラグイン管理', 'url' => array('plugin' => '', 'controller' => 'plugins', 'action' => 'index')),
-		array('name' => 'カスタムフィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index')),
+		array('name' => 'カスタムフィールド定義管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index')),
 	);
 
 	/**
@@ -35,7 +35,7 @@ class PetitCustomFieldConfigMetasController extends CuCustomFieldAppController
 	 *
 	 * @var string
 	 */
-	public $adminTitle = 'フィールド設定';
+	public $adminTitle = 'フィールド定義';
 
 	/**
 	 * beforeFilter
@@ -47,7 +47,7 @@ class PetitCustomFieldConfigMetasController extends CuCustomFieldAppController
 	}
 
 	/**
-	 * [ADMIN] カスタムフィールド設定一覧
+	 * [ADMIN] カスタムフィールド定義一覧
 	 *
 	 * @param int $configId
 	 */
@@ -56,7 +56,7 @@ class PetitCustomFieldConfigMetasController extends CuCustomFieldAppController
 		$this->pageTitle = $this->adminTitle . '一覧';
 		$this->help		 = 'petit_custom_field_metas_index';
 
-		$this->crumbs[] = array('name' => 'フィールド設定管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
+		$this->crumbs[] = array('name' => 'フィールド定義管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
 
 		// フィールド一覧の最大件数を取得し、ページネーション件数に設定する
 		$max = $this->CuCustomFieldDefinition->getMax('config_id');
@@ -186,7 +186,7 @@ class PetitCustomFieldConfigMetasController extends CuCustomFieldAppController
 
 		if ($this->PetitCustomFieldConfigMeta->delete($id)) {
 
-			// メタ情報削除時、そのメタ情報が持つカスタムフィールド設定を削除する
+			// メタ情報削除時、そのメタ情報が持つカスタムフィールド定義を削除する
 			$this->CuCustomFieldDefinition->Behaviors->KeyValue->KeyValue = $this->CuCustomFieldDefinition;
 			if ($data) {
 				//resetSection(Model $Model, $foreignKey = null, $section = null, $key = null)
@@ -236,7 +236,7 @@ class PetitCustomFieldConfigMetasController extends CuCustomFieldAppController
 		// 削除実行
 		if ($this->PetitCustomFieldConfigMeta->delete($id)) {
 
-			// メタ情報削除時、そのメタ情報が持つカスタムフィールド設定を削除する
+			// メタ情報削除時、そのメタ情報が持つカスタムフィールド定義を削除する
 			$this->CuCustomFieldDefinition->Behaviors->KeyValue->KeyValue = $this->CuCustomFieldDefinition;
 			//resetSection(Model $Model, $foreignKey = null, $section = null, $key = null)
 			if (!$this->CuCustomFieldDefinition->resetSection($data['PetitCustomFieldConfigMeta']['field_foreign_id'], 'CuCustomFieldDefinition')) {
