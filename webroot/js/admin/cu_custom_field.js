@@ -48,24 +48,28 @@ $(function(){
 		var options = {};
 		// 本来であれば編集時のみ必要な値だが、actionによる条件分岐でビュー側に値を設定しなかった場合、
 		// Controllerでの取得値が文字列での null となってしまうため、常に設定し取得している
-		var foreignId = $("#ForeignId").html();
+		var id = $("#CuCustomFieldDefinitionScript").attr('data-id');
+		var configId = $("#CuCustomFieldDefinitionScript").attr('data-config-id');
 
 		switch (fieldId) {
 			case 'CuCustomFieldDefinitionName':
 				options = {
-					"data[CuCustomFieldDefinition][foreign_id]": foreignId,
+				    "data[CuCustomFieldDefinition][id]": id,
+					"data[CuCustomFieldDefinition][config_id]": configId,
 					"data[CuCustomFieldDefinition][name]": $("#CuCustomFieldDefinitionName").val()
 				};
 				break;
 			case 'CuCustomFieldDefinitionLabelName':
 				options = {
-					"data[CuCustomFieldDefinition][foreign_id]": foreignId,
+				    "data[CuCustomFieldDefinition][id]": id,
+					"data[CuCustomFieldDefinition][config_id]": configId,
 					"data[CuCustomFieldDefinition][label_name]": $("#CuCustomFieldDefinitionLabelName").val()
 				};
 				break;
 			case 'CuCustomFieldDefinitionFieldName':
 				options = {
-					"data[CuCustomFieldDefinition][foreign_id]": foreignId,
+				    "data[CuCustomFieldDefinition][id]": id,
+					"data[CuCustomFieldDefinition][config_id]": configId,
 					"data[CuCustomFieldDefinition][field_name]": $("#CuCustomFieldDefinitionFieldName").val()
 				};
 				break;

@@ -3,10 +3,16 @@
 /**
  * [ControllerEventListener] CuCustomField
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * @copyright        Copyright, Catchup, Inc.
+ * @link            https://catchup.co.jp
+ * @package            CuCustomField
+ * @license            MIT
+ */
+
+/**
+ * Class CuCustomFieldControllerEventListener
+ *
+ * @property CuCustomFieldDefinition $CuCustomFieldDefinitionModel
  */
 class CuCustomFieldControllerEventListener extends BcControllerEventListener
 {
@@ -16,11 +22,11 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 	 *
 	 * @var array
 	 */
-	public $events = array(
+	public $events = [
 		'initialize',
 		'Blog.Blog.beforeRender',
 		'Blog.BlogPosts.beforeRender',
-	);
+	];
 
 	/**
 	 * cu_custom_fieldヘルパー
@@ -34,7 +40,7 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 	 *
 	 * @var array
 	 */
-	public $cuCustomFieldConfigs = array();
+	public $cuCustomFieldConfigs = [];
 
 	/**
 	 * cu_custom_fieldモデル
@@ -55,7 +61,7 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 	 *
 	 * @var array
 	 */
-	public $settingsCuCustomField = array();
+	public $settingsCuCustomField = [];
 
 	/**
 	 * initialize
@@ -64,10 +70,10 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 	 */
 	public function initialize(CakeEvent $event)
 	{
-		$Controller						 = $event->subject();
+		$Controller = $event->subject();
 		// CuCustomFieldヘルパーの追加
-		$Controller->helpers[]			 = 'CuCustomField.CuCustomField';
-		$this->settingsCuCustomField	 = Configure::read('cuCustomField');
+		$Controller->helpers[] = 'CuCustomField.CuCustomField';
+		$this->settingsCuCustomField = Configure::read('cuCustomField');
 	}
 
 	/**
@@ -90,15 +96,15 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 
 				$this->CuCustomFieldValueModel->publicConfigData = $this->cuCustomFieldConfigs;
 
-				$fieldConfigField																			 = $this->CuCustomFieldConfigModel->PetitCustomFieldConfigMeta->find('all', array(
-					'conditions' => array(
+				$fieldConfigField = $this->CuCustomFieldConfigModel->PetitCustomFieldConfigMeta->find('all', [
+					'conditions' => [
 						'PetitCustomFieldConfigMeta.petit_custom_field_config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id']
-					),
-					'order'		 => 'PetitCustomFieldConfigMeta.position ASC',
-					'recursive'	 => -1,
-				));
-				$defaultFieldValue[$this->cuCustomFieldConfigs['CuCustomFieldConfig']['content_id']]	 = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition');
-				$this->CuCustomFieldValueModel->publicFieldConfigData											 = $defaultFieldValue;
+					],
+					'order' => 'PetitCustomFieldConfigMeta.position ASC',
+					'recursive' => -1,
+				]);
+				$defaultFieldValue[$this->cuCustomFieldConfigs['CuCustomFieldConfig']['content_id']] = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition');
+				$this->CuCustomFieldValueModel->publicFieldConfigData = $defaultFieldValue;
 			}
 		}
 	}
@@ -126,19 +132,19 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 			$Controller->request->data['CuCustomFieldConfig'] = $this->cuCustomFieldConfigs['CuCustomFieldConfig'];
 
 			if ($this->cuCustomFieldConfigs['CuCustomFieldConfig']['status']) {
-				$fieldConfigField = $this->PetitCustomFieldConfigMetaModel->find('all', array(
-					'conditions' => array(
-						'PetitCustomFieldConfigMeta.petit_custom_field_config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id']
-					),
-					'order'		 => 'PetitCustomFieldConfigMeta.position ASC',
-					'recursive'	 => -1,
-				));
+				$fieldConfigField = $this->CuCustomFieldDefinitionModel->find('all', [
+					'conditions' => [
+						'CuCustomFieldDefinition.config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id']
+					],
+					'order' => 'CuCustomFieldDefinition.sort ASC',
+					'recursive' => -1,
+				]);
 				$Controller->set('fieldConfigField', $fieldConfigField);
 
 				// フィールド設定から初期値を生成
-				$defaultFieldValue								 = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition.default_value');
-				$this->CuCustomFieldValueModel->keyValueDefaults	 = array('CuCustomFieldValue' => $defaultFieldValue);
-				$defalut										 = $this->CuCustomFieldValueModel->defaultValues();
+				$defaultFieldValue = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition.default_value');
+				$this->CuCustomFieldValueModel->keyValueDefaults = ['CuCustomFieldValue' => $defaultFieldValue];
+				$defalut = $this->CuCustomFieldValueModel->defaultValues();
 				// 初期値と存在値をマージする
 				if (!empty($Controller->request->data['CuCustomFieldValue'])) {
 					$Controller->request->data['CuCustomFieldValue'] = Hash::merge($defalut['CuCustomFieldValue'], $Controller->request->data['CuCustomFieldValue']);
@@ -153,21 +159,21 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 			$Controller->request->data['CuCustomFieldConfig'] = $this->cuCustomFieldConfigs['CuCustomFieldConfig'];
 
 			if ($this->cuCustomFieldConfigs['CuCustomFieldConfig']['status']) {
-				$fieldConfigField = $this->PetitCustomFieldConfigMetaModel->find('all', array(
-					'conditions' => array(
-						'PetitCustomFieldConfigMeta.petit_custom_field_config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id']
-					),
-					'order'		 => 'PetitCustomFieldConfigMeta.position ASC',
-					'recursive'	 => -1,
-				));
+				$fieldConfigField = $this->CuCustomFieldDefinitionModel->find('all', [
+					'conditions' => [
+						'CuCustomFieldDefinition.config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id']
+					],
+					'order' => 'CuCustomFieldDefinition.sort ASC',
+					'recursive' => -1,
+				]);
 				$Controller->set('fieldConfigField', $fieldConfigField);
 
 				// フィールド設定から初期値を生成
 				if (empty($Controller->request->data['CuCustomFieldValue'])) {
-					$defaultFieldValue								 = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition.default_value');
-					$this->CuCustomFieldValueModel->keyValueDefaults	 = array('CuCustomFieldValue' => $defaultFieldValue);
-					$defalut										 = $this->CuCustomFieldValueModel->defaultValues();
-					$Controller->request->data['CuCustomFieldValue']	 = $defalut['CuCustomFieldValue'];
+					$defaultFieldValue = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition.default_value');
+					$this->CuCustomFieldValueModel->keyValueDefaults = ['CuCustomFieldValue' => $defaultFieldValue];
+					$defalut = $this->CuCustomFieldValueModel->defaultValues();
+					$Controller->request->data['CuCustomFieldValue'] = $defalut['CuCustomFieldValue'];
 				}
 			}
 		}
@@ -186,18 +192,13 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 			$this->CuCustomFieldConfigModel = ClassRegistry::init('CuCustomField.CuCustomFieldConfig');
 		}
 		// $this->cuCustomFieldConfigs = $this->CuCustomFieldConfigModel->read(null, $Controller->BlogContent->id);
-		$this->cuCustomFieldConfigs					 = $this->CuCustomFieldConfigModel->find('first', array(
-			'conditions' => array('CuCustomFieldConfig.content_id' => $Controller->BlogContent->id),
-			'recurseve'	 => -1,
-		));
-		$this->CuCustomFieldValueModel					 = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
-		$this->CuCustomFieldValueModel->publicConfigData	 = $this->cuCustomFieldConfigs;
-
-		if (ClassRegistry::isKeySet('CuCustomField.PetitCustomFieldConfigMeta')) {
-			$this->PetitCustomFieldConfigMetaModel = ClassRegistry::getObject('CuCustomField.PetitCustomFieldConfigMeta');
-		} else {
-			$this->PetitCustomFieldConfigMetaModel = ClassRegistry::init('CuCustomField.PetitCustomFieldConfigMeta');
-		}
+		$this->cuCustomFieldConfigs = $this->CuCustomFieldConfigModel->find('first', [
+			'conditions' => ['CuCustomFieldConfig.content_id' => $Controller->BlogContent->id],
+			'recurseve' => -1,
+		]);
+		$this->CuCustomFieldValueModel = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
+		$this->CuCustomFieldValueModel->publicConfigData = $this->cuCustomFieldConfigs;
+		$this->CuCustomFieldDefinitionModel = ClassRegistry::init('CuCustomField.CuCustomFieldDefinition');
 	}
 
 }

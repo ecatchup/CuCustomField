@@ -50,6 +50,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		parent::beforeFilter();
 		// カスタムフィールド定義からコンテンツIDを取得してセット
 		if (!empty($this->request->params['pass'][0])) {
+			$this->CuCustomFieldDefinition->setup($this->request->params['pass'][0]);
 			$configData = $this->CuCustomFieldDefinition->CuCustomFieldConfig->find('first', [
 				'conditions' => ['CuCustomFieldConfig.id' => $this->request->params['pass'][0]],
 				'recursive' => -1,
@@ -123,7 +124,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 			}
 		}
 
-		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name');
+		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name', $configId);
 		$this->set(compact('fieldNameList', 'configId', 'deletable'));
 		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');
@@ -348,9 +349,9 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		$this->layout = null;
 		$result = true;
 
-		if (!$this->RequestHandler->isAjax()) {
+		if (!$this->request->is('ajax')) {
 			$message = '許可されていないアクセスです。';
-			$this->setMessage($message, true);
+			$this->BcMessage->setError($message);
 			$this->redirect(['controller' => 'cu_custom_field_configs', 'action' => 'index']);
 		}
 
@@ -358,28 +359,24 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 			$conditions = [];
 			if (array_key_exists('name', $this->request->data[$this->modelClass])) {
 				$conditions = [
-					$this->modelClass . '.' . 'key' => $this->modelClass . '.' . 'name',
-					$this->modelClass . '.' . 'value' => $this->request->data[$this->modelClass]['name'],
+					$this->modelClass . '.' . 'name' => $this->request->data[$this->modelClass]['name']
 				];
 			}
 			if (array_key_exists('label_name', $this->request->data[$this->modelClass])) {
 				$conditions = [
-					$this->modelClass . '.' . 'key' => $this->modelClass . '.' . 'label_name',
-					$this->modelClass . '.' . 'value' => $this->request->data[$this->modelClass]['label_name'],
+					$this->modelClass . '.' . 'label_name' => $this->request->data[$this->modelClass]['label_name']
 				];
 			}
 			if (array_key_exists('field_name', $this->request->data[$this->modelClass])) {
 				$conditions = [
-					$this->modelClass . '.' . 'key' => $this->modelClass . '.' . 'field_name',
-					$this->modelClass . '.' . 'value' => $this->request->data[$this->modelClass]['field_name'],
+					$this->modelClass . '.' . 'field_name' => $this->request->data[$this->modelClass]['field_name']
 				];
 			}
 
-			if ($this->request->data[$this->modelClass]['foreign_id']) {
-				$conditions = Hash::merge($conditions, [
-					'NOT' => [$this->modelClass . '.config_id' => $this->request->data[$this->modelClass]['foreign_id']],
-				]);
-			}
+			$conditions = Hash::merge($conditions, [
+				$this->modelClass . '.' . 'config_id' => $this->request->data[$this->modelClass]['config_id'],
+				'NOT' => [$this->modelClass . '.id' => $this->request->data[$this->modelClass]['id']],
+			]);
 
 			$ret = $this->{$this->modelClass}->find('first', [
 				'conditions' => $conditions,

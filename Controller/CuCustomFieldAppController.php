@@ -82,26 +82,6 @@ class CuCustomFieldAppController extends AppController
 	}
 
 	/**
-	 * [ADMIN] 新規登録
-	 *
-	 */
-	public function admin_add()
-	{
-		if ($this->request->data) {
-			if ($this->{$this->modelClass}->save($this->request->data)) {
-				$message = $this->name . '「' . $this->request->data[$this->modelClass]['name'] . '」を追加しました。';
-				$this->setMessage($message, false, true);
-				$this->redirect(['action' => 'index']);
-			} else {
-				$this->setMessage('入力エラーです。内容を修正してください。', true);
-			}
-		}
-
-		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
-		$this->render('form');
-	}
-
-	/**
 	 * [ADMIN] 編集
 	 *
 	 * @param int $id
@@ -110,46 +90,24 @@ class CuCustomFieldAppController extends AppController
 	{
 		if (!$id) {
 			$this->setMessage('無効な処理です。', true);
-			$this->redirect(['action' => 'index']);
+			$this->redirect(array('action' => 'index'));
 		}
 
 		if (empty($this->request->data)) {
-			$this->{$this->modelClass}->id = $id;
-			$this->request->data = $this->{$this->modelClass}->read();
+			$this->{$this->modelClass}->id	 = $id;
+			$this->request->data			 = $this->{$this->modelClass}->read();
 		} else {
 			if ($this->{$this->modelClass}->save($this->request->data)) {
 				$message = $this->name . ' ID:' . $this->request->data[$this->modelClass]['id'] . '」を更新しました。';
 				$this->setMessage($message, false, true);
-				$this->redirect(['action' => 'index']);
+				$this->redirect(array('action' => 'index'));
 			} else {
 				$this->setMessage('入力エラーです。内容を修正して下さい。', true);
 			}
 		}
 
-		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
+		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
 		$this->render('form');
-	}
-
-	/**
-	 * [ADMIN] 削除
-	 *
-	 * @param int $id
-	 */
-	public function admin_delete($id = null)
-	{
-		if (!$id) {
-			$this->setMessage('無効な処理です。', true);
-			$this->redirect(['action' => 'index']);
-		}
-
-		if ($this->{$this->modelClass}->delete($id)) {
-			$message = $this->name . ' ID:' . $id . ' を削除しました。';
-			$this->setMessage($message, false, true);
-			$this->redirect(['action' => 'index']);
-		} else {
-			$this->setMessage('データベース処理中にエラーが発生しました。', true);
-		}
-		$this->redirect(['action' => 'index']);
 	}
 
 	/**
@@ -187,44 +145,6 @@ class CuCustomFieldAppController extends AppController
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * [ADMIN] 無効状態にする
-	 *
-	 * @param int $id
-	 */
-	public function admin_unpublish($id)
-	{
-		if (!$id) {
-			$this->setMessage('無効な処理です。', true);
-			$this->redirect(['action' => 'index']);
-		}
-		if ($this->_changeStatus($id, false)) {
-			$this->setMessage($this->name . ' ID:' . $id . 'を「無効」状態に変更しました。', false, true);
-			$this->redirect(['action' => 'index']);
-		}
-		$this->setMessage('処理に失敗しました。', true);
-		$this->redirect(['action' => 'index']);
-	}
-
-	/**
-	 * [ADMIN] 有効状態にする
-	 *
-	 * @param int $id
-	 */
-	public function admin_publish($id)
-	{
-		if (!$id) {
-			$this->setMessage('無効な処理です。', true);
-			$this->redirect(['action' => 'index']);
-		}
-		if ($this->_changeStatus($id, true)) {
-			$this->setMessage($this->name . ' ID:' . $id . 'を「有効」状態に変更しました。', false, true);
-			$this->redirect(['action' => 'index']);
-		}
-		$this->setMessage('処理に失敗しました。', true);
-		$this->redirect(['action' => 'index']);
 	}
 
 	/**
@@ -289,26 +209,6 @@ class CuCustomFieldAppController extends AppController
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * [ADMIN] ListBehavior利用中のデータ並び順を割り振る
-	 *
-	 */
-	function admin_reposition()
-	{
-		if ($this->{$this->modelClass}->Behaviors->enabled('List')) {
-			if ($this->{$this->modelClass}->fixListOrder()) {
-				$message = $this->name . ' データに並び順（position）を割り振りました。';
-				$this->setMessage($message, false, true);
-				$this->redirect(['action' => 'index']);
-			} else {
-				$this->setMessage('データベース処理中にエラーが発生しました。', true);
-			}
-		} else {
-			$this->setMessage('ListBehaviorが無効のモデルです。', true);
-		}
-		$this->redirect(['action' => 'index']);
 	}
 
 }

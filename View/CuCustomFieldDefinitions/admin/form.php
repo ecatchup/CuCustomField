@@ -12,9 +12,14 @@
  * @var BcAppView $this
  * @var int $contentId
  * @var array $blogContentDatas
+ * @var int $configId
+ * @var array $fieldNameList
  */
 $this->BcBaser->css('CuCustomField.admin/cu_custom_field', ['inline' => false]);
-$this->BcBaser->js(['CuCustomField.admin/cu_custom_field']);
+$this->BcBaser->js('CuCustomField.admin/cu_custom_field', true, ['id' => 'CuCustomFieldDefinitionScript',
+	'data-id' => $this->request->data['CuCustomFieldDefinition']['id'],
+	'data-config-id' => $configId
+]);
 $currentModelName = $this->request->params['models']['CuCustomFieldDefinition']['className'];
 $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 ?>

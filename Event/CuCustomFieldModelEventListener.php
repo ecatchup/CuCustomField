@@ -232,6 +232,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 	 * blogBlogPostBeforeValidate
 	 *
 	 * @param CakeEvent $event
+	 * @return bool
 	 */
 	public function blogBlogPostBeforeValidate(CakeEvent $event)
 	{
@@ -268,11 +269,11 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			return true;
 		}
 
-		$fieldConfigField = $this->CuCustomFieldConfigModel->PetitCustomFieldConfigMeta->find('all', array(
+		$fieldConfigField = $this->CuCustomFieldConfigModel->CuCustomFieldDefinition->find('all', array(
 			'conditions' => array(
-				'PetitCustomFieldConfigMeta.petit_custom_field_config_id' => $data['CuCustomFieldConfig']['id'],
+				'CuCustomFieldDefinition.config_id' => $data['CuCustomFieldConfig']['id'],
 			),
-			'order'		 => 'PetitCustomFieldConfigMeta.position ASC',
+			'order'		 => 'CuCustomFieldDefinition.sort ASC',
 			'recursive'	 => -1,
 		));
 		if (!$fieldConfigField) {
@@ -293,6 +294,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 		if (!$this->CuCustomFieldValueModel->validateSection($Model->data, 'CuCustomFieldValue')) {
 			return false;
 		}
+		return true;
 	}
 
 	/**

@@ -29,6 +29,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	public $belongsTo = ['CuCustomFieldConfig' => [ 'className' => 'CuCustomField.CuCustomFieldConfig',
 			'foreignKey' => 'config_id']];
 
+	public $configId = null;
 	/**
 	 * constructer
 	 *
@@ -42,11 +43,12 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	}
 
 	/**
-	 * 保存時の foreign_id
-	 *
-	 * @var int
+	 * Setup
+	 * @param $configId
 	 */
-	public $foreignId = null;
+	public function setup($configId) {
+		$this->configId = $configId;
+	}
 
 	/**
 	 * バリデーション
@@ -87,7 +89,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 					'message' => '255文字以内で入力してください。',
 				],
 				'duplicateKeyValue' => [
-					'rule' => ['duplicateKeyValue', 'name'],
+					'rule' => ['duplicate', 'name'],
 					'message' => '入力内容は既に使用されています。変更してください。',
 				],
 			],
@@ -116,8 +118,8 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 					'rule' => ['alphaNumericPlus'],
 					'message' => '半角英数で入力してください。',
 				],
-				'duplicateKeyValue' => [
-					'rule' => ['duplicateKeyValue', 'field_name'],
+				'duplicate' => [
+					'rule' => ['duplicate', 'field_name'],
 					'message' => '入力内容は既に使用されています。変更してください。',
 				],
 				// フィールドタイプが wysiwyg の場合はチェックするバリデーション
@@ -139,29 +141,20 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 		],
 	];
 
-	/**
-	 * データの重複チェックを行う
-	 *
-	 * @param array $check 対象データ
-	 * @param string $field
-	 * @return boolean
-	 */
-	public function duplicateKeyValue($check, $field)
-	{
-		if (!$this->foreignId) {
-			return true;
-		}
-
-		//$conditions = array($this->alias . '.' . key($check) => $check[key($check)]);
+/**
+ * データの重複チェックを行う
+ * @param array $check
+ * @return boolean false 重複あり / true 重複なし
+ */
+	public function duplicate($check) {
 		$conditions = [
-			$this->alias . '.' . 'key' => $this->alias . '.' . $field,
-			$this->alias . '.' . 'value' => $check[key($check)],
-			'NOT' => [$this->alias . '.config_id' => $this->foreignId],
+			$this->alias . '.' . key($check) => $check[key($check)],
+			$this->alias . '.config_id' => $this->data[$this->alias]['config_id'],
 		];
-		$ret = $this->find('first', [
-			'conditions' => $conditions,
-			'recursive' => -1,
-		]);
+		if ($this->exists()) {
+			$conditions['NOT'] = [$this->alias . '.' . $this->primaryKey => $this->id];
+		}
+		$ret = $this->find('first', ['conditions' => $conditions]);
 		if ($ret) {
 			return false;
 		} else {
@@ -252,19 +245,23 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 * コントロールソースを取得する
 	 *
 	 * @param string $field フィールド名
-	 * @return array
+	 * @param int $configId
+	 * @return array|false
 	 */
 	public function getControlSource($field)
 	{
+		if(!$this->configId) {
+			trigger_error('CuCustomFieldDefinition::setup() を実行して CuCustomFieldDefinition モデルに configId を設定してください。');
+		}
 		switch($field) {
 			case 'field_name':
 				$conditions = [
-					$this->alias . '.' . 'key' => $this->alias . '.' . $field,
+					$this->alias . '.config_id' => $this->configId,
 				];
 				$controlSources['field_name'] = $this->find('list', [
 					'conditions' => $conditions,
-					'fields' => [$this->alias . '.id', $this->alias . '.value'],
-					'order' => ['value' => 'ASC'],
+					'fields' => ['field_name'],
+					'order' => ['sort' => 'ASC'],
 				]);
 				break;
 		}
