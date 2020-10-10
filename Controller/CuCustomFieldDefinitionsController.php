@@ -3,10 +3,10 @@
 /**
  * [Controller] CuCustomField
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * @copyright        Copyright, Catchup, Inc.
+ * @link            https://catchup.co.jp
+ * @package            CuCustomField
+ * @license            MIT
  */
 App::uses('CuCustomFieldApp', 'CuCustomField.Controller');
 
@@ -18,17 +18,17 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	 *
 	 * @var array
 	 */
-	public $uses = array('CuCustomField.CuCustomFieldDefinition');
+	public $uses = ['CuCustomField.CuCustomFieldDefinition'];
 
 	/**
 	 * ぱんくずナビ
 	 *
 	 * @var string
 	 */
-	public $crumbs = array(
-		array('name' => 'プラグイン管理', 'url' => array('plugin' => '', 'controller' => 'plugins', 'action' => 'index')),
-		array('name' => 'カスタムフィールド定義管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index')),
-	);
+	public $crumbs = [
+		['name' => 'プラグイン管理', 'url' => ['plugin' => '', 'controller' => 'plugins', 'action' => 'index']],
+		['name' => 'カスタムフィールド定義管理', 'url' => ['plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_configs', 'action' => 'index']],
+	];
 
 	/**
 	 * 管理画面タイトル
@@ -46,10 +46,10 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		parent::beforeFilter();
 		// カスタムフィールド定義からコンテンツIDを取得してセット
 		if (!empty($this->request->params['pass'][0])) {
-			$configData = $this->CuCustomFieldDefinition->CuCustomFieldConfig->find('first', array(
-				'conditions' => array('CuCustomFieldConfig.id' => $this->request->params['pass'][0]),
-				'recursive'	 => -1,
-			));
+			$configData = $this->CuCustomFieldDefinition->CuCustomFieldConfig->find('first', [
+				'conditions' => ['CuCustomFieldConfig.id' => $this->request->params['pass'][0]],
+				'recursive' => -1,
+			]);
 			$this->set('contentId', $configData['CuCustomFieldConfig']['content_id']);
 		}
 	}
@@ -63,21 +63,21 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	public function admin_edit($configId = null, $foreignId = null)
 	{
 		$this->pageTitle = $this->adminTitle . '編集';
-		$this->help		 = 'cu_custom_field_definitions';
-		$deletable		 = true;
+		$this->help = 'cu_custom_field_definitions';
+		$deletable = true;
 
 		if (!$configId || !$foreignId) {
 			$this->setMessage('無効な処理です。', true);
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 
-		$this->crumbs[] = array('name' => 'フィールド定義管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
+		$this->crumbs[] = ['name' => 'フィールド定義管理', 'url' => ['plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId]];
 
 		if (empty($this->request->data)) {
 			// $data = $this->CuCustomFieldValueModel->getSection($Model->id, $this->CuCustomFieldValueModel->name);
 			$data = $this->{$this->modelClass}->getSection($foreignId, $this->modelClass);
 			if ($data) {
-				$this->request->data = array($this->modelClass => $data);
+				$this->request->data = [$this->modelClass => $data];
 			}
 		} else {
 			// バリデーション重複チェックのため、foreign_id をモデルのプロパティに持たせる
@@ -86,7 +86,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 				if ($this->CuCustomFieldDefinition->saveSection($foreignId, $this->request->data, 'CuCustomFieldDefinition')) {
 					$message = $this->name . '「' . $this->request->data['CuCustomFieldDefinition']['name'] . '」を更新しました。';
 					$this->setMessage($message, false, true);
-					$this->redirect(array('controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
+					$this->redirect(['controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId]);
 				} else {
 					$this->setMessage('入力エラーです。内容を修正して下さい。', true);
 				}
@@ -97,7 +97,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 
 		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name');
 		$this->set(compact('fieldNameList', 'configId', 'foreignId', 'deletable'));
-		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
+		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');
 	}
 
@@ -109,15 +109,15 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	public function admin_add($configId = null)
 	{
 		$this->pageTitle = $this->adminTitle . '追加';
-		$this->help		 = 'cu_custom_field_definitions';
-		$deletable		 = false;
+		$this->help = 'cu_custom_field_definitions';
+		$deletable = false;
 
-		$this->crumbs[]	 = array('name' => 'カスタムフィールド定義管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
-		$foreignId		 = $this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->getMax('field_foreign_id') + 1;
+		$this->crumbs[] = ['name' => 'カスタムフィールド定義管理', 'url' => ['plugin' => 'cu_custom_field', 'controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId]];
+		$foreignId = $this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->getMax('field_foreign_id') + 1;
 
 		if (!$configId) {
 			$this->setMessage('無効な処理です。', true);
-			$this->redirect(array('controller' => 'cu_custom_field_configs', 'action' => 'index'));
+			$this->redirect(['controller' => 'cu_custom_field_configs', 'action' => 'index']);
 		}
 
 		if (empty($this->request->data)) {
@@ -127,22 +127,22 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 				if ($this->CuCustomFieldDefinition->saveSection($foreignId, $this->request->data, 'CuCustomFieldDefinition')) {
 
 					// リンクテーブルにデータを追加する
-					$saveData = array(
-						'PetitCustomFieldConfigMeta' => array(
-							'petit_custom_field_config_id'	 => $configId,
-							'field_foreign_id'				 => $foreignId,
-						),
-					);
+					$saveData = [
+						'PetitCustomFieldConfigMeta' => [
+							'petit_custom_field_config_id' => $configId,
+							'field_foreign_id' => $foreignId,
+						],
+					];
 					// load しないと順番が振られない。スコープが効かない。
 					$this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->Behaviors->load(
-							'CuCustomField.List', array('scope' => 'petit_custom_field_config_id')
+						'CuCustomField.List', ['scope' => 'petit_custom_field_config_id']
 					);
 					$this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->create($saveData);
 					$this->CuCustomFieldDefinition->PetitCustomFieldConfigMeta->save($saveData);
 
 					$message = $this->name . '「' . $this->request->data['CuCustomFieldDefinition']['name'] . '」の追加が完了しました。';
 					$this->setMessage($message, false, true);
-					$this->redirect(array('controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId));
+					$this->redirect(['controller' => 'petit_custom_field_config_metas', 'action' => 'index', $configId]);
 				} else {
 					$this->setMessage('入力エラーです。内容を修正して下さい。', true);
 				}
@@ -153,7 +153,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 
 		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name');
 		$this->set(compact('fieldNameList', 'configId', 'foreignId', 'deletable'));
-		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
+		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');
 	}
 
@@ -167,7 +167,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	{
 		if (!$configId || !$foreignId) {
 			$this->setMessage('無効な処理です。', true);
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 
 		// 削除前にメッセージ用にカスタムフィールドを取得する
@@ -176,11 +176,11 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		if ($this->CuCustomFieldDefinition->resetSection($foreignId)) {
 			$message = $this->name . '「' . $data['CuCustomFieldDefinition']['name'] . '」を削除しました。';
 			$this->setMessage($message, false, true);
-			$this->redirect(array('action' => 'index', $configId));
+			$this->redirect(['action' => 'index', $configId]);
 		} else {
 			$this->setMessage('データベース処理中にエラーが発生しました。', true);
 		}
-		$this->redirect(array('action' => 'index', $configId));
+		$this->redirect(['action' => 'index', $configId]);
 	}
 
 	/**
@@ -191,8 +191,8 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	 */
 	protected function _createAdminIndexConditions($data)
 	{
-		$conditions		 = array();
-		$blogContentId	 = '';
+		$conditions = [];
+		$blogContentId = '';
 
 		if (isset($data['CuCustomFieldDefinition']['content_id'])) {
 			$blogContentId = $data['CuCustomFieldDefinition']['content_id'];
@@ -203,7 +203,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 
 		// 条件指定のないフィールドを解除
 		if (!empty($data['CuCustomFieldDefinition'])) {
-			foreach ($data['CuCustomFieldDefinition'] as $key => $value) {
+			foreach($data['CuCustomFieldDefinition'] as $key => $value) {
 				if ($value === '') {
 					unset($data['CuCustomFieldDefinition'][$key]);
 				}
@@ -214,15 +214,15 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		}
 
 		if ($blogContentId) {
-			$conditions = array(
+			$conditions = [
 				'CuCustomFieldDefinition.content_id' => $blogContentId
-			);
+			];
 		}
 
 		if ($conditions) {
 			return $conditions;
 		} else {
-			return array();
+			return [];
 		}
 	}
 
@@ -234,46 +234,46 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	public function admin_ajax_check_duplicate()
 	{
 		Configure::write('debug', 0);
-		$this->layout	 = null;
-		$result			 = true;
+		$this->layout = null;
+		$result = true;
 
 		if (!$this->RequestHandler->isAjax()) {
 			$message = '許可されていないアクセスです。';
 			$this->setMessage($message, true);
-			$this->redirect(array('controller' => 'cu_custom_field_configs', 'action' => 'index'));
+			$this->redirect(['controller' => 'cu_custom_field_configs', 'action' => 'index']);
 		}
 
 		if ($this->request->data) {
-			$conditions = array();
+			$conditions = [];
 			if (array_key_exists('name', $this->request->data[$this->modelClass])) {
-				$conditions = array(
-					$this->modelClass . '.' . 'key'		 => $this->modelClass . '.' . 'name',
-					$this->modelClass . '.' . 'value'	 => $this->request->data[$this->modelClass]['name'],
-				);
+				$conditions = [
+					$this->modelClass . '.' . 'key' => $this->modelClass . '.' . 'name',
+					$this->modelClass . '.' . 'value' => $this->request->data[$this->modelClass]['name'],
+				];
 			}
 			if (array_key_exists('label_name', $this->request->data[$this->modelClass])) {
-				$conditions = array(
-					$this->modelClass . '.' . 'key'		 => $this->modelClass . '.' . 'label_name',
-					$this->modelClass . '.' . 'value'	 => $this->request->data[$this->modelClass]['label_name'],
-				);
+				$conditions = [
+					$this->modelClass . '.' . 'key' => $this->modelClass . '.' . 'label_name',
+					$this->modelClass . '.' . 'value' => $this->request->data[$this->modelClass]['label_name'],
+				];
 			}
 			if (array_key_exists('field_name', $this->request->data[$this->modelClass])) {
-				$conditions = array(
-					$this->modelClass . '.' . 'key'		 => $this->modelClass . '.' . 'field_name',
-					$this->modelClass . '.' . 'value'	 => $this->request->data[$this->modelClass]['field_name'],
-				);
+				$conditions = [
+					$this->modelClass . '.' . 'key' => $this->modelClass . '.' . 'field_name',
+					$this->modelClass . '.' . 'value' => $this->request->data[$this->modelClass]['field_name'],
+				];
 			}
 
 			if ($this->request->data[$this->modelClass]['foreign_id']) {
-				$conditions = Hash::merge($conditions, array(
-							'NOT' => array($this->modelClass . '.config_id' => $this->request->data[$this->modelClass]['foreign_id']),
-				));
+				$conditions = Hash::merge($conditions, [
+					'NOT' => [$this->modelClass . '.config_id' => $this->request->data[$this->modelClass]['foreign_id']],
+				]);
 			}
 
-			$ret = $this->{$this->modelClass}->find('first', array(
+			$ret = $this->{$this->modelClass}->find('first', [
 				'conditions' => $conditions,
-				'recursive'	 => -1,
-			));
+				'recursive' => -1,
+			]);
 			if ($ret) {
 				$result = false;
 			} else {
