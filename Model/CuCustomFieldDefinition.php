@@ -278,4 +278,83 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 		]]);
 	}
 
+	/**
+	 * 上へ移動
+	 * config_id で絞り込むため、TreeBehavior::moveUp() をそのまま使えない
+	 * @param $id
+	 * @param $configId
+	 * @return bool
+	 */
+	public function up($id, $configId) {
+		$parentId = $this->field('parent_id', ['CuCustomFieldDefinition.id' => $id]);
+		$definitions = $this->find('all', [
+			'conditions' => ['CuCustomFieldDefinition.parent_id' => $parentId],
+			'order' => 'CuCustomFieldDefinition.lft',
+			'recursive' => -1
+		]);
+		$currentKey = null;
+		foreach($definitions as $key => $value) {
+			if($value['CuCustomFieldDefinition']['id'] === $id) {
+				$currentKey = $key;
+				break;
+			}
+		}
+
+		$offset = 0;
+		for($i=$currentKey-1;$i>=0;$i--) {
+			$offset++;
+			if(isset($definitions[$i])) {
+				if($definitions[$i]['CuCustomFieldDefinition']['config_id'] === $configId) {
+					break;
+				}
+			} else {
+				return false;
+			}
+		}
+		if($offset>0) {
+			return $this->moveUp($id, $offset);
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * 下へ移動
+	 * config_id で絞り込むため、TreeBehavior::moveDown() をそのまま使えない
+	 * @param $id
+	 * @param $configId
+	 * @return bool
+	 */
+	public function down($id, $configId) {
+		$parentId = $this->field('parent_id', ['CuCustomFieldDefinition.id' => $id]);
+		$definitions = $this->find('all', [
+			'conditions' => ['CuCustomFieldDefinition.parent_id' => $parentId],
+			'order' => 'CuCustomFieldDefinition.lft',
+			'recursive' => -1
+		]);
+		$currentKey = null;
+		foreach($definitions as $key => $value) {
+			if($value['CuCustomFieldDefinition']['id'] === $id) {
+				$currentKey = $key;
+				break;
+			}
+		}
+		$offset = 0;
+		for($i=$currentKey+1;$i<=count($definitions)-1;$i++) {
+			$offset++;
+			if(isset($definitions[$i])) {
+				if($definitions[$i]['CuCustomFieldDefinition']['config_id'] === $configId) {
+					break;
+				}
+			} else {
+				return false;
+			}
+		}
+		if($offset>0) {
+			return $this->moveDown($id, $offset);
+		} else {
+			return true;
+		}
+	}
+
 }

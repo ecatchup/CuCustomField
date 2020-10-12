@@ -315,7 +315,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 			$this->redirect(['action' => 'index']);
 		}
 
-		if ($this->CuCustomFieldDefinition->changeSort($id, -1, ['CuCustomFieldDefinition.config_id' => $configId])) {
+		if ($this->CuCustomFieldDefinition->up($id, $configId)) {
 			$this->BcMessage->setSuccess('フィールド定義の並び順を繰り上げました。');
 		} else {
 			$this->BcMessage->setError('データベース処理中にエラーが発生しました。');
@@ -336,7 +336,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 			$this->redirect(['action' => 'index']);
 		}
 
-		if ($this->CuCustomFieldDefinition->changeSort($id, 1, ['CuCustomFieldDefinition.config_id' => $configId])) {
+		if ($this->CuCustomFieldDefinition->down($id, $configId)) {
 			$this->BcMessage->setSuccess('フィールド定義の並び順を繰り下げました。');
 		} else {
 			$this->BcMessage->setError('データベース処理中にエラーが発生しました。');
