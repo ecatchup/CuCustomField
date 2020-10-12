@@ -17,8 +17,8 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 	 * @var array
 	 */
 	public $events = array(
-		'Form.afterCreate',
-		'Form.afterForm',
+		'BcFormTable.before',
+		'BcFormTable.after',
 	);
 
 	/**
@@ -43,95 +43,93 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 	private $isDisplay = false;
 
 	/**
-	 * formAfterCreate
-	 * - ブログ記事追加・編集画面にカスタムフィールド編集欄を追加する
-	 * - 記事編集画面の上部に追加する
-	 *
-	 * @param CakeEvent $event
-	 * @return array
-	 */
-	public function formAfterCreate(CakeEvent $event)
-	{
-		if (!BcUtil::isAdminSystem()) {
-			return;
-		}
-
-		$View = $event->subject();
-
-		if (!in_array($View->request->params['controller'], $this->targetController)) {
-			return;
-		}
-
-		if (!in_array($View->request->params['action'], $this->targetAction)) {
-			return;
-		}
-
-		$targetId = array('BlogPostForm');
-		if (!in_array($event->data['id'], $targetId)) {
-			return;
-		}
-
-		if (!isset($View->request->data['CuCustomFieldConfig']) || empty($View->request->data['CuCustomFieldConfig'])) {
-			return;
-		}
-
-		if (!$View->request->data['CuCustomFieldConfig']['status']) {
-			return;
-		}
-
-		if ($View->request->data['CuCustomFieldConfig']['form_place'] === 'top') {
-			// ブログ記事追加画面にカスタムフィールド編集欄を追加する
-			$event->data['out']	 = $event->data['out'] . $View->element('CuCustomField.cu_custom_field_form');
-			$this->isDisplay	 = true;
-		}
-
-		return;
-	}
-
-	/**
-	 * formAfterForm
+	 * BcFormTable Before
 	 * - ブログ記事追加・編集画面にカスタムフィールド編集欄を追加する
 	 * - 記事編集画面の下部に追加する
 	 *
 	 * @param CakeEvent $event
 	 */
-	public function formAfterForm(CakeEvent $event)
-	{
+	public function bcFormTableBefore(CakeEvent $event) {
 		if (!BcUtil::isAdminSystem()) {
-			return;
+			return false;
 		}
 
 		$View = $event->subject();
 
 		if (!in_array($View->request->params['controller'], $this->targetController)) {
-			return;
+			return false;
 		}
 
 		if (!in_array($View->request->params['action'], $this->targetAction)) {
-			return;
+			return false;
 		}
 
 		$targetId = array('BlogPostForm');
 		if (!in_array($event->data['id'], $targetId)) {
-			return;
+			return false;
 		}
 
 		if (!isset($View->request->data['CuCustomFieldConfig']) || empty($View->request->data['CuCustomFieldConfig'])) {
-			return;
+			return false;
 		}
 
 		if (!$View->request->data['CuCustomFieldConfig']['status']) {
-			return;
+			return false;
+		}
+
+		if ($View->request->data['CuCustomFieldConfig']['form_place'] === 'top') {
+			// ブログ記事追加画面にカスタムフィールド編集欄を追加する
+			$this->isDisplay = true;
+			return $View->element('CuCustomField.admin/cu_custom_field_values/cu_custom_field_form');
+		}
+		return false;
+	}
+
+	/**
+	 * BcFormTable After
+	 * - ブログ記事追加・編集画面にカスタムフィールド編集欄を追加する
+	 * - 記事編集画面の下部に追加する
+	 *
+	 * @param CakeEvent $event
+	 */
+	public function bcFormTableAfter(CakeEvent $event) {
+		if (!BcUtil::isAdminSystem()) {
+			return false;
+		}
+
+		$View = $event->subject();
+
+		if (!in_array($View->request->params['controller'], $this->targetController)) {
+			return false;
+		}
+
+		if (!in_array($View->request->params['action'], $this->targetAction)) {
+			return false;
+		}
+
+		$targetId = array('BlogPostForm');
+		if (!in_array($event->data['id'], $targetId)) {
+			return false;
+		}
+
+		if (!isset($View->request->data['CuCustomFieldConfig']) || empty($View->request->data['CuCustomFieldConfig'])) {
+			return false;
+		}
+
+		if (!$View->request->data['CuCustomFieldConfig']['status']) {
+			return false;
 		}
 
 		if ($this->isDisplay) {
-			return;
+			return false;
 		}
 
 		if ($View->request->data['CuCustomFieldConfig']['form_place'] === 'normal') {
 			// ブログ記事追加画面にカスタムフィールド編集欄を追加する
-			echo $View->element('CuCustomField.cu_custom_field_form');
+			$this->isDisplay = true;
+			return $View->element('CuCustomField.admin/cu_custom_field_values/cu_custom_field_form');
 		}
+		return false;
 	}
 
 }
