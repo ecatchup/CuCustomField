@@ -2,19 +2,27 @@
 /**
  * [ADMIN] CuCustomField
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * @copyright        Copyright, Catchup, Inc.
+ * @link            https://catchup.co.jp
+ * @package            CuCustomField
+ * @license            MIT
  */
-$classies = array();
+
+/**
+ * @var BcAppView $this
+ * @var int $count
+ * @var array $data
+ * @var array $datas
+ */
+$classies = [];
 if (!$this->CuCustomField->allowPublish($data)) {
-	$classies = array('unpublish', 'disablerow');
+	$classies = ['unpublish', 'disablerow'];
 } else {
-	$classies = array('publish');
+	$classies = ['publish'];
 }
-$class=' class="'.implode(' ', $classies).'"';
+$class = ' class="' . implode(' ', $classies) . '"';
 ?>
+
 
 <tr<?php echo $class ?>>
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--no"><?php // No ?>
@@ -23,15 +31,15 @@ $class=' class="'.implode(' ', $classies).'"';
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--title"><?php // タイトル ?>
 		<?php
 		$this->BcBaser->link($data['CuCustomFieldDefinition']['name'],
-				[
-					'controller' => 'cu_custom_field_definitions',
-					'action' => 'edit',
-					$data['CuCustomFieldDefinition']['config_id'],
-					$data['CuCustomFieldDefinition']['id']
-				],
-				[
-					'title' => '編集'
-				]);
+			[
+				'controller' => 'cu_custom_field_definitions',
+				'action' => 'edit',
+				$data['CuCustomFieldDefinition']['config_id'],
+				$data['CuCustomFieldDefinition']['id']
+			],
+			[
+				'title' => '編集'
+			]);
 		?>
 	</td>
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--hasCustomField"><?php // フィールド名 ?>
@@ -41,7 +49,7 @@ $class=' class="'.implode(' ', $classies).'"';
 		<?php
 		echo $this->CuCustomField->arrayValue($data['CuCustomFieldDefinition']['field_type'], $customFieldConfig['field_type'], '<small>未登録</small>');
 		if ($data['CuCustomFieldDefinition']['field_type'] == 'wysiwyg') {
-			echo '<br /><small>'. $this->CuCustomField->arrayValue($data['CuCustomFieldDefinition']['editor_tool_type'], $customFieldConfig['editor_tool_type'], ''). '</small>';
+			echo '<br /><small>' . $this->CuCustomField->arrayValue($data['CuCustomFieldDefinition']['editor_tool_type'], $customFieldConfig['editor_tool_type'], '') . '</small>';
 		}
 		?>
 	</td>
@@ -65,7 +73,7 @@ $class=' class="'.implode(' ', $classies).'"';
 			[
 				'title' => __d('baser', '非公開'),
 				'class' => 'btn-unpublish bca-btn-icon',
-				'data-bca-btn-type' => 'unpublish','data-bca-btn-size' => 'lg'
+				'data-bca-btn-type' => 'unpublish', 'data-bca-btn-size' => 'lg'
 			]);
 		// 公開
 		$this->BcBaser->link('',
@@ -107,35 +115,32 @@ $class=' class="'.implode(' ', $classies).'"';
 				'data-bca-btn-type' => 'delete',
 				'data-bca-btn-size' => 'lg'
 			]);
+
 		// 並び替えはconfigIdで絞り込んだ画面で有効化する
 		if ($this->request->params['pass']) {
 			$faArrowUp = '<i class="fa fa-arrow-up fa-2x" style="vertical-align: bottom;margin-left: 2px;"></i>';
 			$faArrowDown = '<i class="fa fa-arrow-down fa-2x" style="vertical-align: bottom;margin-left: 2px;"></i>';
-			if ($count != 1 || !isset($datas)) {
-				$this->BcBaser->link($faArrowUp,
-						[
-							'controller' => 'cu_custom_field_definitions',
-							'action' => 'move_up',
-							$data['CuCustomFieldConfig']['id'],
-							$data['CuCustomFieldDefinition']['id']
-						],
-						[
-							'class' => 'btn-up',
-							'title' => '上へ移動'
-						]);
+			if ($this->CuCustomField->isAvailableDefinitionMoveUp($datas, $count -1)) {
+				$this->BcBaser->link($faArrowUp, [
+					'controller' => 'cu_custom_field_definitions',
+					'action' => 'move_up',
+					$data['CuCustomFieldConfig']['id'],
+					$data['CuCustomFieldDefinition']['id']
+				], [
+					'class' => 'btn-up',
+					'title' => '上へ移動'
+				]);
 			} else {
-				$this->BcBaser->link($faArrowUp,
-						[
-							'controller' => 'cu_custom_field_definitions',
-							'action' => 'move_up',
-							$data['CuCustomFieldConfig']['id'],
-							$data['CuCustomFieldDefinition']['id']
-						],
-						[
-							'class' => 'btn-up',
-							'title' => '上へ移動',
-							'style' => 'display:none'
-						]);
+				$this->BcBaser->link($faArrowUp, [
+					'controller' => 'cu_custom_field_definitions',
+					'action' => 'move_up',
+					$data['CuCustomFieldConfig']['id'],
+					$data['CuCustomFieldDefinition']['id']
+				], [
+					'class' => 'btn-up',
+					'title' => '上へ移動',
+					'style' => 'display:none'
+				]);
 //				if (count($datas) > 2) {
 //					//最下段へ移動
 //					$this->BcBaser->link('<i class="fa fa-arrow-circle-down fa-2x" style="vertical-align: bottom;margin-left: 2px;"></i>',
@@ -153,31 +158,27 @@ $class=' class="'.implode(' ', $classies).'"';
 //				}
 			}
 		}
-		if (!isset($datas) || count($datas) != $count) {
-			$this->BcBaser->link($faArrowDown,
-					[
-						'controller' => 'cu_custom_field_definitions',
-						'action' => 'move_down',
-						$data['CuCustomFieldConfig']['id'],
-						$data['CuCustomFieldDefinition']['id']
-					],
-					[
-						'class' => 'btn-down',
-						'title' => '下へ移動'
-					]);
+		if ($this->CuCustomField->isAvailableDefinitionMoveDown($datas, $count -1)) {
+			$this->BcBaser->link($faArrowDown, [
+				'controller' => 'cu_custom_field_definitions',
+				'action' => 'move_down',
+				$data['CuCustomFieldConfig']['id'],
+				$data['CuCustomFieldDefinition']['id']
+			], [
+				'class' => 'btn-down',
+				'title' => '下へ移動'
+			]);
 		} else {
-			$this->BcBaser->link($faArrowDown,
-					[
-						'controller' => 'cu_custom_field_definitions',
-						'action' => 'move_down',
-						$data['CuCustomFieldConfig']['id'],
-						$data['CuCustomFieldDefinition']['id']
-					],
-					[
-						'class' => 'btn-down',
-						'title' => '下へ移動',
-						'style' => 'display:none'
-					]);
+			$this->BcBaser->link($faArrowDown, [
+				'controller' => 'cu_custom_field_definitions',
+				'action' => 'move_down',
+				$data['CuCustomFieldConfig']['id'],
+				$data['CuCustomFieldDefinition']['id']
+			], [
+				'class' => 'btn-down',
+				'title' => '下へ移動',
+				'style' => 'display:none'
+			]);
 //			if (count($datas) > 2) {
 //				//最上段へ移動
 //				$this->BcBaser->link('<i class="fa fa-arrow-circle-up fa-2x" style="vertical-align: bottom;margin-left: 2px;"></i>',

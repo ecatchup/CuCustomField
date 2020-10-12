@@ -23,7 +23,7 @@ $class=' class="'.implode(' ', $classies).'"';
 		<?php
 		$this->BcBaser->link($this->BcText->arrayValue($data['CuCustomFieldConfig']['content_id'], $blogContentDatas, ''),
 				[
-					'controller' => 'petit_custom_field_config_metas',
+					'controller' => 'cu_custom_field_definitions',
 					'action' => 'index',
 					$data['CuCustomFieldConfig']['id']
 				],

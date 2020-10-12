@@ -762,4 +762,46 @@ class CuCustomFieldHelper extends AppHelper
 		return $prefList;
 	}
 
+	/**
+	 * フィールド定義一覧で上へ移動ボタンが利用可能かどうか
+	 * @param $records
+	 * @param $currentKey
+	 * @return bool
+	 */
+	public function isAvailableDefinitionMoveUp($records, $currentKey) {
+		$current = $records[$currentKey];
+		$parentId = $current['CuCustomFieldDefinition']['parent_id'];
+		for($i=$currentKey-1;$i>=0;$i--) {
+			if(isset($records[$i])) {
+				if($records[$i]['CuCustomFieldDefinition']['parent_id'] === $parentId) {
+					return true;
+				}
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * フィールド定義一覧で下へ移動ボタンが利用可能かどうか
+	 * @param $records
+	 * @param $currentKey
+	 * @return bool
+	 */
+	public function isAvailableDefinitionMoveDown($records, $currentKey) {
+		$current = $records[$currentKey];
+		$parentId = $current['CuCustomFieldDefinition']['parent_id'];
+		for($i=$currentKey+1;$i<=count($records)-1;$i++) {
+			if(isset($records[$i])) {
+				if($records[$i]['CuCustomFieldDefinition']['parent_id'] === $parentId) {
+					return true;
+				}
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
+
 }
