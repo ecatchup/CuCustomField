@@ -10,56 +10,111 @@
 
 /**
  * @var BcAppView $this
- * @var array $fieldConfigField
+ * @var array $definitions
  */
 $formPlace = $this->request->data('CuCustomFieldConfig.form_place');
-$this->BcBaser->js('https://maps.google.com/maps/api/js?key=' . $this->BcBaser->siteConfig['google_maps_api_key']);
-$this->BcBaser->js('CuCustomField.admin/google_maps');
+$this->BcBaser->js('https://maps.google.com/maps/api/js?key=' . $this->BcBaser->siteConfig['google_maps_api_key'], false);
+$this->BcBaser->js('CuCustomField.admin/google_maps', false);
+$this->BcBaser->js('CuCustomField.admin/cu_custom_field_values', false);
+$this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => false]);
 ?>
 
 
-<?php if ($fieldConfigField): ?>
+<?php if ($definitions): ?>
 
 	<table class="form-table section bca-form-table" id="CuCustomFieldTable">
-	<?php foreach($fieldConfigField as $keyFieldConfig => $valueFieldConfig): ?>
-		<?php if ($this->CuCustomField->judgeStatus($valueFieldConfig)): ?>
+	<?php foreach($definitions as $keyFieldConfig => $definition): ?>
+		<?php if ($this->CuCustomField->judgeStatus($definition)): ?>
 				<tr>
 					<th class="col-head bca-form-table__label">
-						<?php echo $this->BcForm->label("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}", $valueFieldConfig['CuCustomFieldDefinition']['name']) ?>
-						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, ['field' => 'required'])): ?>&nbsp;
+						<?php echo $this->BcForm->label("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}", $definition['CuCustomFieldDefinition']['name']) ?>
+						<?php if ($this->CuCustomField->judgeShowFieldConfig($definition, ['field' => 'required'])): ?>&nbsp;
 							<span class="required bca-label" data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span>
 						<?php endif ?>
 					</th>
 					<td class="col-input bca-form-table__input">
-						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, ['field' => 'prepend'])): ?>
-							<div><?php echo nl2br($valueFieldConfig['CuCustomFieldDefinition']['prepend']) ?></div>
+						<?php if ($this->CuCustomField->judgeShowFieldConfig($definition, ['field' => 'prepend'])): ?>
+							<div><?php echo nl2br($definition['CuCustomFieldDefinition']['prepend']) ?></div>
 						<?php endif ?>
-<?php if ($valueFieldConfig['CuCustomFieldDefinition']['field_type'] == 'googlemaps'): ?>
-						<?php if (!empty($this->BcBaser->siteConfig['google_maps_api_key'])): ?>
-							<div class="petit-google-maps" style="width:100%; height:450px;"></div>
-							<div style="margin-right: 5px;">
-								<?php echo $this->BcForm->input('google_maps_address',
-									['type' => 'text', 'name' => '', 'class' => 'petit-google_maps_address']) ?>
-								<?php echo $this->BcForm->button('入力住所から地図を設定', ['type' => 'button', 'class' => 'petit-set_google_maps_setting', 'size' => 40]) ?>
+
+						<?php if($definition['CuCustomFieldDefinition']['field_type'] === 'loop'): ?>
+
+							<!-- 表示 -->
+							<div id="loop-<?php echo $definition['CuCustomFieldDefinition']['field_name'] ?>" class="cucf-loop">
+
+							<?php if($this->request->data['CuCustomFieldValue'][$definition['CuCustomFieldDefinition']['field_name']]): ?>
+								<?php foreach($this->request->data['CuCustomFieldValue'][$definition['CuCustomFieldDefinition']['field_name']] as $key => $value): ?>
+								<div id="CucfLoop<?php echo $definition['CuCustomFieldDefinition']['field_name'] . '-' . $key ?>" class="cucf-loop-block">
+									<table class="bca-form-table">
+										<?php foreach($definition['CuCustomFieldDefinition']['children'] as $child): ?>
+										<tr>
+											<th class="bca-form-table__label">
+												<?php echo $this->BcForm->label("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}.{$key}.{$child['CuCustomFieldDefinition']['field_name']}", $child['CuCustomFieldDefinition']['name']) ?>
+												<?php if ($this->CuCustomField->judgeShowFieldConfig($child, ['field' => 'required'])): ?>&nbsp;
+													<span class="required bca-label" data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span>
+												<?php endif ?>
+											</th>
+											<td class="bca-form-table__input">
+												<?php echo $this->CuCustomField->input("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}.{$key}.{$child['CuCustomFieldDefinition']['field_name']}", $this->CuCustomField->getFormOption($child, 'CuCustomFieldDefinition')) ?>
+											</td>
+										</tr>
+										<?php endforeach ?>
+									</table>
+									<?php echo $this->BcForm->button('削除', [
+										'class' => 'btn-delete-loop bca-btn',
+										'data-delete-target' => 'CucfLoop' . $definition['CuCustomFieldDefinition']['field_name'] . '-' . $key
+									]) ?>
+								</div>
+								<?php endforeach ?>
+
+							<?php endif ?>
+
 							</div>
-							<?php echo '緯度' . $this->CuCustomField->input("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}.google_maps_latitude", ['type' => 'text', 'class' => 'petit-google_maps_latitude', 'default' => $valueFieldConfig['CuCustomFieldDefinition']['google_maps_latitude'], 'size' => 22]); ?>
-							<?php echo '経度' . $this->CuCustomField->input("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}.google_maps_longtude", ['type' => 'text', 'class' => 'petit-google_maps_longtude', 'default' => $valueFieldConfig['CuCustomFieldDefinition']['google_maps_longtude'], 'size' => 22]); ?>
-							<?php echo 'ズーム値' . $this->CuCustomField->input("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}.google_maps_zoom", ['type' => 'text', 'class' => 'petit-google_maps_zoom', 'default' => $valueFieldConfig['CuCustomFieldDefinition']['google_maps_zoom'], 'size' => 4]); ?>
-							<br>
-							<?php echo 'ポップアップテキスト' . $this->CuCustomField->input("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}.google_maps_text", ['type' => 'text', 'class' => 'petit-google_maps_text', 'default' => $valueFieldConfig['CuCustomFieldDefinition']['google_maps_text'], 'size' => 60]); ?>
+
+							<!-- 追加用のソース -->
+							<div id="CufcLoopSrc<?php echo $definition['CuCustomFieldDefinition']['field_name'] ?>" class="cucf-loop-block" hidden>
+								<table class="bca-form-table">
+								<?php foreach($definition['CuCustomFieldDefinition']['children'] as $child): ?>
+									<tr>
+										<th class="bca-form-table__label">
+											<?php echo $this->BcForm->label("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}.__loop-src__.{$child['CuCustomFieldDefinition']['field_name']}", $child['CuCustomFieldDefinition']['name']) ?>
+											<?php if ($this->CuCustomField->judgeShowFieldConfig($child, ['field' => 'required'])): ?>&nbsp;
+												<span class="required bca-label" data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span>
+											<?php endif ?>
+										</th>
+										<td class="bca-form-table__input">
+											<?php echo $this->CuCustomField->input("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}.__loop-src__.{$child['CuCustomFieldDefinition']['field_name']}", $this->CuCustomField->getFormOption($child, 'CuCustomFieldDefinition')) ?>
+										</td>
+									</tr>
+								<?php endforeach ?>
+								</table>
+								<?php echo $this->BcForm->button('削除', [
+									'class' => 'btn-delete-loop bca-btn',
+									'data-delete-target' => 'CucfLoop' . $definition['CuCustomFieldDefinition']['field_name']
+								]) ?>
+							</div>
+
+							<div class="cucf-loop-add">
+								<?php echo $this->BcForm->button('追加', [
+									'class' => 'bca-btn',
+									'id' => 'BtnAddLoop',
+									'data-src' => $definition['CuCustomFieldDefinition']['field_name'],
+									'data-count' => $key + 1
+								]) ?>
+							</div>
 						<?php else: ?>
-							※Googleマップを利用するには、Google Maps APIのキーの登録が必要です。キーを取得して、システム管理より設定してください。
-						<?php endif; ?>
-<?php else: ?>
-						<?php echo $this->CuCustomField->input("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}", $this->CuCustomField->getFormOption($valueFieldConfig, 'CuCustomFieldDefinition')) ?>
-<?php endif ?>
-						<?php echo $this->BcForm->error("CuCustomFieldValue.{$valueFieldConfig['CuCustomFieldDefinition']['field_name']}") ?>
-						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, ['field' => 'append'])): ?>
-							<div><?php echo nl2br($valueFieldConfig['CuCustomFieldDefinition']['append']) ?></div>
+
+						<?php echo $this->CuCustomField->input("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}", $this->CuCustomField->getFormOption($definition, 'CuCustomFieldDefinition')) ?>
+
 						<?php endif ?>
-						<?php if ($this->CuCustomField->judgeShowFieldConfig($valueFieldConfig, ['field' => 'description'])): ?>
+
+						<?php echo $this->BcForm->error("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}") ?>
+						<?php if ($this->CuCustomField->judgeShowFieldConfig($definition, ['field' => 'append'])): ?>
+							<div><?php echo nl2br($definition['CuCustomFieldDefinition']['append']) ?></div>
+						<?php endif ?>
+						<?php if ($this->CuCustomField->judgeShowFieldConfig($definition, ['field' => 'description'])): ?>
 							<br/>
-							<small><?php echo nl2br($valueFieldConfig['CuCustomFieldDefinition']['description']) ?></small>
+							<small><?php echo nl2br($definition['CuCustomFieldDefinition']['description']) ?></small>
 						<?php endif ?>
 					</td>
 				</tr>

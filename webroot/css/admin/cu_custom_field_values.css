@@ -1,0 +1,17 @@
+.cucf-loop table {
+    border-bottom:1px solid #eeeeea;
+}
+.cucf-loop-add {
+    padding-top:20px;
+    padding-bottom:10px;
+    text-align:center;
+}
+.cucf-loop-block {
+    position: relative;
+}
+.cucf-loop-block>button{
+    position: absolute;
+    right: 10px;
+    top: 20px;
+    display:block;
+}

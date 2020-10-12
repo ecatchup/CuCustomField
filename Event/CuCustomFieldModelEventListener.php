@@ -193,7 +193,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 					'conditions' => array(
 						'CuCustomFieldDefinition.config_id' => $configData['CuCustomFieldConfig']['id']
 					),
-					'order'		 => 'CuCustomFieldDefinition.sort ASC',
+					'order'		 => 'CuCustomFieldDefinition.lft ASC',
 					'recursive'	 => -1,
 				));
 				if ($contentId) {
@@ -257,6 +257,12 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			return true;
 		}
 
+		foreach($Model->data['CuCustomFieldValue'] as $key => $value) {
+			if(isset($value['__loop-src__'])) {
+				unset($Model->data['CuCustomFieldValue'][$key]['__loop-src__']);
+			}
+		}
+
 		$this->setUpModel();
 		$data	 = $this->CuCustomFieldConfigModel->find('first', array(
 			'conditions' => array(
@@ -273,7 +279,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			'conditions' => array(
 				'CuCustomFieldDefinition.config_id' => $data['CuCustomFieldConfig']['id'],
 			),
-			'order'		 => 'CuCustomFieldDefinition.sort ASC',
+			'order'		 => 'CuCustomFieldDefinition.lft ASC',
 			'recursive'	 => -1,
 		));
 		if (!$fieldConfigField) {

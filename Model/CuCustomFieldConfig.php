@@ -29,7 +29,7 @@ class CuCustomFieldConfig extends CuCustomFieldAppModel
 		'CuCustomFieldDefinition' => [
 			'className' => 'CuCustomField.CuCustomFieldDefinition',
 			'foreignKey' => 'config_id',
-			'order' => ['CuCustomFieldDefinition.sort' => 'ASC'],
+			'order' => ['CuCustomFieldDefinition.lft' => 'ASC'],
 			'dependent' => true,
 		],
 	];

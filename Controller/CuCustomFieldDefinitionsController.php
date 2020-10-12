@@ -120,6 +120,18 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		} else {
 			$this->CuCustomFieldDefinition->set($this->request->data);
 			if ($this->CuCustomFieldDefinition->save()) {
+
+				if($this->request->data['CuCustomFieldDefinition']['field_type'] !== 'loop') {
+					$children = $this->CuCustomFieldDefinition->children($this->request->data['CuCustomFieldDefinition']['id']);
+					if($children) {
+						foreach($children as $child) {
+							$child['CuCustomFieldDefinition']['parent_id'] = null;
+							$this->CuCustomFieldDefinition->set($child);
+							$this->CuCustomFieldDefinition->save();
+						}
+					}
+				}
+
 				$message = 'フィールド定義「' . $this->request->data['CuCustomFieldDefinition']['name'] . '」を更新しました。';
 				$this->BcMessage->setSuccess($message);
 				$this->redirect(['action' => 'index', $configId]);
@@ -154,9 +166,6 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		if (empty($this->request->data)) {
 			$this->request->data = ['CuCustomFieldDefinition' => ['config_id' => $configId]];
 		} else {
-			$this->request->data['CuCustomFieldDefinition']['sort'] = (int) $this->CuCustomFieldDefinition->getMax('sort', [
-				'CuCustomFieldDefinition.config_id' => $configId
-			]) + 1;
 			$this->CuCustomFieldDefinition->create($this->request->data);
 			if ($this->CuCustomFieldDefinition->save()) {
 				$message = 'フィールド定義「' . $this->request->data['CuCustomFieldDefinition']['name'] . '」の追加が完了しました。';

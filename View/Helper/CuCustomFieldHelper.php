@@ -494,7 +494,10 @@ class CuCustomFieldHelper extends AppHelper
 					));
 					$formOption	 = Hash::merge($formOption, $_formOption);
 					break;
-
+				case 'googlemaps':
+					$_formOption['definitions'] = $data;
+					$formOption	= Hash::merge($formOption, $_formOption);
+					break;
 				default:
 					$formOption = Hash::merge($formOption, $_formOption);
 					break;
@@ -514,27 +517,21 @@ class CuCustomFieldHelper extends AppHelper
 	public function input($field, $options = array())
 	{
 		$fieldType	 = $options['type'];
-		$formString	 = '';
 
 		switch ($fieldType) {
 			case 'date':
-				$options['type'] = 'text';
-				$formString		 = $this->BcForm->datepicker($field, $options);
+				$options['type'] = 'datepicker';
+				$options['class'] = 'bca-textbox__input';
+				$formString		 = $this->BcForm->input($field, $options);
 				break;
-
 			case 'datetime':
-				$options['type'] = 'text';
-				$formString		 = $this->BcForm->dateTimePicker($field, $options);
+				$options['type'] = 'dateTimePicker';
+				$formString		 = $this->BcForm->input($field, $options);
 				break;
-
 			case 'wysiwyg':
 				$editorOptions	 = array(
 					'editor'		 => $this->_View->viewVars['siteConfig']['editor'],
 					'editorEnterBr'	 => $this->_View->viewVars['siteConfig']['editor_enter_br'],
-					// 'enterBr' => $this->_View->viewVars['siteConfig']['editor_enter_br'],
-					// 'editorEnterBr' => $this->_View->viewVars['siteConfig']['editor_enter_br']
-					// 'editorUseDraft' => true,
-					// 'editorDraftField' => 'detail_draft',
 					'editorWidth'	 => $options['width'],
 					'editorHeight'	 => $options['height'],
 					'editorToolType' => $options['editor_tool_type'],
@@ -542,7 +539,9 @@ class CuCustomFieldHelper extends AppHelper
 				$options		 = array_merge($editorOptions, $options);
 				$formString		 = $this->BcForm->ckeditor($field, $options);
 				break;
-
+			case 'googlemaps':
+				$formString = $this->_View->element('CuCustomField.admin/cu_custom_field_values/input_block/google_maps', ['definitions' => $options['definitions']]);
+				break;
 			default:
 				$formString = $this->BcForm->input($field, $options);
 				break;

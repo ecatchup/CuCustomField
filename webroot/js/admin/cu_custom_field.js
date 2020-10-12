@@ -251,6 +251,7 @@ $(function () {
 
             case 'date':
             case 'datetime':
+                $parentId.hide();
                 $defaultValue.show();
                 break;
 
@@ -302,6 +303,7 @@ $(function () {
                 break;
 
             case 'wysiwyg':
+                $parentId.hide();
                 $rowsGroup.show('slow');
                 $rows.show('slow');
                 $rows.attr('placeholder', '200px');
@@ -311,7 +313,7 @@ $(function () {
                 break;
 
             case 'googlemaps':
-
+                $parentId.hide();
                 $googlemapsGroup.show('slow');
                 break;
 

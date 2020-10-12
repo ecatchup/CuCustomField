@@ -98,9 +98,9 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 
 				$fieldConfigField = $this->CuCustomFieldConfigModel->PetitCustomFieldConfigMeta->find('all', [
 					'conditions' => [
-						'PetitCustomFieldConfigMeta.petit_custom_field_config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id']
+						'CuCustomFieldDefinition.config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id']
 					],
-					'order' => 'PetitCustomFieldConfigMeta.position ASC',
+					'order' => 'CuCustomFieldDefinition.lft ASC',
 					'recursive' => -1,
 				]);
 				$defaultFieldValue[$this->cuCustomFieldConfigs['CuCustomFieldConfig']['content_id']] = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition');
@@ -132,17 +132,25 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 			$Controller->request->data['CuCustomFieldConfig'] = $this->cuCustomFieldConfigs['CuCustomFieldConfig'];
 
 			if ($this->cuCustomFieldConfigs['CuCustomFieldConfig']['status']) {
-				$fieldConfigField = $this->CuCustomFieldDefinitionModel->find('all', [
+				$definitions = $this->CuCustomFieldDefinitionModel->find('all', [
 					'conditions' => [
-						'CuCustomFieldDefinition.config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id']
+						'CuCustomFieldDefinition.config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id'],
+						'CuCustomFieldDefinition.parent_id' => null
 					],
-					'order' => 'CuCustomFieldDefinition.sort ASC',
+					'order' => 'CuCustomFieldDefinition.lft ASC',
 					'recursive' => -1,
 				]);
-				$Controller->set('fieldConfigField', $fieldConfigField);
+				if($definitions) {
+					foreach($definitions as $key => $definition) {
+						if($definition['CuCustomFieldDefinition']['field_type'] === 'loop') {
+							$definitions[$key]['CuCustomFieldDefinition']['children'] = $this->CuCustomFieldDefinitionModel->children($definition['CuCustomFieldDefinition']['id']);
+						}
+					}
+				}
+				$Controller->set('definitions', $definitions);
 
 				// フィールド設定から初期値を生成
-				$defaultFieldValue = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition.default_value');
+				$defaultFieldValue = Hash::combine($definitions, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition.default_value');
 				$this->CuCustomFieldValueModel->keyValueDefaults = ['CuCustomFieldValue' => $defaultFieldValue];
 				$defalut = $this->CuCustomFieldValueModel->defaultValues();
 				// 初期値と存在値をマージする
@@ -159,18 +167,19 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 			$Controller->request->data['CuCustomFieldConfig'] = $this->cuCustomFieldConfigs['CuCustomFieldConfig'];
 
 			if ($this->cuCustomFieldConfigs['CuCustomFieldConfig']['status']) {
-				$fieldConfigField = $this->CuCustomFieldDefinitionModel->find('all', [
+				$definitions = $this->CuCustomFieldDefinitionModel->find('all', [
 					'conditions' => [
-						'CuCustomFieldDefinition.config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id']
+						'CuCustomFieldDefinition.config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id'],
+						'CuCustomFieldDefinition.parent_id' => null
 					],
-					'order' => 'CuCustomFieldDefinition.sort ASC',
+					'order' => 'CuCustomFieldDefinition.lft ASC',
 					'recursive' => -1,
 				]);
-				$Controller->set('fieldConfigField', $fieldConfigField);
+				$Controller->set('definitions', $definitions);
 
 				// フィールド設定から初期値を生成
 				if (empty($Controller->request->data['CuCustomFieldValue'])) {
-					$defaultFieldValue = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition.default_value');
+					$defaultFieldValue = Hash::combine($definitions, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition.default_value');
 					$this->CuCustomFieldValueModel->keyValueDefaults = ['CuCustomFieldValue' => $defaultFieldValue];
 					$defalut = $this->CuCustomFieldValueModel->defaultValues();
 					$Controller->request->data['CuCustomFieldValue'] = $defalut['CuCustomFieldValue'];

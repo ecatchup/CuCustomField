@@ -256,7 +256,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 				$controlSources['field_name'] = $this->find('list', [
 					'conditions' => $conditions,
 					'fields' => ['field_name'],
-					'order' => ['sort' => 'ASC'],
+					'order' => ['lft' => 'ASC'],
 				]);
 				break;
 		}
