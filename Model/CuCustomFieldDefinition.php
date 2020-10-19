@@ -237,6 +237,25 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	}
 
 	/**
+	 * シリアライズされているデータを復元する
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+	public function unserializeData($data = array())
+	{
+		foreach ($data as $key => $record) {
+			foreach($record[$this->alias] as $field => $value) {
+				// TODO BcUtil::unserialize を利用するとエラーが発生するため通常のシリアライズを利用する
+				if ($judge = @unserialize($value)) {
+					$data[$key][$this->alias][$field] = $judge;
+				}
+			}
+		}
+		return $data;
+	}
+
+	/**
 	 * コントロールソースを取得する
 	 *
 	 * @param string $field フィールド名

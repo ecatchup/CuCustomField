@@ -58,6 +58,7 @@ $config['cuCustomField'] = [
 			'checkbox' => 'チェックボックス',
 			'multiple' => 'マルチチェックボックス',
 			'pref' => '都道府県リスト',
+			'datasource' => '関連データ'
 		],
 		'コンテンツ' => [
 			'wysiwyg' => 'Wysiwyg Editor',

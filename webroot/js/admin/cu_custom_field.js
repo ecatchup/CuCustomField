@@ -171,6 +171,7 @@ $(function () {
         $validateRegex = $('#CuCustomFieldDefinitionValidateREGEXCHECK');
         $validateRegexBox = $('#CuCustomFieldDefinitionValidateRegexBox');
         $sizeGroup = $("#RowCuCustomFieldDefinitionSizeGroup");
+        $datasourceGroup = $("#RowCuCustomFieldDefinitionDatasourceGroup");
         $size = $("#RowCuCustomFieldDefinitionSize");
         $maxLength = $("#RowCuCustomFieldDefinitionMaxLenght");
         $labelName = $("#RowCuCustomFieldDefinitionLabelName");
@@ -322,6 +323,11 @@ $(function () {
                 $required.hide();
                 $("#CuCustomFieldDefinitionParentId").val('');
                 $("#CuCustomFieldDefinitionRequired").attr('checked', false);
+                break;
+
+            case 'datasource':
+                $datasourceGroup.show();
+                $defaultValue.show();
                 break;
         }
     }

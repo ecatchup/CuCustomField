@@ -574,6 +574,9 @@ class CuCustomFieldHelper extends AppHelper
 			case 'file':
 				$formString = $this->file($field, $options);
 				break;
+			case 'datasource':
+				$formString = $this->datasource($field, $options);
+				break;
 			default:
 				$formString = $this->BcForm->input($field, $options);
 				break;
@@ -919,4 +922,31 @@ class CuCustomFieldHelper extends AppHelper
 			return $this->BcHtml->link($label, $this->saveUrl . $fieldValue, $options);
 		}
 	}
+
+	/**
+	 * データソースから選択
+	 *
+	 * @param $fieldName
+	 * @param $options
+	 * @return string
+	 */
+	public function datasource($fieldName, $options) {
+		$dummy = serialize([
+			'table' => 'users',
+			'title' => 'real_name_1'
+		]);
+		$options['datasource'] = $dummy;
+		$datasource = unserialize($options['datasource']);
+		unset($options['datasource']);
+
+		$db = ConnectionManager::getDataSource('default');
+		$table = $db->config['prefix'] . $datasource['table'];
+		$sql = 'SELECT CuCustomField.id, CuCustomField.' . $datasource['title'] . ' FROM ' . $table . ' AS CuCustomField';
+		$record = $db->query($sql);
+		$list = Hash::combine($record, '{n}.CuCustomField.id', '{n}.CuCustomField.' . $datasource['title']);
+		$options['type'] = 'select';
+		$options['options'] = ['' => '指定なし'] + $list;
+		return $formString = $this->BcForm->input($fieldName, $options);
+	}
+
 }
