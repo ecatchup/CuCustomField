@@ -65,10 +65,15 @@ class CuCustomFieldUploadBehavior extends ModelBehavior {
 		$Folder->create($this->saveDir . $year . DS . $month . DS, 0777);
 		$baseFileName = $year . '/' . $month . '/' . CakeText::uuid();
 		$fileName = $baseFileName . '.' . $ext;
-		$thumbName = $baseFileName . '_thumb.' . $ext;
-		$imageresizer = new Imageresizer();
-		$imageresizer->resize($value['tmp_name'], $this->saveDir . $thumbName, 300, 300, false);
-		move_uploaded_file($value['tmp_name'], $this->saveDir . $fileName);
+		if(in_array($ext, ['png', 'gif', 'jpeg', 'jpg'])) {
+			$thumbName = $baseFileName . '_thumb.' . $ext;
+			$imageresizer = new Imageresizer();
+			$imageresizer->resize($value['tmp_name'], $this->saveDir . $fileName, 1000, 1000, false);
+			$imageresizer->resize($this->saveDir . $fileName, $this->saveDir . $thumbName, 300, 300, false);
+		} else {
+			move_uploaded_file($value['tmp_name'], $this->saveDir . $fileName);
+			chmod($this->saveDir . $fileName, 0666);
+		}
 		if($beforeValue) {
 			$this->deleteFile($beforeValue);
 		}

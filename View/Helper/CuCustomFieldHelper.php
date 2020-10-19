@@ -3,10 +3,10 @@
 /**
  * [Helper] CuCustomField
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * @copyright        Copyright, Catchup, Inc.
+ * @link            https://catchup.co.jp
+ * @package            CuCustomField
+ * @license            MIT
  */
 
 /**
@@ -23,14 +23,14 @@ class CuCustomFieldHelper extends AppHelper
 	 *
 	 * @var array
 	 */
-	public $helpers = array('BcForm', 'Blog.Blog', 'BcBaser', 'BcTime', 'BcText', 'BcHtml');
+	public $helpers = ['BcForm', 'Blog.Blog', 'BcBaser', 'BcTime', 'BcText', 'BcHtml'];
 
 	/**
 	 * カスタムフィールド設定情報
 	 *
 	 * @var array
 	 */
-	public $customFieldConfig = array();
+	public $customFieldConfig = [];
 
 	/**
 	 * カスタムフィールドデータ・モデル
@@ -44,21 +44,27 @@ class CuCustomFieldHelper extends AppHelper
 	 *
 	 * @var array
 	 */
-	public $publicFieldData = array();
+	public $publicFieldData = [];
 
 	/**
 	 * カスタムフィールドのフィールド別設定データ
 	 *
 	 * @var array
 	 */
-	public $publicFieldConfigData = array();
+	public $publicFieldConfigData = [];
 
 	/**
 	 * カスタムフィールド設定データ
 	 *
 	 * @var array
 	 */
-	public $publicConfigData = array();
+	public $publicConfigData = [];
+
+	/**
+	 * ファイルの保存URL
+	 * @var string
+	 */
+	public $saveUrl = '/files/cu_custom_field/';
 
 	/**
 	 * constructor
@@ -67,7 +73,7 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param View $View
 	 * @param array $settings
 	 */
-	public function __construct(View $View, $settings = array())
+	public function __construct(View $View, $settings = [])
 	{
 		parent::__construct($View, $settings);
 		$this->customFieldConfig = Configure::read('cuCustomField');
@@ -78,9 +84,9 @@ class CuCustomFieldHelper extends AppHelper
 		} else {
 			$this->CuCustomFieldValueModel = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
 		}
-		$this->publicConfigData		 = $this->CuCustomFieldValueModel->publicConfigData;
+		$this->publicConfigData = $this->CuCustomFieldValueModel->publicConfigData;
 		$this->publicFieldConfigData = $this->CuCustomFieldValueModel->publicFieldConfigData;
-		$this->publicFieldData		 = $this->CuCustomFieldValueModel->publicFieldData;
+		$this->publicFieldData = $this->CuCustomFieldValueModel->publicFieldData;
 	}
 
 	/**
@@ -90,13 +96,13 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $options
 	 * @return string
 	 */
-	public function getField($field = '', $options = array())
+	public function getField($field = '', $options = [])
 	{
-		$data		 = '';
-		$_options	 = array(
+		$data = '';
+		$_options = [
 			'field' => 'label_name',
-		);
-		$options	 = Hash::merge($_options, $options);
+		];
+		$options = Hash::merge($_options, $options);
 		if (!$field) {
 			return '';
 		}
@@ -104,7 +110,7 @@ class CuCustomFieldHelper extends AppHelper
 		// コンテンツのIDを設定
 		$contentId = $this->_View->viewVars['blogContent']['BlogContent']['id'];
 
-		foreach ($this->publicFieldConfigData as $key => $fieldConfig) {
+		foreach($this->publicFieldConfigData as $key => $fieldConfig) {
 			if ($contentId == $key) {
 				if (isset($fieldConfig[$field])) {
 					$data = $fieldConfig[$field][$options['field']];
@@ -122,13 +128,14 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param int $contentId
 	 * @return array
 	 */
-	public function getFieldConfigList($contentId) {
-		foreach ($this->publicFieldConfigData as $key => $fieldConfigList) {
+	public function getFieldConfigList($contentId)
+	{
+		foreach($this->publicFieldConfigData as $key => $fieldConfigList) {
 			if ($contentId == $key) {
 				return $fieldConfigList;
 			}
 		}
-		return array();
+		return [];
 	}
 
 	/**
@@ -138,16 +145,17 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param string $fieldName
 	 * @return array
 	 */
-	public function getFieldConfig($contentId, $fieldName) {
+	public function getFieldConfig($contentId, $fieldName)
+	{
 		$configList = $this->getFieldConfigList($contentId);
 		if ($configList) {
-			foreach ($configList as $key => $fieldConfig) {
+			foreach($configList as $key => $fieldConfig) {
 				if ($key === $fieldName) {
 					return $fieldConfig;
 				}
 			}
 		}
-		return array();
+		return [];
 	}
 
 	/**
@@ -157,9 +165,10 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param string $fieldName
 	 * @return array
 	 */
-	public function getFieldConfigChoice($contentId, $fieldName) {
-		$selector	 = array();
-		$config		 = $this->getFieldConfig($contentId, $fieldName);
+	public function getFieldConfigChoice($contentId, $fieldName)
+	{
+		$selector = [];
+		$config = $this->getFieldConfig($contentId, $fieldName);
 		if ($config) {
 			if (Hash::get($config, 'choices')) {
 				$selector = $this->textToArray(Hash::get($config, 'choices'));
@@ -175,7 +184,7 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $options
 	 * @return string
 	 */
-	public function getPdcfDataField($field = '', $options = array())
+	public function getPdcfDataField($field = '', $options = [])
 	{
 		if (Configure::read('debug') > 0) {
 			trigger_error(deprecatedMessage('ヘルパーメソッド：CuCustomFieldHelper::getPdcfDataField()', '1.0.0-beta', '1.0.0', '$this->CuCustomField->getField() を利用してください。'), E_USER_DEPRECATED);
@@ -191,16 +200,16 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $options
 	 * @return mixes
 	 */
-	public function get($post = array(), $field = '', $options = array())
+	public function get($post = [], $field = '', $options = [])
 	{
-		$data		 = '';
-		$_options	 = array(
-			'novalue'	 => '',
-			'format'	 => 'Y-m-d',
-			'model'		 => 'CuCustomFieldValue',
-			'separator'	 => ', ',
-		);
-		$options	 = Hash::merge($_options, $options);
+		$data = '';
+		$_options = [
+			'novalue' => '',
+			'format' => 'Y-m-d',
+			'model' => 'CuCustomFieldValue',
+			'separator' => ', ',
+		];
+		$options = Hash::merge($_options, $options);
 		if (!$field) {
 			return '';
 		}
@@ -218,7 +227,7 @@ class CuCustomFieldHelper extends AppHelper
 		// 記事のコンテンツID
 		$contentId = $post['BlogPost']['blog_content_id'];
 
-		foreach ($this->publicFieldConfigData as $key => $fieldConfig) {
+		foreach($this->publicFieldConfigData as $key => $fieldConfig) {
 			if ($contentId == $key) {
 				// 記事データには存在するが、記事に設定中のフィールド一覧にないものは利用しないために判定
 				if (!empty($fieldConfig[$field])) {
@@ -286,6 +295,19 @@ class CuCustomFieldHelper extends AppHelper
 							$data = $fieldValue;
 							break;
 
+						case 'file':
+							if($fieldValue) {
+								if(in_array(pathinfo($fieldValue, PATHINFO_EXTENSION), ['png', 'gif', 'jpeg', 'jpg'])) {
+									$data = $this->uploadImage($fieldValue, $options);
+								} else {
+									$options['label'] = $fieldConfig[$field]['name'];
+									$data = $this->fileLink($fieldValue, $options);
+								}
+							} else {
+								$data = '';
+							}
+							break;
+
 						default:
 							$data = $fieldValue;
 							break;
@@ -304,7 +326,7 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $options
 	 * @return mixes
 	 */
-	public function getPdcfData($post = array(), $field = '', $options = array())
+	public function getPdcfData($post = [], $field = '', $options = [])
 	{
 		if (Configure::read('debug') > 0) {
 			trigger_error(deprecatedMessage('ヘルパーメソッド：CuCustomFieldHelper::getPdcfData()', '1.0.0-beta', '1.0.0', '$this->CuCustomField->get() を利用してください。'), E_USER_DEPRECATED);
@@ -320,20 +342,20 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $options
 	 * @return string
 	 */
-	public function getGoogleMaps($post = array(), $field = '', $options = array())
+	public function getGoogleMaps($post = [], $field = '', $options = [])
 	{
 		$data = $this->get($post, $field, $options);
 		if (!$data) {
 			return false;
 		}
 
-		$elementOptions	 = array(
-			'googleMapsPopupText'	 => true,
-			'googleMapsWidth'	 => '100%',
-			'googleMapsHeight'	 => '400px',
-		);
+		$elementOptions = [
+			'googleMapsPopupText' => true,
+			'googleMapsWidth' => '100%',
+			'googleMapsHeight' => '400px',
+		];
 
-		foreach ($elementOptions as $key => $var) {
+		foreach($elementOptions as $key => $var) {
 			if (isset($options[$key])) {
 				$data[$key] = $options[$key];
 			} else {
@@ -352,7 +374,7 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $options
 	 * @return string
 	 */
-	public function getGoogleMapsText($post = array(), $field = '', $options = array())
+	public function getGoogleMapsText($post = [], $field = '', $options = [])
 	{
 		$data = $this->get($post, $field, $options);
 		if (isset($data['google_maps_text'])) {
@@ -368,9 +390,9 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $options
 	 * @return array
 	 */
-	public function getFormOption($data = array(), $section = '', $options = array())
+	public function getFormOption($data = [], $section = '', $options = [])
 	{
-		$formOption = array();
+		$formOption = [];
 
 		if ($data) {
 			$modelName = key($data);
@@ -379,93 +401,93 @@ class CuCustomFieldHelper extends AppHelper
 				$modelName = $section;
 			}
 			// フィールドのタイプを判定用に設定する
-			$fieldType	 = $data[$modelName]['field_type'];
-			$_formOption = array(
+			$fieldType = $data[$modelName]['field_type'];
+			$_formOption = [
 				'type' => $fieldType,
-			);
+			];
 
-			switch ($fieldType) {
+			switch($fieldType) {
 				case 'text':
 					if ($data[$modelName]['size']) {
-						$_formOption = array_merge($_formOption, array('size' => $data[$modelName]['size']));
+						$_formOption = array_merge($_formOption, ['size' => $data[$modelName]['size']]);
 					}
 					if ($data[$modelName]['max_length']) {
-						$_formOption = array_merge($_formOption, array('maxlength' => $data[$modelName]['max_length']));
+						$_formOption = array_merge($_formOption, ['maxlength' => $data[$modelName]['max_length']]);
 					} else {
-						$_formOption = array_merge($_formOption, array('maxlength' => '255'));
+						$_formOption = array_merge($_formOption, ['maxlength' => '255']);
 					}
 					if ($data[$modelName]['counter']) {
-						$_formOption = array_merge($_formOption, array('counter' => $data[$modelName]['counter']));
+						$_formOption = array_merge($_formOption, ['counter' => $data[$modelName]['counter']]);
 					}
 					if ($data[$modelName]['placeholder']) {
-						$_formOption = array_merge($_formOption, array('placeholder' => $data[$modelName]['placeholder']));
+						$_formOption = array_merge($_formOption, ['placeholder' => $data[$modelName]['placeholder']]);
 					}
 					$formOption = Hash::merge($formOption, $_formOption);
 					break;
 
 				case 'textarea':
 					if ($data[$modelName]['rows']) {
-						$_formOption = array_merge($_formOption, array('rows' => $data[$modelName]['rows']));
+						$_formOption = array_merge($_formOption, ['rows' => $data[$modelName]['rows']]);
 					}
 					if ($data[$modelName]['cols']) {
-						$_formOption = array_merge($_formOption, array('cols' => $data[$modelName]['cols']));
+						$_formOption = array_merge($_formOption, ['cols' => $data[$modelName]['cols']]);
 					}
 					if ($data[$modelName]['placeholder']) {
-						$_formOption = array_merge($_formOption, array('placeholder' => $data[$modelName]['placeholder']));
+						$_formOption = array_merge($_formOption, ['placeholder' => $data[$modelName]['placeholder']]);
 					}
 					$formOption = Hash::merge($formOption, $_formOption);
 					break;
 
 				case 'date':
 					if ($data[$modelName]['size']) {
-						$_formOption = array_merge($_formOption, array('size' => $data[$modelName]['size']));
+						$_formOption = array_merge($_formOption, ['size' => $data[$modelName]['size']]);
 					} else {
-						$_formOption = array_merge($_formOption, array('size' => 12));
+						$_formOption = array_merge($_formOption, ['size' => 12]);
 					}
 					if ($data[$modelName]['max_length']) {
-						$_formOption = array_merge($_formOption, array('maxlength' => $data[$modelName]['max_length']));
+						$_formOption = array_merge($_formOption, ['maxlength' => $data[$modelName]['max_length']]);
 					} else {
-						$_formOption = array_merge($_formOption, array('maxlength' => 10));
+						$_formOption = array_merge($_formOption, ['maxlength' => 10]);
 					}
 					$formOption = Hash::merge($formOption, $_formOption);
 					break;
 
 				case 'datetime':
 					if ($data[$modelName]['size']) {
-						$_formOption = array_merge($_formOption, array('size' => $data[$modelName]['size']));
+						$_formOption = array_merge($_formOption, ['size' => $data[$modelName]['size']]);
 					} else {
-						$_formOption = array_merge($_formOption, array('size' => 12));
+						$_formOption = array_merge($_formOption, ['size' => 12]);
 					}
 					if ($data[$modelName]['max_length']) {
-						$_formOption = array_merge($_formOption, array('maxlength' => $data[$modelName]['max_length']));
+						$_formOption = array_merge($_formOption, ['maxlength' => $data[$modelName]['max_length']]);
 					} else {
-						$_formOption = array_merge($_formOption, array('maxlength' => 10));
+						$_formOption = array_merge($_formOption, ['maxlength' => 10]);
 					}
 					$formOption = Hash::merge($formOption, $_formOption);
 					break;
 
 				case 'select':
 					if ($data[$modelName]['choices']) {
-						$option		 = $this->textToArray($data[$modelName]['choices']);
-						$_formOption = array_merge($_formOption, array('options' => $option));
+						$option = $this->textToArray($data[$modelName]['choices']);
+						$_formOption = array_merge($_formOption, ['options' => $option]);
 					}
 					$formOption = Hash::merge($formOption, $_formOption);
 					break;
 
 				case 'radio':
 					if ($data[$modelName]['choices']) {
-						$option		 = $this->textToArray($data[$modelName]['choices']);
-						$_formOption = array_merge($_formOption, array('options' => $option));
+						$option = $this->textToArray($data[$modelName]['choices']);
+						$_formOption = array_merge($_formOption, ['options' => $option]);
 					}
 					if ($data[$modelName]['separator']) {
-						$_formOption = array_merge($_formOption, array('separator' => $data[$modelName]['separator']));
+						$_formOption = array_merge($_formOption, ['separator' => $data[$modelName]['separator']]);
 					}
 					$formOption = Hash::merge($formOption, $_formOption);
 					break;
 
 				case 'checkbox':
 					if ($data[$modelName]['label_name']) {
-						$_formOption = array_merge($_formOption, array('label' => $data[$modelName]['label_name']));
+						$_formOption = array_merge($_formOption, ['label' => $data[$modelName]['label_name']]);
 					}
 					$formOption = Hash::merge($formOption, $_formOption);
 					break;
@@ -473,37 +495,37 @@ class CuCustomFieldHelper extends AppHelper
 				case 'multiple':
 					$_formOption['type'] = 'select';
 					if ($data[$modelName]['choices']) {
-						$option		 = $this->textToArray($data[$modelName]['choices']);
-						$_formOption = array_merge($_formOption, array('options' => $option, $fieldType => 'checkbox'));
+						$option = $this->textToArray($data[$modelName]['choices']);
+						$_formOption = array_merge($_formOption, ['options' => $option, $fieldType => 'checkbox']);
 					}
 					$formOption = Hash::merge($formOption, $_formOption);
 					break;
 
 				case 'pref':
 					$_formOption['type'] = 'select';
-					$_formOption		 = array_merge($_formOption, array('options' => $this->BcText->prefList()));
-					$formOption			 = Hash::merge($formOption, $_formOption);
+					$_formOption = array_merge($_formOption, ['options' => $this->BcText->prefList()]);
+					$formOption = Hash::merge($formOption, $_formOption);
 					break;
 
 				case 'wysiwyg':
 					if ($data[$modelName]['rows']) {
-						$_formOption = array_merge($_formOption, array('height' => $data[$modelName]['rows']));
+						$_formOption = array_merge($_formOption, ['height' => $data[$modelName]['rows']]);
 					} else {
-						$_formOption = array_merge($_formOption, array('height' => '200px'));
+						$_formOption = array_merge($_formOption, ['height' => '200px']);
 					}
 					if ($data[$modelName]['cols']) {
-						$_formOption = array_merge($_formOption, array('width' => $data[$modelName]['cols']));
+						$_formOption = array_merge($_formOption, ['width' => $data[$modelName]['cols']]);
 					} else {
-						$_formOption = array_merge($_formOption, array('width' => '100%'));
+						$_formOption = array_merge($_formOption, ['width' => '100%']);
 					}
-					$_formOption = array_merge($_formOption, array(
+					$_formOption = array_merge($_formOption, [
 						'editor_tool_type' => $data[$modelName]['editor_tool_type'],
-					));
-					$formOption	 = Hash::merge($formOption, $_formOption);
+					]);
+					$formOption = Hash::merge($formOption, $_formOption);
 					break;
 				case 'googlemaps':
 					$_formOption['definitions'] = $data;
-					$formOption	= Hash::merge($formOption, $_formOption);
+					$formOption = Hash::merge($formOption, $_formOption);
 					break;
 				default:
 					$formOption = Hash::merge($formOption, $_formOption);
@@ -521,30 +543,30 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $options
 	 * @return string
 	 */
-	public function input($field, $options = array())
+	public function input($field, $options = [])
 	{
-		$fieldType	 = $options['type'];
+		$fieldType = $options['type'];
 
-		switch ($fieldType) {
+		switch($fieldType) {
 			case 'date':
 				$options['type'] = 'datepicker';
 				$options['class'] = 'bca-textbox__input';
-				$formString		 = $this->BcForm->input($field, $options);
+				$formString = $this->BcForm->input($field, $options);
 				break;
 			case 'datetime':
 				$options['type'] = 'dateTimePicker';
-				$formString		 = $this->BcForm->input($field, $options);
+				$formString = $this->BcForm->input($field, $options);
 				break;
 			case 'wysiwyg':
-				$editorOptions	 = array(
-					'editor'		 => $this->_View->viewVars['siteConfig']['editor'],
-					'editorEnterBr'	 => $this->_View->viewVars['siteConfig']['editor_enter_br'],
-					'editorWidth'	 => $options['width'],
-					'editorHeight'	 => $options['height'],
+				$editorOptions = [
+					'editor' => $this->_View->viewVars['siteConfig']['editor'],
+					'editorEnterBr' => $this->_View->viewVars['siteConfig']['editor_enter_br'],
+					'editorWidth' => $options['width'],
+					'editorHeight' => $options['height'],
 					'editorToolType' => $options['editor_tool_type'],
-				);
-				$options		 = array_merge($editorOptions, $options);
-				$formString		 = $this->BcForm->ckeditor($field, $options);
+				];
+				$options = array_merge($editorOptions, $options);
+				$formString = $this->BcForm->ckeditor($field, $options);
 				break;
 			case 'googlemaps':
 				$formString = $this->_View->element('CuCustomField.admin/cu_custom_field_values/input_block/google_maps', ['definitions' => $options['definitions']]);
@@ -572,13 +594,13 @@ class CuCustomFieldHelper extends AppHelper
 	public function arrayValue($key, $array, $noValue = '')
 	{
 		if (is_numeric($key)) {
-			$key = (int) $key;
+			$key = (int)$key;
 		}
 		if (isset($array[$key])) {
 			return $array[$key];
 		}
 		// グループ指定がある場合の判定
-		foreach ($array as $group => $list) {
+		foreach($array as $group => $list) {
 			if (isset($list[$key])) {
 				return $list[$key];
 			}
@@ -597,20 +619,20 @@ class CuCustomFieldHelper extends AppHelper
 	public function textToArray($str = '')
 	{
 		// "CR + LF: \r\n｜CR: \r｜LF: \n"
-		$code	 = array('\r\n', '\r');
+		$code = ['\r\n', '\r'];
 		// 文頭文末の空白を削除する
-		$str	 = trim($str);
+		$str = trim($str);
 		// 改行コードを統一する（改行コードを変換する際はダブルクォーテーションで指定する）
 		//$str = str_replace($code, '\n', $str);
-		$str	 = preg_replace('/\r\n|\r|\n/', "\n", $str);
+		$str = preg_replace('/\r\n|\r|\n/', "\n", $str);
 		// 分割（結果は配列に入る）
 		// 文字によっては文字化けを起こして正しく配列に変換されない
 		// preg系は、UTF8文字列を扱う場合はu修飾子が必要
-		$str	 = preg_split('/[\s,]+/u', $str);
+		$str = preg_split('/[\s,]+/u', $str);
 		//$str = explode('\n', $str);
 		// 区切り文字を利用して、キーと値を指定する場合の処理
-		$keyValueArray = array();
-		foreach ($str as $key => $value) {
+		$keyValueArray = [];
+		foreach($str as $key => $value) {
 			$array = preg_split('/[:]+/', $value);
 			if (count($array) > 1) {
 				$keyValueArray[$array[1]] = $array[0];
@@ -632,12 +654,12 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $options
 	 * @return boolean
 	 */
-	public function judgeShowFieldConfig($data = array(), $options = array())
+	public function judgeShowFieldConfig($data = [], $options = [])
 	{
-		$_options	 = array(
+		$_options = [
 			'field' => '',
-		);
-		$options	 = array_merge($_options, $options);
+		];
+		$options = array_merge($_options, $options);
 
 		if ($data) {
 			if (isset($data['CuCustomFieldDefinition'])) {
@@ -660,7 +682,7 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $data
 	 * @return boolean
 	 */
-	public function judgeStatus($data = array())
+	public function judgeStatus($data = [])
 	{
 		if ($data) {
 			if (isset($data['CuCustomFieldDefinition'])) {
@@ -683,7 +705,7 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $data
 	 * @return int
 	 */
-	public function hasCustomField($data = array())
+	public function hasCustomField($data = [])
 	{
 		$count = 0;
 		if ($data['CuCustomFieldDefinition']) {
@@ -710,7 +732,7 @@ class CuCustomFieldHelper extends AppHelper
 				$data = $data['CuCustomFieldConfig'];
 			}
 		}
-		$allowPublish = (int) $data['status'];
+		$allowPublish = (int)$data['status'];
 		return $allowPublish;
 	}
 
@@ -720,16 +742,16 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $data
 	 * @return array
 	 */
-	public function convertKeyValueToModelData($data = array())
+	public function convertKeyValueToModelData($data = [])
 	{
-		$dataField = array();
+		$dataField = [];
 		if (isset($data['CuCustomFieldDefinition'])) {
 			$dataField[]['CuCustomFieldDefinition'] = $data['CuCustomFieldDefinition'];
 		}
 
-		$detailArray = array();
-		foreach ($dataField as $value) {
-			$keyArray								 = preg_split('/\./', $value['CuCustomFieldDefinition']['key'], 2);
+		$detailArray = [];
+		foreach($dataField as $value) {
+			$keyArray = preg_split('/\./', $value['CuCustomFieldDefinition']['key'], 2);
 			$detailArray[$keyArray[0]][$keyArray[1]] = $value['CuCustomFieldDefinition']['value'];
 		}
 		return $detailArray;
@@ -742,15 +764,15 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param array $options
 	 * @return void
 	 */
-	public function showCuCustomField($post = array(), $options = array())
+	public function showCuCustomField($post = [], $options = [])
 	{
-		$_options	 = array(
+		$_options = [
 			'template' => 'cu_custom_field_block'
-		);
-		$options	 = Hash::merge($_options, $options);
+		];
+		$options = Hash::merge($_options, $options);
 		extract($options);
 
-		$this->BcBaser->element('CuCustomField.' . $template, array('plugin' => 'cu_custom_field', 'post' => $post));
+		$this->BcBaser->element('CuCustomField.' . $template, ['plugin' => 'cu_custom_field', 'post' => $post]);
 	}
 
 	/**
@@ -761,7 +783,7 @@ class CuCustomFieldHelper extends AppHelper
 	public function previewPrefList()
 	{
 		$prefList = $this->BcText->prefList();
-		foreach ($prefList as $key => $value) {
+		foreach($prefList as $key => $value) {
 			if (!$key) {
 				$prefList[$key] = '値 ＝ ' . $value;
 			} else {
@@ -777,12 +799,13 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param $currentKey
 	 * @return bool
 	 */
-	public function isAvailableDefinitionMoveUp($records, $currentKey) {
+	public function isAvailableDefinitionMoveUp($records, $currentKey)
+	{
 		$current = $records[$currentKey];
 		$parentId = $current['CuCustomFieldDefinition']['parent_id'];
-		for($i=$currentKey-1;$i>=0;$i--) {
-			if(isset($records[$i])) {
-				if($records[$i]['CuCustomFieldDefinition']['parent_id'] === $parentId) {
+		for($i = $currentKey - 1; $i >= 0; $i--) {
+			if (isset($records[$i])) {
+				if ($records[$i]['CuCustomFieldDefinition']['parent_id'] === $parentId) {
 					return true;
 				}
 			} else {
@@ -798,12 +821,13 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param $currentKey
 	 * @return bool
 	 */
-	public function isAvailableDefinitionMoveDown($records, $currentKey) {
+	public function isAvailableDefinitionMoveDown($records, $currentKey)
+	{
 		$current = $records[$currentKey];
 		$parentId = $current['CuCustomFieldDefinition']['parent_id'];
-		for($i=$currentKey+1;$i<=count($records)-1;$i++) {
-			if(isset($records[$i])) {
-				if($records[$i]['CuCustomFieldDefinition']['parent_id'] === $parentId) {
+		for($i = $currentKey + 1; $i <= count($records) - 1; $i++) {
+			if (isset($records[$i])) {
+				if ($records[$i]['CuCustomFieldDefinition']['parent_id'] === $parentId) {
 					return true;
 				}
 			} else {
@@ -813,7 +837,15 @@ class CuCustomFieldHelper extends AppHelper
 		return false;
 	}
 
-	public function file($fieldName, $options) {
+	/**
+	 * ファイルアップロードコントロール
+	 *
+	 * @param string $fieldName
+	 * @param array $options
+	 * @return string
+	 */
+	public function file($fieldName, $options)
+	{
 		// ファイル
 		$output = $this->BcForm->input($fieldName, $options);
 		// 保存値
@@ -825,17 +857,66 @@ class CuCustomFieldHelper extends AppHelper
 				$this->BcForm->label($fieldName . '_delete', __d('baser', '削除する'))
 			);
 			// ファイルリンク
-			$saveDir = '/files/cu_custom_field/';
 			list($name, $ext) = explode('.', $value);
 			$thumb = $name . '_thumb.' . $ext;
-			$fileLinkTag = '<figure class="bca-file__figure">' .$this->BcHtml->link(
-				$this->BcHtml->image($saveDir . $thumb, ['width' => 300]),
-				$saveDir . $value,
-				['rel' => 'colorbox', 'escape' => false]
-			) . '</figure>';
+			if(in_array($ext, ['png', 'gif', 'jpeg', 'jpg'])) {
+				$fileLinkTag = '<figure class="bca-file__figure">' . $this->BcHtml->link(
+					$this->BcHtml->image($this->saveUrl . $thumb, ['width' => 300]),
+					$this->saveUrl . $value,
+					['rel' => 'colorbox', 'escape' => false]
+				) . '</figure>';
+			} else {
+				$fileLinkTag = '<p>' . $this->BcHtml->link(
+					'ダウンロード',
+					$this->saveUrl . $value,
+					['target' => '_blank', 'class' => 'bca-btn']
+				) . '</p>';
+			}
+
 			$output = $output . $delCheckTag . '<br>' . $fileLinkTag;
 		}
 		return $output;
 	}
 
+	/**
+	 * アップロード画像
+	 * @param $fieldValue
+	 * @param $options
+	 * @return mixed|string
+	 */
+	public function uploadImage($fieldValue, $options)
+	{
+		$options = array_merge([
+			'width' => '100%',
+		], $options);
+		$noValue = $options['novalue'];
+		unset($options['format'], $options['model'], $options['separator'], $options['novalue']);
+		if(!$fieldValue) {
+			return $noValue;
+		} else {
+			return $this->BcHtml->image($this->saveUrl . $fieldValue, $options);
+		}
+	}
+
+	/**
+	 * ファイルリンク
+	 *
+	 * @param string $fieldValue
+	 * @param array $options
+	 * @return mixed|string
+	 */
+	public function fileLink($fieldValue, $options) {
+		$options = array_merge([
+			'target' => '_blank',
+			'label' => 'ダウンロード'
+		], $options);
+		$noValue = $options['novalue'];
+		$label = $options['label'];
+		unset($options['format'], $options['model'], $options['separator'], $options['novalue']);
+		if(!$fieldValue) {
+			return $noValue;
+		} else {
+			return $this->BcHtml->link($label, $this->saveUrl . $fieldValue, $options);
+		}
+	}
 }
