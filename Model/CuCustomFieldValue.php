@@ -21,7 +21,8 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	public $actsAs = array(
 		'CuCustomField.KeyValue' => [
 			'foreignKeyField' => 'relate_id'
-		]
+		],
+		'CuCustomField.CuCustomFieldUpload'
 	);
 
 	/**
@@ -188,6 +189,38 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * フィールド定義を取得する
+	 * @param $relateId
+	 * @param $fieldName
+	 * @return false|mixed
+	 */
+	public function getFieldDefinition($relateId, $fieldName) {
+		/* @var BlogPost $BlogPost */
+		$BlogPost = ClassRegistry::init('Blog.BlogPost');
+		$contentId = $BlogPost->field('blog_content_id', ['BlogPost.id' => $relateId]);
+		/* @var CuCustomFieldConfig $$CustomFieldConfig */
+		$CustomFieldConfig = ClassRegistry::init('CuCustomField.CuCustomFieldConfig');
+		$config = $CustomFieldConfig->find('first', [
+			'conditions' => ['CuCustomFieldConfig.content_id' => $contentId],
+			'recursive' => 1]
+		);
+		if(is_array($config) && empty($config['CuCustomFieldDefinition'])) {
+			return false;
+		}
+		if($fieldName) {
+			list(, $fieldName) = explode('.', $fieldName);
+			foreach($config['CuCustomFieldDefinition'] as $definition) {
+				if($definition['field_name'] === $fieldName) {
+					return $definition;
+				}
+			}
+			return false;
+		} else {
+			return $config['CuCustomFieldDefinition'];
+		}
 	}
 
 }

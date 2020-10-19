@@ -8,6 +8,13 @@
  * @package			CuCustomField
  * @license			MIT
  */
+
+/**
+ * Class CuCustomFieldHelper
+ *
+ * @property BcFormHelper $BcForm
+ * @property BcHtmlHelper $BcHtml
+ */
 class CuCustomFieldHelper extends AppHelper
 {
 
@@ -16,7 +23,7 @@ class CuCustomFieldHelper extends AppHelper
 	 *
 	 * @var array
 	 */
-	public $helpers = array('BcForm', 'Blog.Blog', 'BcBaser', 'BcTime', 'BcText');
+	public $helpers = array('BcForm', 'Blog.Blog', 'BcBaser', 'BcTime', 'BcText', 'BcHtml');
 
 	/**
 	 * カスタムフィールド設定情報
@@ -542,6 +549,9 @@ class CuCustomFieldHelper extends AppHelper
 			case 'googlemaps':
 				$formString = $this->_View->element('CuCustomField.admin/cu_custom_field_values/input_block/google_maps', ['definitions' => $options['definitions']]);
 				break;
+			case 'file':
+				$formString = $this->file($field, $options);
+				break;
 			default:
 				$formString = $this->BcForm->input($field, $options);
 				break;
@@ -801,6 +811,31 @@ class CuCustomFieldHelper extends AppHelper
 			}
 		}
 		return false;
+	}
+
+	public function file($fieldName, $options) {
+		// ファイル
+		$output = $this->BcForm->input($fieldName, $options);
+		// 保存値
+		$value = $this->value($fieldName);
+		if ($value && is_string($value)) {
+			// 削除
+			$delCheckTag = $this->BcHtml->tag('span',
+				$this->BcForm->checkbox($fieldName . '_delete', ['class' => 'bca-file__delete-input']) .
+				$this->BcForm->label($fieldName . '_delete', __d('baser', '削除する'))
+			);
+			// ファイルリンク
+			$saveDir = '/files/cu_custom_field/';
+			list($name, $ext) = explode('.', $value);
+			$thumb = $name . '_thumb.' . $ext;
+			$fileLinkTag = '<figure class="bca-file__figure">' .$this->BcHtml->link(
+				$this->BcHtml->image($saveDir . $thumb, ['width' => 300]),
+				$saveDir . $value,
+				['rel' => 'colorbox', 'escape' => false]
+			) . '</figure>';
+			$output = $output . $delCheckTag . '<br>' . $fileLinkTag;
+		}
+		return $output;
 	}
 
 }
