@@ -94,8 +94,50 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 				$event->data[0]['recursive'] = 2;
 			}
 		}
-
+		$request = Router::getRequest();
+		if($request->query) {
+			$Model->bindModel(['hasMany' => [
+				'CuCustomFieldValue' => [
+					'className' => 'CuCustomField.CuCustomFieldValue',
+					'order' => 'id',
+					'foreignKey' => 'relate_id',
+				]
+			]], false);
+			$event->data[0] = $this->customSearchQuery($event->data[0], $request->query);
+		}
 		return $event->data;
+	}
+
+	public function customSearchQuery($query, $get) {
+		$conditions = [];
+		if(!empty($query['conditions'])) {
+			$conditions = $query['conditions'];
+		}
+		foreach($get as $key => $value) {
+			$conditions[] = [
+				'key' => 'CuCustomFieldValue.' . $key,
+				'value LIKE' => '%' . $value . '%'
+			];
+		}
+		$query['conditions'] = $conditions;
+		$query['joins'] = [[
+			'table' => 'cu_custom_field_values',
+        	'alias' => 'CuCustomFieldValue',
+        	'type' => 'left',
+        	'conditions' => [
+            	'BlogPost.id = CuCustomFieldValue.relate_id'
+            ]
+        ]];
+        if($query['fields']) {
+			if(is_array($query['fields'])) {
+				$query['fields'][0] = 'DISTINCT ' . $query['fields'][0];
+			} else {
+				$query['fields'] = 'DISTINCT ' . $query['fields'];
+			}
+		} else {
+        	$query['fields'] = 'DISTINCT BlogPost.*';
+		}
+		return $query;
 	}
 
 	/**
