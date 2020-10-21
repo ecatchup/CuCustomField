@@ -307,7 +307,9 @@ class CuCustomFieldHelper extends AppHelper
 								$data = '';
 							}
 							break;
-
+						case 'datasource':
+							$data = $this->relatedData($fieldValue, $fieldConfig[$field]['option_meta']['datasource'], $options);
+							break;
 						default:
 							$data = $fieldValue;
 							break;
@@ -525,6 +527,10 @@ class CuCustomFieldHelper extends AppHelper
 					break;
 				case 'googlemaps':
 					$_formOption['definitions'] = $data;
+					$formOption = Hash::merge($formOption, $_formOption);
+					break;
+				case 'datasource':
+					$_formOption['datasource'] = $data[$modelName]['option_meta']['datasource'];
 					$formOption = Hash::merge($formOption, $_formOption);
 					break;
 				default:
@@ -890,13 +896,19 @@ class CuCustomFieldHelper extends AppHelper
 	public function uploadImage($fieldValue, $options)
 	{
 		$options = array_merge([
-			'width' => '100%',
+			'width' => (!empty($options['thumb']))? false : '100%',
+			'thumb' => false
 		], $options);
 		$noValue = $options['novalue'];
-		unset($options['format'], $options['model'], $options['separator'], $options['novalue']);
+		$thumb = $options['thumb'];
+
+		unset($options['format'], $options['model'], $options['separator'], $options['novalue'], $options['thumb']);
 		if(!$fieldValue) {
 			return $noValue;
 		} else {
+			if($thumb) {
+				$fieldValue = preg_replace('/^(.+\/)([^\/]+)(\.[a-z]+)$/', "$1$2_thumb$3", $fieldValue);
+			}
 			return $this->BcHtml->image($this->saveUrl . $fieldValue, $options);
 		}
 	}
@@ -931,22 +943,59 @@ class CuCustomFieldHelper extends AppHelper
 	 * @return string
 	 */
 	public function datasource($fieldName, $options) {
-		$dummy = serialize([
-			'table' => 'users',
-			'title' => 'real_name_1'
-		]);
-		$options['datasource'] = $dummy;
-		$datasource = unserialize($options['datasource']);
+		$datasource = $options['datasource'];
 		unset($options['datasource']);
-
-		$db = ConnectionManager::getDataSource('default');
-		$table = $db->config['prefix'] . $datasource['table'];
-		$sql = 'SELECT CuCustomField.id, CuCustomField.' . $datasource['title'] . ' FROM ' . $table . ' AS CuCustomField';
-		$record = $db->query($sql);
-		$list = Hash::combine($record, '{n}.CuCustomField.id', '{n}.CuCustomField.' . $datasource['title']);
+		$list = $this->getRelatedList($datasource);
 		$options['type'] = 'select';
 		$options['options'] = ['' => '指定なし'] + $list;
 		return $formString = $this->BcForm->input($fieldName, $options);
 	}
 
+	/**
+	 * 関連データ
+	 * @param string $fieldValue
+	 * @param array $datasource
+	 * @param string $noValue
+	 * @return mixied|string
+	 */
+	public function relatedData ($fieldValue, $datasource, $options) {
+		$list = $this->getRelatedList($datasource, 'all');
+		foreach($list as $record) {
+			if($fieldValue === $record['CuCustomField']['id']) {
+				return $record['CuCustomField'];
+			}
+		}
+	}
+
+	/**
+	 * 関連データリスト
+	 * @param array $datasource
+	 * @return array
+	 */
+	public function getRelatedList($datasource, $type = 'list') {
+		$db = ConnectionManager::getDataSource('default');
+		$table = $db->config['prefix'] . $datasource['table'];
+		$where = '';
+		if($datasource['entity_id']) {
+			$where = ' WHERE blog_content_id = ' . $datasource['entity_id'];
+		}
+		switch ($type) {
+			case 'all' :
+				$field = '*';
+				break;
+			default :
+				$field = 'CuCustomField.id, CuCustomField.' . $datasource['title'];
+
+		}
+		$sql = 'SELECT ' . $field . ' FROM ' . $table . ' AS CuCustomField';
+		if($where) {
+			$sql .= $where;
+		}
+		$record = $db->query($sql);
+		if($type === 'all') {
+			return $record;
+		} else {
+			return Hash::combine($record, '{n}.CuCustomField.id', '{n}.CuCustomField.' . $datasource['title']);
+		}
+	}
 }

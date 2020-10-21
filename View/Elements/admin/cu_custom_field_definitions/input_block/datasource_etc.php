@@ -21,5 +21,10 @@
 			<?php echo $this->BcForm->input('CuCustomFieldDefinition.option_meta.datasource.title', ['type' => 'text', 'size' => 10, 'placeholder' => 'name']) ?>
 			<?php echo $this->BcForm->error('CuCustomFieldDefinition.option_meta.datasource.title') ?>
 		</span>
+		<span id="Row<?php echo $currentModelName . Inflector::camelize('option_meta_datasource_entity_id'); ?>">
+			<?php echo $this->BcForm->label('CuCustomFieldDefinition.option_meta.datasource.entity_id', 'ブログコンテンツID') ?>
+			<?php echo $this->BcForm->input('CuCustomFieldDefinition.option_meta.datasource.entity_id', ['type' => 'text', 'size' => 10, 'placeholder' => 'name']) ?>
+			<?php echo $this->BcForm->error('CuCustomFieldDefinition.option_meta.datasource.entity_id') ?>
+		</span>
 	</td>
 </tr>
