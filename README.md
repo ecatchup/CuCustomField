@@ -1,6 +1,6 @@
 # カスタムフィールド プラグイン
 
-PetitCustomField プラグインは、ブログ記事に入力欄を追加できるbaserCMS専用のプラグインです。
+CustomField プラグインは、ブログ記事に入力欄を追加できるbaserCMS専用のプラグインです。
 
 * カスタムフィールド設定管理: 利用するカスタムフィールドをコンテンツ毎（ブログ毎）に管理できます。
 * カスタムフィールド管理: コンテンツ毎のカスタムフィールドの並び順、所属コンテンツの編集ができます。
@@ -9,8 +9,8 @@ PetitCustomField プラグインは、ブログ記事に入力欄を追加でき
 
 ## Installation
 
-1. 圧縮ファイルを解凍後、BASERCMS/app/Plugin/PetitCustomField に配置します。
-2. 管理システムのプラグイン管理にアクセスし、表示されている PetitCustomField プラグイン をインストール（有効化）して下さい。
+1. 圧縮ファイルを解凍後、BASERCMS/app/Plugin/CustomField に配置します。
+2. 管理システムのプラグイン管理にアクセスし、表示されている CustomField プラグイン をインストール（有効化）して下さい。
 3. カスタムフィールド設定一覧画面にアクセスし、利用するコンテンツ毎に有効化します。
 4. カスタムフィールド設定一覧画面の「新規追加」よりフィールドを追加します。
 5. フィールド追加後、ブログ記事の投稿画面にアクセスすると、入力項目が追加されてます。
@@ -20,7 +20,7 @@ PetitCustomField プラグインは、ブログ記事に入力欄を追加でき
 
 公開側での利用サンプルは以下のエレメントを参照してください。
 
-* /PetitCustomField/View/Elements/petit_blog_custom_field_block.php
+* /CustomField/View/Elements/blog_custom_field_block.php
 
 
 ## Uses Config
@@ -33,18 +33,18 @@ PetitCustomField プラグインは、ブログ記事に入力欄を追加でき
 
 ## CU確認済バージョン
 
-|baserCMSバージョン|プラグインバージョン|ステータス|コメント|
-|:--|:--|:--|:--|
-|4.0.9|2.0.0|未承認|動作可|
-|4.2.0|2.0.4|未承認|動作可|
-|4.3.0|3.0.0|未承認|動作可|
-
+| baserCMSバージョン | プラグインバージョン | ステータス | コメント |
+| ---- | ---- | ---- | ---- |
+| 4.0.9 | 2.0.0 | 未承認 | 動作可 |
+| 4.2.0 | 2.0.4 | 未承認 | 動作可 |
+| 4.3.0 | 3.0.0 | 未承認 | 動作可 |
+| 4.4.1 | 4.0.0 | 承認 | 動作可 |
 
 ## Thanks ##
 
-- [http://basercms.net](http://basercms.net/)
-- [http://wiki.basercms.net/](http://wiki.basercms.net/)
-- [http://doc.basercms.net/](http://doc.basercms.net/)
-- [http://cakephp.jp](http://cakephp.jp)
-- [Cake Development Corporation](http://cakedc.com)
-- [DerEuroMark](http://www.dereuromark.de/)
+- [https://basercms.net](http://basercms.net/)
+- [https://wiki.basercms.net/](http://wiki.basercms.net/)
+- [https://doc.basercms.net/](http://doc.basercms.net/)
+- [https://cakephp.jp](https://cakephp.org)
+- [Cake Development Corporation](https://cakedc.com)
+- [DerEuroMark](https://www.dereuromark.de/)
