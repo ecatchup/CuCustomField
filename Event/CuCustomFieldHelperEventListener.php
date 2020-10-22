@@ -51,38 +51,38 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 	 */
 	public function bcFormTableBefore(CakeEvent $event) {
 		if (!BcUtil::isAdminSystem()) {
-			return false;
+			return true;
 		}
 
 		$View = $event->subject();
 
 		if (!in_array($View->request->params['controller'], $this->targetController)) {
-			return false;
+			return true;
 		}
 
 		if (!in_array($View->request->params['action'], $this->targetAction)) {
-			return false;
+			return true;
 		}
 
 		$targetId = array('BlogPostForm');
 		if (!in_array($event->data['id'], $targetId)) {
-			return false;
+			return true;
 		}
 
 		if (!isset($View->request->data['CuCustomFieldConfig']) || empty($View->request->data['CuCustomFieldConfig'])) {
-			return false;
+			return true;
 		}
 
 		if (!$View->request->data['CuCustomFieldConfig']['status']) {
-			return false;
+			return true;
 		}
 
 		if ($View->request->data['CuCustomFieldConfig']['form_place'] === 'top') {
 			// ブログ記事追加画面にカスタムフィールド編集欄を追加する
 			$this->isDisplay = true;
-			return $View->element('CuCustomField.admin/cu_custom_field_values/cu_custom_field_form');
+			$event->data['out'] .= $View->element('CuCustomField.admin/cu_custom_field_values/cu_custom_field_form');
 		}
-		return false;
+		return true;
 	}
 
 	/**
@@ -94,42 +94,41 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 	 */
 	public function bcFormTableAfter(CakeEvent $event) {
 		if (!BcUtil::isAdminSystem()) {
-			return false;
+			return true;
 		}
 
 		$View = $event->subject();
 
 		if (!in_array($View->request->params['controller'], $this->targetController)) {
-			return false;
+			return true;
 		}
 
 		if (!in_array($View->request->params['action'], $this->targetAction)) {
-			return false;
+			return true;
 		}
 
 		$targetId = array('BlogPostForm');
 		if (!in_array($event->data['id'], $targetId)) {
-			return false;
+			return true;
 		}
 
 		if (!isset($View->request->data['CuCustomFieldConfig']) || empty($View->request->data['CuCustomFieldConfig'])) {
-			return false;
+			return true;
 		}
 
 		if (!$View->request->data['CuCustomFieldConfig']['status']) {
-			return false;
+			return true;
 		}
 
 		if ($this->isDisplay) {
-			return false;
+			return true;
 		}
 
 		if ($View->request->data['CuCustomFieldConfig']['form_place'] === 'normal') {
 			// ブログ記事追加画面にカスタムフィールド編集欄を追加する
 			$this->isDisplay = true;
-			return $View->element('CuCustomField.admin/cu_custom_field_values/cu_custom_field_form');
+			$event->data['out'] .= $View->element('CuCustomField.admin/cu_custom_field_values/cu_custom_field_form');
 		}
-		return false;
 	}
 
 }
