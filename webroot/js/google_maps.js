@@ -7,11 +7,11 @@ $(function(){
 	function setGoogleMaps(element) {
 		var mapElement = element[0];
 		var latitude = parseFloat(mapElement.getAttribute('data-latitude'));
-		var longtude = parseFloat(mapElement.getAttribute('data-longtude'));
+		var longitude = parseFloat(mapElement.getAttribute('data-longitude'));
 		var zoom = parseInt(mapElement.getAttribute('data-zoom'));
 		var text = mapElement.getAttribute('data-text');
 
-		var latlng = new google.maps.LatLng(latitude, longtude);
+		var latlng = new google.maps.LatLng(latitude, longitude);
 
 		var options = {
 			center: latlng,

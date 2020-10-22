@@ -18,10 +18,10 @@
 				<?php echo $this->BcForm->input('CuCustomFieldDefinition.google_maps_latitude', ['type' => 'text', 'size' => 22]) ?>
 				<?php echo $this->BcForm->error('CuCustomFieldDefinition.google_maps_latitude') ?>
 			</span>
-			<span id="Row<?php echo $currentModelName . Inflector::camelize('google_maps_longtude'); ?>">
-				<?php echo $this->BcForm->label('CuCustomFieldDefinition.google_maps_longtude', '経度') ?>
-				<?php echo $this->BcForm->input('CuCustomFieldDefinition.google_maps_longtude', ['type' => 'text', 'size' => 22]) ?>
-				<?php echo $this->BcForm->error('CuCustomFieldDefinition.google_maps_longtude') ?>
+			<span id="Row<?php echo $currentModelName . Inflector::camelize('google_maps_longitude'); ?>">
+				<?php echo $this->BcForm->label('CuCustomFieldDefinition.google_maps_longitude', '経度') ?>
+				<?php echo $this->BcForm->input('CuCustomFieldDefinition.google_maps_longitude', ['type' => 'text', 'size' => 22]) ?>
+				<?php echo $this->BcForm->error('CuCustomFieldDefinition.google_maps_longitude') ?>
 			</span>
 
 			<span id="Row<?php echo $currentModelName . Inflector::camelize('google_maps_zoom'); ?>">

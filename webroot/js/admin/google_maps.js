@@ -36,7 +36,7 @@ $(function(){
 		var selectors = {
 			'map': '.petit-google-maps',
 			'latitudeInput': '.petit-google_maps_latitude',
-			'longtudeInput': '.petit-google_maps_longtude',
+			'longitudeInput': '.petit-google_maps_longitude',
 			'zoomInput': '.petit-google_maps_zoom',
 			'popupTextInput': '.petit-google_maps_text',
 			'addressInput': '.petit-google_maps_address',
@@ -72,22 +72,22 @@ $(function(){
 		self.set = function(element) {
 			var mapElement = element.find(selectors.map)[0];
 			var latitudeInput = element.find(selectors.latitudeInput);
-			var longtudeInput = element.find(selectors.longtudeInput);
+			var longitudeInput = element.find(selectors.longitudeInput);
 			var zoomInput = element.find(selectors.zoomInput);
 			var popupTextInput = element.find(selectors.popupTextInput);
 			var addressInput = element.find(selectors.addressInput);
 			var setMapButton = element.find(selectors.setMapButton);
 
 			var latitude = parseFloat(latitudeInput.val());
-			var longtude = parseFloat(longtudeInput.val());
+			var longitude = parseFloat(longitudeInput.val());
 			var zoom = parseInt(zoomInput.val());
 
 			// データが入力されていない場合の初期値を設定（東京都）
 			if (isNaN(latitude)) latitude = 35.6894875;
-			if (isNaN(longtude)) longtude = 139.69170639999993;
+			if (isNaN(longitude)) longitude = 139.69170639999993;
 			if (isNaN(zoom)) zoom = 7;
 
-			var latlng = new google.maps.LatLng(latitude, longtude);
+			var latlng = new google.maps.LatLng(latitude, longitude);
 
 			var geocoder = new google.maps.Geocoder();
 
@@ -112,7 +112,7 @@ $(function(){
 				if (!markerDragMode) {
 					marker.setPosition(map.getCenter());
 					latitudeInput.val(map.getCenter().lat());
-					longtudeInput.val(map.getCenter().lng());
+					longitudeInput.val(map.getCenter().lng());
 					zoomInput.val(map.getZoom());
 				}
 			});
@@ -132,7 +132,7 @@ $(function(){
 				markerDragMode = true;
 				marker.setPosition(e.latLng);
 				latitudeInput.val(e.latLng.lat());
-				longtudeInput.val(e.latLng.lng());
+				longitudeInput.val(e.latLng.lng());
 			});
 			// マーカーダブルクリックでマーカー座標を地図のセンターに
 			google.maps.event.addListener(marker, 'dblclick', function(){
@@ -142,7 +142,7 @@ $(function(){
 			google.maps.event.addListener(marker, 'dragend', function(){
 				markerDragMode = true;
 				latitudeInput.val(marker.getPosition().lat());
-				longtudeInput.val(marker.getPosition().lng());
+				longitudeInput.val(marker.getPosition().lng());
 				zoomInput.val(map.getZoom());
 			});
 
@@ -157,7 +157,7 @@ $(function(){
 					map.setCenter(result[0].geometry.location);
 					marker.setPosition(result[0].geometry.location);
 					latitudeInput.val(map.getCenter().lat());
-					longtudeInput.val(map.getCenter().lng());
+					longitudeInput.val(map.getCenter().lng());
 					zoomInput.val(map.getZoom());
 				});
 			});
@@ -175,14 +175,14 @@ $(function(){
 
 		self.checkFieldEmpty = function(element) {
 			var latitudeInput = element.find(selectors.latitudeInput);
-			var longtudeInput = element.find(selectors.longtudeInput);
+			var longitudeInput = element.find(selectors.longitudeInput);
 			var zoomInput = element.find(selectors.zoomInput);
 
 			var latitude = parseFloat(latitudeInput.val());
-			var longtude = parseFloat(longtudeInput.val());
+			var longitude = parseFloat(longitudeInput.val());
 			var zoom = parseInt(zoomInput.val());
 
-			if (!latitude || !longtude || !zoom) {
+			if (!latitude || !longitude || !zoom) {
 				alert('緯度、経度、zoom値を数値で入力してください');
 				return false;
 			}

@@ -19,10 +19,10 @@
 		'default' => $definitions['CuCustomFieldDefinition']['google_maps_latitude'],
 		'size' => 22
 	]) ?>
-	<?php echo '経度' . $this->CuCustomField->input("CuCustomFieldValue.{$definitions['CuCustomFieldDefinition']['field_name']}.google_maps_longtude", [
+	<?php echo '経度' . $this->CuCustomField->input("CuCustomFieldValue.{$definitions['CuCustomFieldDefinition']['field_name']}.google_maps_longitude", [
 		'type' => 'text',
-		'class' => 'bca-textbox__input petit-google_maps_longtude',
-		'default' => $definitions['CuCustomFieldDefinition']['google_maps_longtude'],
+		'class' => 'bca-textbox__input petit-google_maps_longitude',
+		'default' => $definitions['CuCustomFieldDefinition']['google_maps_longitude'],
 		'size' => 22
 	]) ?>
 	<?php echo 'ズーム値' . $this->CuCustomField->input("CuCustomFieldValue.{$definitions['CuCustomFieldDefinition']['field_name']}.google_maps_zoom", [

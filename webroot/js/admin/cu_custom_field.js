@@ -147,6 +147,24 @@ $(function () {
         }
     });
 
+    $("#CuCustomFieldDefinitionParentId").change(cuCustomFieldDefinitionParentIdChangeHandler);
+
+    cuCustomFieldDefinitionParentIdChangeHandler();
+
+    function cuCustomFieldDefinitionParentIdChangeHandler() {
+        var prepend = $("#RowCuCustomFieldDefinitionPrepend");
+        var append = $("#RowCuCustomFieldDefinitionAppend");
+        var description = $("#RowCuCustomFieldDefinitionDescription");
+        if($("#CuCustomFieldDefinitionParentId").val()) {
+            prepend.hide();
+            append.hide();
+            description.hide();
+        } else {
+            prepend.show('slow');
+            append.show('slow');
+            description.show('slow');
+        }
+    }
     /**
      * タイプの値によってフィールドの表示設定を行う
      *
