@@ -155,7 +155,7 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 				}
 			}
 			$message = sprintf('%s 件のカスタムフィールド設定を登録しました。', $count);
-			$this->setMessage($message);
+			$this->BcMessage->setSuccess($message);
 			$this->redirect(['controller' => 'cu_custom_field_configs', 'action' => 'index']);
 		}
 	}

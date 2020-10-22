@@ -72,7 +72,7 @@ class CuCustomFieldValuesController extends CuCustomFieldAppController
 		$this->pageTitle = $this->adminTitle . '編集';
 
 		if (!$id) {
-			$this->setMessage('無効な処理です。', true);
+			$this->BcMessage->setError('無効な処理です。');
 			$this->redirect(['action' => 'index']);
 		}
 
@@ -92,10 +92,10 @@ class CuCustomFieldValuesController extends CuCustomFieldAppController
 			$this->request->data['CuCustomFieldConfig'] = $configData['CuCustomFieldConfig'];
 
 			if ($this->{$this->modelClass}->save($this->request->data)) {
-				$this->setMessage($this->name . ' ID:' . $id . ' を更新しました。', false, true);
+				$this->BcMessage->setSuccess($this->name . ' ID:' . $id . ' を更新しました。');
 				$this->redirect(['action' => 'index']);
 			} else {
-				$this->setMessage('入力エラーです。内容を修正して下さい。', true);
+				$this->BcMessage->setError('入力エラーです。内容を修正して下さい。');
 			}
 		}
 

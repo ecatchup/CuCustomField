@@ -103,10 +103,10 @@ class CuCustomFieldAppController extends AppController
 		} else {
 			if ($this->{$this->modelClass}->save($this->request->data)) {
 				$message = $this->name . ' ID:' . $this->request->data[$this->modelClass]['id'] . '」を更新しました。';
-				$this->setMessage($message, false, true);
+				$this->BcMessage->setSuccess($message);
 				$this->redirect(['action' => 'index']);
 			} else {
-				$this->setMessage('入力エラーです。内容を修正して下さい。', true);
+				$this->BcMessage->setError('入力エラーです。内容を修正して下さい。');
 			}
 		}
 
