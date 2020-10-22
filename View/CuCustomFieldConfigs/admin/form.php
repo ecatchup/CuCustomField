@@ -1,16 +1,21 @@
 <?php
 /**
- * [ADMIN] PetitBlogCustomField
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
  *
- * @copyright        Copyright, Catchup, Inc.
- * @link            https://catchup.co.jp
- * @package            PetitBlogCustomField
- * @license            MIT
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.View
+ * @license          MIT LICENSE
  */
+
 $hasAddableBlog = false;
 if (count($blogContentDatas) > 0) {
 	$hasAddableBlog = true;
 }
+/**
+ * @var BcAppView $this
+ */
 ?>
 <script type="text/javascript">
 	$(window).load(function () {

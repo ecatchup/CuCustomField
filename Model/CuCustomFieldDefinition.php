@@ -1,15 +1,18 @@
 <?php
-
 /**
- * [Model] CuCustomFieldConfig
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
  *
- * @copyright        Copyright, Catchup, Inc.
- * @link            https://catchup.co.jp
- * @package            CuCustomField
- * @license            MIT
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.Model
+ * @license          MIT LICENSE
  */
 App::uses('CuCustomField.CuCustomFieldAppModel', 'Model');
 
+/**
+ * Class CuCustomFieldDefinition
+ */
 class CuCustomFieldDefinition extends CuCustomFieldAppModel
 {
 
@@ -22,14 +25,15 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 		'Tree', 'BcCache'
 	];
 
-/**
- * belongsTo
- * @var array
- */
-	public $belongsTo = ['CuCustomFieldConfig' => [ 'className' => 'CuCustomField.CuCustomFieldConfig',
-			'foreignKey' => 'config_id']];
+	/**
+	 * belongsTo
+	 * @var array
+	 */
+	public $belongsTo = ['CuCustomFieldConfig' => ['className' => 'CuCustomField.CuCustomFieldConfig',
+		'foreignKey' => 'config_id']];
 
 	public $configId = null;
+
 	/**
 	 * constructer
 	 *
@@ -46,7 +50,8 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 * Setup
 	 * @param $configId
 	 */
-	public function setup($configId) {
+	public function setup($configId)
+	{
 		$this->configId = $configId;
 	}
 
@@ -136,12 +141,13 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 		],
 	];
 
-/**
- * データの重複チェックを行う
- * @param array $check
- * @return boolean false 重複あり / true 重複なし
- */
-	public function duplicate($check) {
+	/**
+	 * データの重複チェックを行う
+	 * @param array $check
+	 * @return boolean false 重複あり / true 重複なし
+	 */
+	public function duplicate($check)
+	{
 		$conditions = [
 			$this->alias . '.' . key($check) => $check[key($check)],
 			$this->alias . '.config_id' => $this->data[$this->alias]['config_id'],
@@ -242,9 +248,9 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 * @param array $data
 	 * @return array
 	 */
-	public function unserializeData($data = array())
+	public function unserializeData($data = [])
 	{
-		foreach ($data as $key => $record) {
+		foreach($data as $key => $record) {
 			foreach($record[$this->alias] as $field => $value) {
 				// TODO BcUtil::unserialize を利用するとエラーが発生するため通常のシリアライズを利用する
 				if ($judge = @unserialize($value)) {
@@ -264,7 +270,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 */
 	public function getControlSource($field)
 	{
-		if(!$this->configId) {
+		if (!$this->configId) {
 			trigger_error('CuCustomFieldDefinition::setup() を実行して CuCustomFieldDefinition モデルに configId を設定してください。');
 		}
 		switch($field) {
@@ -290,7 +296,8 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 * ループリストを取得する
 	 * @return array|null
 	 */
-	public function getLoopList($configId) {
+	public function getLoopList($configId)
+	{
 		return $this->find('list', ['conditions' => [
 			'CuCustomFieldDefinition.field_type' => 'loop',
 			'CuCustomFieldDefinition.config_id' => $configId
@@ -304,7 +311,8 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 * @param $configId
 	 * @return bool
 	 */
-	public function up($id, $configId) {
+	public function up($id, $configId)
+	{
 		$parentId = $this->field('parent_id', ['CuCustomFieldDefinition.id' => $id]);
 		$definitions = $this->find('all', [
 			'conditions' => ['CuCustomFieldDefinition.parent_id' => $parentId],
@@ -313,24 +321,24 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 		]);
 		$currentKey = null;
 		foreach($definitions as $key => $value) {
-			if($value['CuCustomFieldDefinition']['id'] === $id) {
+			if ($value['CuCustomFieldDefinition']['id'] === $id) {
 				$currentKey = $key;
 				break;
 			}
 		}
 
 		$offset = 0;
-		for($i=$currentKey-1;$i>=0;$i--) {
+		for($i = $currentKey - 1; $i >= 0; $i--) {
 			$offset++;
-			if(isset($definitions[$i])) {
-				if($definitions[$i]['CuCustomFieldDefinition']['config_id'] === $configId) {
+			if (isset($definitions[$i])) {
+				if ($definitions[$i]['CuCustomFieldDefinition']['config_id'] === $configId) {
 					break;
 				}
 			} else {
 				return false;
 			}
 		}
-		if($offset>0) {
+		if ($offset > 0) {
 			return $this->moveUp($id, $offset);
 		} else {
 			return true;
@@ -344,7 +352,8 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	 * @param $configId
 	 * @return bool
 	 */
-	public function down($id, $configId) {
+	public function down($id, $configId)
+	{
 		$parentId = $this->field('parent_id', ['CuCustomFieldDefinition.id' => $id]);
 		$definitions = $this->find('all', [
 			'conditions' => ['CuCustomFieldDefinition.parent_id' => $parentId],
@@ -353,23 +362,23 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 		]);
 		$currentKey = null;
 		foreach($definitions as $key => $value) {
-			if($value['CuCustomFieldDefinition']['id'] === $id) {
+			if ($value['CuCustomFieldDefinition']['id'] === $id) {
 				$currentKey = $key;
 				break;
 			}
 		}
 		$offset = 0;
-		for($i=$currentKey+1;$i<=count($definitions)-1;$i++) {
+		for($i = $currentKey + 1; $i <= count($definitions) - 1; $i++) {
 			$offset++;
-			if(isset($definitions[$i])) {
-				if($definitions[$i]['CuCustomFieldDefinition']['config_id'] === $configId) {
+			if (isset($definitions[$i])) {
+				if ($definitions[$i]['CuCustomFieldDefinition']['config_id'] === $configId) {
 					break;
 				}
 			} else {
 				return false;
 			}
 		}
-		if($offset>0) {
+		if ($offset > 0) {
 			return $this->moveDown($id, $offset);
 		} else {
 			return true;

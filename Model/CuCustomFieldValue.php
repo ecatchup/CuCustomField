@@ -1,15 +1,18 @@
 <?php
-
 /**
- * [Model] CuCustomField
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.Model
+ * @license          MIT LICENSE
  */
 App::uses('CuCustomField.CuCustomFieldAppModel', 'Model');
 
+/**
+ * Class CuCustomFieldValue
+ */
 class CuCustomFieldValue extends CuCustomFieldAppModel
 {
 
@@ -18,12 +21,12 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 *
 	 * @var array
 	 */
-	public $actsAs = array(
+	public $actsAs = [
 		'CuCustomField.KeyValue' => [
 			'foreignKeyField' => 'relate_id'
 		],
 		'CuCustomField.CuCustomFieldUpload'
-	);
+	];
 
 	/**
 	 * バリデーション
@@ -31,7 +34,7 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 *
 	 * @var array
 	 */
-	public $validate = array();
+	public $validate = [];
 
 	/**
 	 * KeyValue で利用するバリデーション
@@ -40,9 +43,9 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 *
 	 * @var array
 	 */
-	public $keyValueValidate = array(
-		'CuCustomFieldValue' => array(),
-	);
+	public $keyValueValidate = [
+		'CuCustomFieldValue' => [],
+	];
 
 	/**
 	 * 初期値を取得する
@@ -62,37 +65,37 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 *
 	 * @var array
 	 */
-	public $keyValueDefaults = array(
-		'CuCustomFieldValue' => array(),
-	);
+	public $keyValueDefaults = [
+		'CuCustomFieldValue' => [],
+	];
 
 	/**
 	 * 保存データに対するカスタムフィールドの設定情報
 	 *
 	 * @var array
 	 */
-	public $fieldConfig = array();
+	public $fieldConfig = [];
 
 	/**
 	 * カスタムフィールドへの入力データ
 	 *
 	 * @var array
 	 */
-	public $publicFieldData = array();
+	public $publicFieldData = [];
 
 	/**
 	 * カスタムフィールドのフィールド別設定データ
 	 *
 	 * @var array
 	 */
-	public $publicFieldConfigData = array();
+	public $publicFieldConfigData = [];
 
 	/**
 	 * カスタムフィールド設定データ
 	 *
 	 * @var array
 	 */
-	public $publicConfigData = array();
+	public $publicConfigData = [];
 
 	/**
 	 * beforeSave
@@ -101,7 +104,7 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 * @param array $options
 	 * @return boolean
 	 */
-	public function beforeSave($options = array())
+	public function beforeSave($options = [])
 	{
 		parent::beforeSave($options);
 
@@ -110,8 +113,8 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 		// 配列で送られた値はシリアライズ化する
 		// TODO json_encode() に切替える
 		if (is_array($this->data[$this->alias]['value'])) {
-			$serializeData						 = serialize($this->data[$this->alias]['value']);
-			$this->data[$this->alias]['value']	 = $serializeData;
+			$serializeData = serialize($this->data[$this->alias]['value']);
+			$this->data[$this->alias]['value'] = $serializeData;
 		}
 
 		return true;
@@ -139,19 +142,19 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 * @param array $data
 	 * @return array $data
 	 */
-	public function autoConvert($data = array())
+	public function autoConvert($data = [])
 	{
 		// データをキー名をモデル名とキーに分割し、[Model][key]の形式に変換する
 		// $data[key] = CuCustomFieldValue.selectpref
-		$detailArray							 = array();
-		$keyArray								 = preg_split('/\./', $data['key'], 2);
+		$detailArray = [];
+		$keyArray = preg_split('/\./', $data['key'], 2);
 		$detailArray[$keyArray[0]][$keyArray[1]] = $data['value'];
 
-		foreach ($this->fieldConfig as $config) {
+		foreach($this->fieldConfig as $config) {
 			$config = $config['CuCustomFieldDefinition'];
 			if ($keyArray[1] == $config['field_name']) {
 				if ($config['auto_convert'] == 'CONVERT_HANKAKU') {
-					switch ($config['field_type']) {
+					switch($config['field_type']) {
 						case 'text':
 							// 全角英数字を半角に変換する処理を行う
 							$data['value'] = mb_convert_kana($data['value'], 'a');
@@ -175,14 +178,14 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 * 正規表現チェック用関数
 	 *
 	 * @param array $check 対象データ
-	 * @return	boolean
+	 * @return    boolean
 	 */
 	public function regexCheck($check)
 	{
-		$fieldName		 = key($check);
+		$fieldName = key($check);
 		//$check[key($check)]
-		$fieldConfig	 = Hash::extract($this->fieldConfig, '{n}.CuCustomFieldDefinition[field_name=' . $fieldName . ']');
-		$validateRegex	 = Hash::extract($fieldConfig, '{n}.validate_regex');
+		$fieldConfig = Hash::extract($this->fieldConfig, '{n}.CuCustomFieldDefinition[field_name=' . $fieldName . ']');
+		$validateRegex = Hash::extract($fieldConfig, '{n}.validate_regex');
 		if (preg_match($validateRegex[0], $check[key($check)])) {
 			return true;
 		} else {
@@ -197,23 +200,24 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 * @param $fieldName
 	 * @return false|mixed
 	 */
-	public function getFieldDefinition($relateId, $fieldName) {
+	public function getFieldDefinition($relateId, $fieldName)
+	{
 		/* @var BlogPost $BlogPost */
 		$BlogPost = ClassRegistry::init('Blog.BlogPost');
 		$contentId = $BlogPost->field('blog_content_id', ['BlogPost.id' => $relateId]);
 		/* @var CuCustomFieldConfig $$CustomFieldConfig */
 		$CustomFieldConfig = ClassRegistry::init('CuCustomField.CuCustomFieldConfig');
 		$config = $CustomFieldConfig->find('first', [
-			'conditions' => ['CuCustomFieldConfig.content_id' => $contentId],
-			'recursive' => 1]
+				'conditions' => ['CuCustomFieldConfig.content_id' => $contentId],
+				'recursive' => 1]
 		);
-		if(is_array($config) && empty($config['CuCustomFieldDefinition'])) {
+		if (is_array($config) && empty($config['CuCustomFieldDefinition'])) {
 			return false;
 		}
-		if($fieldName) {
+		if ($fieldName) {
 			list(, $fieldName) = explode('.', $fieldName);
 			foreach($config['CuCustomFieldDefinition'] as $definition) {
-				if($definition['field_name'] === $fieldName) {
+				if ($definition['field_name'] === $fieldName) {
 					return $definition;
 				}
 			}

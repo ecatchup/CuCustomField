@@ -1,12 +1,12 @@
 <?php
-
 /**
- * [Controller] CuCustomField
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
  *
- * @copyright        Copyright, Catchup, Inc.
- * @link            https://catchup.co.jp
- * @package            CuCustomField
- * @license            MIT
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.Controller
+ * @license          MIT LICENSE
  */
 App::uses('CuCustomFieldApp', 'CuCustomField.Controller');
 
@@ -85,7 +85,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 
 		$list = $this->CuCustomFieldDefinition->generateTreeList($conditions);
 		$definitions = [];
-		foreach ($list as $key => $value) {
+		foreach($list as $key => $value) {
 			$definition = $this->CuCustomFieldDefinition->find('first', ['conditions' => ['CuCustomFieldDefinition.id' => $key]]);
 			if (preg_match("/^([_]+)/i", $value, $matches)) {
 				$prefix = str_replace('_', '   ', $matches[1]);
@@ -121,9 +121,9 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 			$this->CuCustomFieldDefinition->set($this->request->data);
 			if ($this->CuCustomFieldDefinition->save()) {
 
-				if($this->request->data['CuCustomFieldDefinition']['field_type'] !== 'loop') {
+				if ($this->request->data['CuCustomFieldDefinition']['field_type'] !== 'loop') {
 					$children = $this->CuCustomFieldDefinition->children($this->request->data['CuCustomFieldDefinition']['id']);
-					if($children) {
+					if ($children) {
 						foreach($children as $child) {
 							$child['CuCustomFieldDefinition']['parent_id'] = null;
 							$this->CuCustomFieldDefinition->set($child);

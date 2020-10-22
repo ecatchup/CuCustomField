@@ -1,15 +1,18 @@
 <?php
-
 /**
- * [Model] CuCustomFieldConfig
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
  *
- * @copyright        Copyright, Catchup, Inc.
- * @link            https://catchup.co.jp
- * @package            CuCustomField
- * @license            MIT
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.Model
+ * @license          MIT LICENSE
  */
 App::uses('CuCustomField.CuCustomFieldAppModel', 'Model');
 
+/**
+ * Class CuCustomFieldConfig
+ */
 class CuCustomFieldConfig extends CuCustomFieldAppModel
 {
 

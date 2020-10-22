@@ -1,12 +1,16 @@
 <?php
+/**
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
+ *
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.Event
+ * @license          MIT LICENSE
+ */
 
 /**
- * [HelperEventListener] CuCustomField
- *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * Class CuCustomFieldHelperEventListener
  */
 class CuCustomFieldHelperEventListener extends BcHelperEventListener
 {
@@ -16,24 +20,24 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 	 *
 	 * @var array
 	 */
-	public $events = array(
+	public $events = [
 		'BcFormTable.before',
 		'BcFormTable.after',
-	);
+	];
 
 	/**
 	 * 処理対象とするコントローラー
 	 *
 	 * @var array
 	 */
-	private $targetController = array('blog_posts');
+	private $targetController = ['blog_posts'];
 
 	/**
 	 * 処理対象とするアクション
 	 *
 	 * @var array
 	 */
-	private $targetAction = array('admin_edit', 'admin_add');
+	private $targetAction = ['admin_edit', 'admin_add'];
 
 	/**
 	 * カスタムフィールドの表示を判定
@@ -49,7 +53,8 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 	 *
 	 * @param CakeEvent $event
 	 */
-	public function bcFormTableBefore(CakeEvent $event) {
+	public function bcFormTableBefore(CakeEvent $event)
+	{
 		if (!BcUtil::isAdminSystem()) {
 			return true;
 		}
@@ -64,7 +69,7 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 			return true;
 		}
 
-		$targetId = array('BlogPostForm');
+		$targetId = ['BlogPostForm'];
 		if (!in_array($event->data['id'], $targetId)) {
 			return true;
 		}
@@ -92,7 +97,8 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 	 *
 	 * @param CakeEvent $event
 	 */
-	public function bcFormTableAfter(CakeEvent $event) {
+	public function bcFormTableAfter(CakeEvent $event)
+	{
 		if (!BcUtil::isAdminSystem()) {
 			return true;
 		}
@@ -107,7 +113,7 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 			return true;
 		}
 
-		$targetId = array('BlogPostForm');
+		$targetId = ['BlogPostForm'];
 		if (!in_array($event->data['id'], $targetId)) {
 			return true;
 		}

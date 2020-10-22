@@ -1,12 +1,15 @@
 <?php
 /**
- * [PUBLISH] PetitCustomField
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			PetitCustomField
- * @license			MIT
- *
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.View
+ * @license          MIT LICENSE
+ */
+
+/**
  * このファイルは、カスタムフィールドを利用する際の利用例を記述したサンプルファイルです。
  * 記事詳細用や記事一覧表示用のビュー・ファイルに記述することで、
  * カスタムフィールドに入力した内容を反映できます。

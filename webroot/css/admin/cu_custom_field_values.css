@@ -1,3 +1,13 @@
+/**
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
+ *
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.css
+ * @license          MIT LICENSE
+ */
+
 .cucf-loop table {
     border-bottom:1px solid #eeeeea;
 }

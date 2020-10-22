@@ -1,13 +1,20 @@
 <?php
 /**
- * [ADMIN] CuCustomField
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.View
+ * @license          MIT LICENSE
+ */
+
+/**
+ * @var BcAppView $this
  */
 ?>
+
+
 <?php echo $this->BcForm->create('CuCustomFieldConfig', array('action' => 'first')) ?>
 <?php echo $this->BcForm->input('CuCustomFieldConfig.active', array('type' => 'hidden', 'value' => '1')) ?>
 <table cellpadding="0" cellspacing="0" class="form-table section" id="ListTable">

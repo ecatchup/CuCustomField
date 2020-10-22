@@ -1,12 +1,16 @@
 <?php
+/**
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
+ *
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.Controller
+ * @license          MIT LICENSE
+ */
 
 /**
- * CuCustomFieldAppController
- *
- * @copyright        Copyright, Catchup, Inc.
- * @link            https://catchup.co.jp
- * @package            CuCustomField
- * @license            MIT
+ * Class CuCustomFieldAppController
  */
 class CuCustomFieldAppController extends AppController
 {
@@ -89,24 +93,24 @@ class CuCustomFieldAppController extends AppController
 	public function admin_edit($id = null)
 	{
 		if (!$id) {
-			$this->setMessage('無効な処理です。', true);
-			$this->redirect(array('action' => 'index'));
+			$this->BcMessage->setError('無効な処理です。');
+			$this->redirect(['action' => 'index']);
 		}
 
 		if (empty($this->request->data)) {
-			$this->{$this->modelClass}->id	 = $id;
-			$this->request->data			 = $this->{$this->modelClass}->read();
+			$this->{$this->modelClass}->id = $id;
+			$this->request->data = $this->{$this->modelClass}->read();
 		} else {
 			if ($this->{$this->modelClass}->save($this->request->data)) {
 				$message = $this->name . ' ID:' . $this->request->data[$this->modelClass]['id'] . '」を更新しました。';
 				$this->setMessage($message, false, true);
-				$this->redirect(array('action' => 'index'));
+				$this->redirect(['action' => 'index']);
 			} else {
 				$this->setMessage('入力エラーです。内容を修正して下さい。', true);
 			}
 		}
 
-		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
+		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');
 	}
 

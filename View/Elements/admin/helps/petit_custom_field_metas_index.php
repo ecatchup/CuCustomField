@@ -1,13 +1,16 @@
 <?php
 /**
- * [ADMIN] CuCustomField
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.View
+ * @license          MIT LICENSE
  */
 ?>
+
+
 <p>フィールド設定一覧管理では、コンテンツに設定中のカスタムフィールドを確認できます。</p>
 <ul>
 	<li>操作欄の <?php $this->BcBaser->img('admin/icn_tool_manage.png') ?> ボタンからは、フィールドを別コンテンツへ移すことができる編集画面へ移動できます。</li>

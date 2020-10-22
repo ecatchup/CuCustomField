@@ -1,15 +1,18 @@
 <?php
-
 /**
- * [Controller] CuCustomField
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.Controller
+ * @license          MIT LICENSE
  */
 App::uses('CuCustomFieldApp', 'CuCustomField.Controller');
 
+/**
+ * Class CuCustomFieldValuesController
+ */
 class CuCustomFieldValuesController extends CuCustomFieldAppController
 {
 
@@ -18,17 +21,17 @@ class CuCustomFieldValuesController extends CuCustomFieldAppController
 	 *
 	 * @var array
 	 */
-	public $uses = array('CuCustomField.CuCustomFieldValue', 'CuCustomField.CuCustomFieldConfig');
+	public $uses = ['CuCustomField.CuCustomFieldValue', 'CuCustomField.CuCustomFieldConfig'];
 
 	/**
 	 * ぱんくずナビ
 	 *
 	 * @var string
 	 */
-	public $crumbs = array(
-		array('name' => 'プラグイン管理', 'url' => array('plugin' => '', 'controller' => 'plugins', 'action' => 'index')),
-		array('name' => 'カスタムフィールド管理', 'url' => array('plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_values', 'action' => 'index'))
-	);
+	public $crumbs = [
+		['name' => 'プラグイン管理', 'url' => ['plugin' => '', 'controller' => 'plugins', 'action' => 'index']],
+		['name' => 'カスタムフィールド管理', 'url' => ['plugin' => 'cu_custom_field', 'controller' => 'cu_custom_field_values', 'action' => 'index']]
+	];
 
 	/**
 	 * 管理画面タイトル
@@ -53,8 +56,8 @@ class CuCustomFieldValuesController extends CuCustomFieldAppController
 	public function admin_index()
 	{
 		$this->pageTitle = $this->adminTitle . '一覧';
-		$this->search	 = 'cu_custom_field_values_index';
-		$this->help		 = 'cu_custom_field_values_index';
+		$this->search = 'cu_custom_field_values_index';
+		$this->help = 'cu_custom_field_values_index';
 
 		parent::admin_index();
 	}
@@ -70,33 +73,33 @@ class CuCustomFieldValuesController extends CuCustomFieldAppController
 
 		if (!$id) {
 			$this->setMessage('無効な処理です。', true);
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 
 		if (empty($this->request->data)) {
-			$this->{$this->modelClass}->id					 = $id;
-			$this->request->data							 = $this->{$this->modelClass}->read();
-			$configData										 = $this->CuCustomFieldConfig->find('first', array(
-				'conditions' => array(
+			$this->{$this->modelClass}->id = $id;
+			$this->request->data = $this->{$this->modelClass}->read();
+			$configData = $this->CuCustomFieldConfig->find('first', [
+				'conditions' => [
 					'CuCustomFieldConfig.content_id' => $this->request->data[$this->modelClass]['content_id']
-			)));
-			$this->request->data['CuCustomFieldConfig']	 = $configData['CuCustomFieldConfig'];
+				]]);
+			$this->request->data['CuCustomFieldConfig'] = $configData['CuCustomFieldConfig'];
 		} else {
-			$configData										 = $this->CuCustomFieldConfig->find('first', array(
-				'conditions' => array(
+			$configData = $this->CuCustomFieldConfig->find('first', [
+				'conditions' => [
 					'CuCustomFieldConfig.content_id' => $this->request->data[$this->modelClass]['content_id']
-			)));
-			$this->request->data['CuCustomFieldConfig']	 = $configData['CuCustomFieldConfig'];
+				]]);
+			$this->request->data['CuCustomFieldConfig'] = $configData['CuCustomFieldConfig'];
 
 			if ($this->{$this->modelClass}->save($this->request->data)) {
 				$this->setMessage($this->name . ' ID:' . $id . ' を更新しました。', false, true);
-				$this->redirect(array('action' => 'index'));
+				$this->redirect(['action' => 'index']);
 			} else {
 				$this->setMessage('入力エラーです。内容を修正して下さい。', true);
 			}
 		}
 
-		$this->set('blogContentDatas', array('0' => '指定しない') + $this->blogContentDatas);
+		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');
 	}
 
@@ -118,9 +121,9 @@ class CuCustomFieldValuesController extends CuCustomFieldAppController
 	 */
 	protected function _createAdminIndexConditions($data)
 	{
-		$conditions		 = array();
-		$name			 = '';
-		$blogContentId	 = '';
+		$conditions = [];
+		$name = '';
+		$blogContentId = '';
 
 		if (isset($data['CuCustomFieldValue']['name'])) {
 			$name = $data['CuCustomFieldValue']['name'];
@@ -137,7 +140,7 @@ class CuCustomFieldValuesController extends CuCustomFieldAppController
 		unset($data['CuCustomFieldValue']['content_id']);
 
 		// 条件指定のないフィールドを解除
-		foreach ($data['CuCustomFieldValue'] as $key => $value) {
+		foreach($data['CuCustomFieldValue'] as $key => $value) {
 			if ($value === '') {
 				unset($data['CuCustomFieldValue'][$key]);
 			}
@@ -154,20 +157,20 @@ class CuCustomFieldValuesController extends CuCustomFieldAppController
 		  } */
 		// １つの入力指定から複数フィールド検索指定
 		if ($name) {
-			$conditions['or'][] = array(
+			$conditions['or'][] = [
 				'PetitCustomField.name LIKE' => '%' . $name . '%'
-			);
+			];
 		}
 		if ($blogContentId) {
-			$conditions['and'] = array(
+			$conditions['and'] = [
 				'PetitCustomField.content_id' => $blogContentId
-			);
+			];
 		}
 
 		if ($conditions) {
 			return $conditions;
 		} else {
-			return array();
+			return [];
 		}
 	}
 

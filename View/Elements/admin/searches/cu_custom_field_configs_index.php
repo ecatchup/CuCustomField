@@ -1,13 +1,16 @@
 <?php
 /**
- * [ADMIN] CuCustomField
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
  *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.View
+ * @license          MIT LICENSE
  */
 ?>
+
+
 <?php echo $this->BcForm->create('CuCustomFieldConfig', array('url' => array('action' => 'index'))) ?>
 <p>
 	<span>

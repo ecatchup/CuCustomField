@@ -1,12 +1,16 @@
 <?php
+/**
+ * CuCustomField : baserCMS Custom Field
+ * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
+ *
+ * @copyright        Copyright (c) Catchup, Inc.
+ * @link             https://catchup.co.jp
+ * @package          CuCustomField.Model
+ * @license          MIT LICENSE
+ */
 
 /**
- * [Model] CuCustomFieldAppModel
- *
- * @copyright		Copyright, Catchup, Inc.
- * @link			https://catchup.co.jp
- * @package			CuCustomField
- * @license			MIT
+ * Class CuCustomFieldAppModel
  */
 class CuCustomFieldAppModel extends AppModel
 {
@@ -17,9 +21,9 @@ class CuCustomFieldAppModel extends AppModel
 	 * @param array $data
 	 * @return array
 	 */
-	public function unserializeData($data = array())
+	public function unserializeData($data = [])
 	{
-		foreach ($data as $key => $value) {
+		foreach($data as $key => $value) {
 			// TODO BcUtil::unserialize を利用するとエラーが発生するため通常のシリアライズを利用する
 			if ($judge = @unserialize($value[$this->alias]['value'])) {
 				$data[$key][$this->alias]['value'] = $judge;
@@ -34,7 +38,7 @@ class CuCustomFieldAppModel extends AppModel
 	 * @param array $data
 	 * @return array
 	 */
-	public function splitData($data = array())
+	public function splitData($data = [])
 	{
 		if ($data) {
 			if (!empty($data['field_type']) && $data['field_type'] == 'multiple') {
