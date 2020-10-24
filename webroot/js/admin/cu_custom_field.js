@@ -183,37 +183,6 @@ $(function () {
         $("#PreviewPrefList").hide();
 
         switch (value) {
-            case 'textarea':
-                $("#RowCuCfDefaultValue").show();
-
-                // バリデーション項目
-                $("#RowCuCfValidate").show('slow');
-                $("#CuCustomFieldDefinitionValidateHANKAKUCHECK").parent().show('slow');
-                $("#CuCustomFieldDefinitionValidateNUMERICCHECK").parent().show('slow');
-                $("#CuCustomFieldDefinitionValidateNONCHECKCHECK").parent().hide('fast');
-                $('#CuCustomFieldDefinitionValidateREGEXCHECK').parent().show('slow');
-                // 正規表現チェックが有効に指定されている場合は、専用の入力欄を表示する
-                if ($('#CuCustomFieldDefinitionValidateREGEXCHECK').prop('checked')) {
-                    $('#CuCfValidateRegexGroup').show('fast');
-                }
-
-                $("#RowCuCfSize").show('slow');
-                $("#CuCfSize").hide('fast');
-                $("#CuCfMaxLength").hide('fast');
-                $("#CuCfCounter").show('slow');
-
-                $("#RowCuCfPlaceholder").show('slow');
-
-                $("#RowCuCfRows").show('slow');
-                $("#CuCfRows").show('slow');
-                $("#CuCfRows").attr('placeholder', '3');
-                $("#CuCfCols").show('slow');
-                $("#CuCfCols").attr('placeholder', '40');
-                $("#CuCfEditorToolType").hide('fast');
-
-                $("#RowCuCfAutoConvert").show('slow');
-                $("#RowCuCfLabelName").hide();
-                break;
 
             case 'date':
             case 'datetime':

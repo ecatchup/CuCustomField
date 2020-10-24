@@ -227,7 +227,7 @@ class CuCustomFieldHelper extends AppHelper
 		$fieldConfig = $this->publicFieldConfigData[$contentId];
 		$fieldDefinition = $fieldConfig[$field];
 		$fieldType = $fieldDefinition['field_type'];
-		if(in_array($fieldType, ['related', 'file', 'text'])) {
+		if(in_array($fieldType, ['related', 'file', 'text', 'textarea'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'get')) {
 				return $this->{$pluginName}->get($fieldValue, $fieldDefinition, $options);
@@ -241,10 +241,6 @@ class CuCustomFieldHelper extends AppHelper
 				if (!empty($fieldConfig[$field])) {
 					$fieldType = $fieldConfig[$field]['field_type'];
 					switch($fieldType) {
-						case 'textarea':
-							$data = $fieldValue;
-							break;
-
 						case 'date':
 							$data = $this->BcTime->format($options['format'], $fieldValue, $invalid = false, $userOffset = null);
 							break;
@@ -543,7 +539,7 @@ class CuCustomFieldHelper extends AppHelper
 		$fieldType = $options['type'];
 
 		// -----------------------------------------------------------------------------
-		if(in_array($fieldType, ['related', 'file', 'text'])) {
+		if(in_array($fieldType, ['related', 'file', 'text', 'textarea'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'input')) {
 				return $this->{$pluginName}->input($field, $options);
