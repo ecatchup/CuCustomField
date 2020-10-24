@@ -1,18 +1,18 @@
 <?php
 /**
- * CuCustomField : baserCMS Custom Field
+ * CuCustomField : baserCMS Custom Field File Plugin
  * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
  *
  * @copyright        Copyright (c) Catchup, Inc.
  * @link             https://catchup.co.jp
- * @package          CuCustomField.Model.Behavior
+ * @package          CuCfFile.Model.Behavior
  * @license          MIT LICENSE
  */
 
 /**
- * Class CuCustomFieldUploadBehavior
+ * Class CuCfFileBehavior
  */
-class CuCustomFieldUploadBehavior extends ModelBehavior
+class CuCfFileBehavior extends ModelBehavior
 {
 
 	public $saveDir = null;
@@ -106,7 +106,7 @@ class CuCustomFieldUploadBehavior extends ModelBehavior
 	 */
 	public function deleteFile($value)
 	{
-		if (!$value) {
+		if (!$value || strpos($value, '.') === false) {
 			return false;
 		}
 		$filePath = $this->saveDir . $value;

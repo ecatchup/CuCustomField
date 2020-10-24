@@ -62,12 +62,6 @@ class CuCustomFieldHelper extends AppHelper
 	public $publicConfigData = [];
 
 	/**
-	 * ファイルの保存URL
-	 * @var string
-	 */
-	public $saveUrl = '/files/cu_custom_field/';
-
-	/**
 	 * constructor
 	 * - 記事に設定されているカスタムフィールド設定情報を取得する
 	 *
@@ -233,10 +227,10 @@ class CuCustomFieldHelper extends AppHelper
 		$fieldConfig = $this->publicFieldConfigData[$contentId];
 		$fieldDefinition = $fieldConfig[$field];
 		$fieldType = $fieldDefinition['field_type'];
-		if($fieldType === 'related') {
+		if(in_array($fieldType, ['related', 'file'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'get')) {
-				return $this->{$pluginName}->get($fieldValue, $fieldDefinition);
+				return $this->{$pluginName}->get($fieldValue, $fieldDefinition, $options);
 			}
 		}
 		// -----------------------------------------------------------------------------
@@ -309,18 +303,6 @@ class CuCustomFieldHelper extends AppHelper
 							$data = $fieldValue;
 							break;
 
-						case 'file':
-							if($fieldValue) {
-								if(in_array(pathinfo($fieldValue, PATHINFO_EXTENSION), ['png', 'gif', 'jpeg', 'jpg'])) {
-									$data = $this->uploadImage($fieldValue, $options);
-								} else {
-									$options['label'] = $fieldConfig[$field]['name'];
-									$data = $this->fileLink($fieldValue, $options);
-								}
-							} else {
-								$data = '';
-							}
-							break;
 						default:
 							$data = $fieldValue;
 							break;
@@ -565,7 +547,7 @@ class CuCustomFieldHelper extends AppHelper
 		$fieldType = $options['type'];
 
 		// -----------------------------------------------------------------------------
-		if($fieldType === 'related') {
+		if(in_array($fieldType, ['related', 'file'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'input')) {
 				return $this->{$pluginName}->input($field, $options);
@@ -596,9 +578,6 @@ class CuCustomFieldHelper extends AppHelper
 				break;
 			case 'googlemaps':
 				$formString = $this->_View->element('CuCustomField.admin/cu_custom_field_values/input_block/google_maps', ['definitions' => $options['definitions']]);
-				break;
-			case 'file':
-				$formString = $this->file($field, $options);
 				break;
 			default:
 				$formString = $this->BcForm->input($field, $options);
@@ -864,95 +843,6 @@ class CuCustomFieldHelper extends AppHelper
 	}
 
 	/**
-	 * ファイルアップロードコントロール
-	 *
-	 * @param string $fieldName
-	 * @param array $options
-	 * @return string
-	 */
-	public function file($fieldName, $options)
-	{
-		// ファイル
-		$output = $this->BcForm->input($fieldName, $options);
-		// 保存値
-		$value = $this->value($fieldName);
-		if ($value && is_string($value)) {
-			// 削除
-			$delCheckTag = $this->BcHtml->tag('span',
-				$this->BcForm->checkbox($fieldName . '_delete', ['class' => 'bca-file__delete-input']) .
-				$this->BcForm->label($fieldName . '_delete', __d('baser', '削除する'))
-			);
-			// ファイルリンク
-			list($name, $ext) = explode('.', $value);
-			$thumb = $name . '_thumb.' . $ext;
-			if(in_array($ext, ['png', 'gif', 'jpeg', 'jpg'])) {
-				$fileLinkTag = '<figure class="bca-file__figure">' . $this->BcHtml->link(
-					$this->BcHtml->image($this->saveUrl . $thumb, ['width' => 300]),
-					$this->saveUrl . $value,
-					['rel' => 'colorbox', 'escape' => false]
-				) . '</figure>';
-			} else {
-				$fileLinkTag = '<p>' . $this->BcHtml->link(
-					'ダウンロード',
-					$this->saveUrl . $value,
-					['target' => '_blank', 'class' => 'bca-btn']
-				) . '</p>';
-			}
-
-			$output = $output . $delCheckTag . '<br>' . $fileLinkTag;
-		}
-		return $output;
-	}
-
-	/**
-	 * アップロード画像
-	 * @param $fieldValue
-	 * @param $options
-	 * @return mixed|string
-	 */
-	public function uploadImage($fieldValue, $options)
-	{
-		$options = array_merge([
-			'width' => (!empty($options['thumb']))? false : '100%',
-			'thumb' => false
-		], $options);
-		$noValue = $options['novalue'];
-		$thumb = $options['thumb'];
-
-		unset($options['format'], $options['model'], $options['separator'], $options['novalue'], $options['thumb']);
-		if(!$fieldValue) {
-			return $noValue;
-		} else {
-			if($thumb) {
-				$fieldValue = preg_replace('/^(.+\/)([^\/]+)(\.[a-z]+)$/', "$1$2_thumb$3", $fieldValue);
-			}
-			return $this->BcHtml->image($this->saveUrl . $fieldValue, $options);
-		}
-	}
-
-	/**
-	 * ファイルリンク
-	 *
-	 * @param string $fieldValue
-	 * @param array $options
-	 * @return mixed|string
-	 */
-	public function fileLink($fieldValue, $options) {
-		$options = array_merge([
-			'target' => '_blank',
-			'label' => 'ダウンロード'
-		], $options);
-		$noValue = $options['novalue'];
-		$label = $options['label'];
-		unset($options['format'], $options['model'], $options['separator'], $options['novalue']);
-		if(!$fieldValue) {
-			return $noValue;
-		} else {
-			return $this->BcHtml->link($label, $this->saveUrl . $fieldValue, $options);
-		}
-	}
-
-	/**
 	 * プラグインのフィールド定義の入力欄を読み込む
 	 */
 	public function loadPluginDefinitionInputs() {
@@ -980,6 +870,7 @@ class CuCustomFieldHelper extends AppHelper
 				$pluginPath = CakePlugin::path('CuCustomField') . 'Plugin' . DS . $plugin . DS;
 				if(file_exists($pluginPath . 'View' . DS . 'Helper' . DS . $plugin . 'Helper.php')) {
 					$this->{$plugin} = $this->_View->loadHelper($plugin . '.' . $plugin);
+					$this->{$plugin}->CuCustomField = $this;
 				}
 			}
 		}

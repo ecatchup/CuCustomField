@@ -62,8 +62,7 @@ $config['cuCustomField'] = [
 		],
 		'コンテンツ' => [
 			'wysiwyg' => 'Wysiwyg Editor',
-			'googlemaps' => 'Googleマップ',
-			'file' => 'ファイルアップロード'
+			'googlemaps' => 'Googleマップ'
 		],
 		'その他' => [
 			'loop' => 'ループ'

@@ -212,7 +212,6 @@ $(function () {
         $labelName.hide();
         $parentId.show();
         $required.show();
-        $("#CufcRelatedGroup").show();
 
         switch (value) {
             case 'text':

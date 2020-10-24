@@ -12,15 +12,9 @@
 /**
  * Class CuCfRelatedHelper
  *
- * @property BcFormHelper $BcForm
+ * @property CuCustomFieldHelper $CuCustomField
  */
 class CuCfRelatedHelper extends AppHelper {
-
-	/**
-	 * helper
-	 * @var string[]
-	 */
-	public $helpers = ['BcForm'];
 
 	/**
 	 * Input
@@ -36,7 +30,7 @@ class CuCfRelatedHelper extends AppHelper {
 		$list = $CuCfRelated->getRelatedList($related['table'], $related['title_field'], $related['where_field'], $related['where_value']);
 		$options['type'] = 'select';
 		$options['options'] = ['' => '指定なし'] + $list;
-		return $this->BcForm->input($fieldName, $options);
+		return $this->CuCustomField->BcForm->input($fieldName, $options);
 	}
 
 	/**

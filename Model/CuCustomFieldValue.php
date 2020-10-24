@@ -24,8 +24,7 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	public $actsAs = [
 		'CuCustomField.KeyValue' => [
 			'foreignKeyField' => 'relate_id'
-		],
-		'CuCustomField.CuCustomFieldUpload'
+		]
 	];
 
 	/**
