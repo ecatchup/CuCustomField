@@ -47,14 +47,7 @@ $config['BcApp.adminNavigation'] = [
 $config['cuCustomField'] = [
 	// フィールドタイプ種別
 	'field_type' => [
-		'基本' => [
-			'text' => 'テキスト',
-			'textarea' => 'テキストエリア',
-			'date' => '日付（年月日）',
-			'datetime' => '日時（年月日時間）',
-		],
 		'選択' => [
-			'select' => 'セレクトボックス',
 			'radio' => 'ラジオボタン',
 			'checkbox' => 'チェックボックス',
 			'multiple' => 'マルチチェックボックス',
