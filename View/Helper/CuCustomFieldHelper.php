@@ -201,7 +201,6 @@ class CuCustomFieldHelper extends AppHelper
 		$data = '';
 		$_options = [
 			'novalue' => '',
-			'format' => 'Y-m-d',
 			'model' => 'CuCustomFieldValue',
 			'separator' => ', ',
 		];
@@ -227,7 +226,7 @@ class CuCustomFieldHelper extends AppHelper
 		$fieldConfig = $this->publicFieldConfigData[$contentId];
 		$fieldDefinition = $fieldConfig[$field];
 		$fieldType = $fieldDefinition['field_type'];
-		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date'])) {
+		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'get')) {
 				return $this->{$pluginName}->get($fieldValue, $fieldDefinition, $options);
@@ -539,7 +538,7 @@ class CuCustomFieldHelper extends AppHelper
 		$fieldType = $options['type'];
 
 		// -----------------------------------------------------------------------------
-		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date'])) {
+		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'input')) {
 				return $this->{$pluginName}->input($field, $options);
@@ -548,10 +547,6 @@ class CuCustomFieldHelper extends AppHelper
 		// -----------------------------------------------------------------------------
 
 		switch($fieldType) {
-			case 'datetime':
-				$options['type'] = 'dateTimePicker';
-				$formString = $this->BcForm->input($field, $options);
-				break;
 			case 'wysiwyg':
 				$editorOptions = [
 					'editor' => $this->_View->viewVars['siteConfig']['editor'],

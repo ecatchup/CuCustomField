@@ -184,11 +184,6 @@ $(function () {
 
         switch (value) {
 
-            case 'datetime':
-                $("#RowCuCfParentId").hide();
-                $("#RowCuCfDefaultValue").show();
-                break;
-
             case 'select':
                 $("#RowCuCfDefaultValue").show();
                 $("#RowCuCfChoices").show('slow');
