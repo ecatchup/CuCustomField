@@ -123,9 +123,6 @@ $(function () {
 
     // submit時の処理
     $("#BtnSave").click(function () {
-        // 都道府県の選択値対応表は送らないようにする
-        $('#CuCustomFieldDefinitionPreviewPrefList').attr('disabled', 'disabled');
-
         // 正規表現チェックが有効の場合に、正規表現入力欄が空の場合は submit させない
         $validateRegexCheck = $('#CuCustomFieldDefinitionValidateREGEXCHECK');
         if ($validateRegexCheck.prop('checked')) {
@@ -171,14 +168,8 @@ $(function () {
             .hide();
 
         $("#RowCuCfParentId").show();
-        $("#PreviewPrefList").hide();
 
         switch (value) {
-
-            case 'pref':
-                $("#PreviewPrefList").show();
-                $("#RowCuCfDefaultValue").show();
-                break;
 
             case 'wysiwyg':
                 $("#RowCuCfParentId").hide();

@@ -47,10 +47,6 @@ $config['BcApp.adminNavigation'] = [
 $config['cuCustomField'] = [
 	// フィールドタイプ種別
 	'field_type' => [
-		'選択' => [
-			'multiple' => 'マルチチェックボックス',
-			'pref' => '都道府県リスト'
-		],
 		'コンテンツ' => [
 			'wysiwyg' => 'Wysiwyg Editor',
 			'googlemaps' => 'Googleマップ'
