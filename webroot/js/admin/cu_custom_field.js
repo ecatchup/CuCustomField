@@ -175,20 +175,6 @@ $(function () {
 
         switch (value) {
 
-            case 'multiple':
-                $("#RowCuCfDefaultValue").show();
-
-                // バリデーション項目
-                $("#RowCuCfValidate").show('slow');
-                $("#CuCustomFieldDefinitionValidateHANKAKUCHECK").parent().hide('fast');
-                $("#CuCustomFieldDefinitionValidateNUMERICCHECK").parent().hide('fast');
-                $("#CuCustomFieldDefinitionValidateNONCHECKCHECK").parent().show('slow');
-                $('#CuCustomFieldDefinitionValidateREGEXCHECK').parent().hide('fast');
-                $('#CuCfValidateRegexGroup').hide('fast');
-
-                $("#RowCuCfChoices").show('slow');
-                break;
-
             case 'pref':
                 $("#PreviewPrefList").show();
                 $("#RowCuCfDefaultValue").show();

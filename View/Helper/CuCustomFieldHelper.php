@@ -227,7 +227,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		$fieldConfig = $this->publicFieldConfigData[$contentId];
 		$fieldDefinition = $fieldConfig[$field];
 		$fieldType = $fieldDefinition['field_type'];
-		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio', 'checkbox'])) {
+		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio', 'checkbox', 'multiple'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'get')) {
 				return $this->{$pluginName}->get($fieldValue, $fieldDefinition, $options);
@@ -241,27 +241,6 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 				if (!empty($fieldConfig[$field])) {
 					$fieldType = $fieldConfig[$field]['field_type'];
 					switch($fieldType) {
-
-						case 'radio':
-							$selector = $this->textToArray($fieldConfig[$field]['choices']);
-							$data = $this->arrayValue($fieldValue, $selector, $options['novalue']);
-							break;
-
-						case 'multiple':
-							$selector = $this->textToArray($fieldConfig[$field]['choices']);
-							$checked = [];
-							if (!empty($fieldValue)) {
-								if (is_array($fieldValue)) {
-									foreach($fieldValue as $check) {
-										$checked[] = $this->arrayValue($check, $selector);
-									}
-								} else {
-									$checked[] = $fieldValue;
-								}
-							}
-							$data = implode($options['separator'], $checked);
-							break;
-
 						case 'pref':
 							$selector = $this->BcText->prefList();
 							$data = $this->arrayValue($fieldValue, $selector, $options['novalue']);
@@ -460,7 +439,6 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 					break;
 
 				case 'multiple':
-					$_formOption['type'] = 'select';
 					if ($data[$modelName]['choices']) {
 						$option = $this->textToArray($data[$modelName]['choices']);
 						$_formOption = array_merge($_formOption, ['options' => $option, $fieldType => 'checkbox']);
@@ -519,7 +497,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		$fieldType = $options['type'];
 
 		// -----------------------------------------------------------------------------
-		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio', 'checkbox'])) {
+		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio', 'checkbox', 'multiple'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'input')) {
 				return $this->{$pluginName}->input($field, $options);

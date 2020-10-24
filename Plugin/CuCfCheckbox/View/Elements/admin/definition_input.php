@@ -1,17 +1,16 @@
 <?php
 /**
- * CuCustomField : baserCMS Custom Field
+ * CuCustomField : baserCMS Custom Field Checkbox Plugin
  * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
  *
  * @copyright        Copyright (c) Catchup, Inc.
  * @link             https://catchup.co.jp
- * @package          CuCustomField.View
+ * @package          CuCfCheckbox.View
  * @license          MIT LICENSE
  */
 
 /**
  * @var BcAppView $this
- * @var string $currentModelName
  */
 ?>
 
