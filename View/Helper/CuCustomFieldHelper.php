@@ -227,7 +227,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		$fieldConfig = $this->publicFieldConfigData[$contentId];
 		$fieldDefinition = $fieldConfig[$field];
 		$fieldType = $fieldDefinition['field_type'];
-		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio'])) {
+		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio', 'checkbox'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'get')) {
 				return $this->{$pluginName}->get($fieldValue, $fieldDefinition, $options);
@@ -245,14 +245,6 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 						case 'radio':
 							$selector = $this->textToArray($fieldConfig[$field]['choices']);
 							$data = $this->arrayValue($fieldValue, $selector, $options['novalue']);
-							break;
-
-						case 'checkbox':
-							if ($fieldValue) {
-								$data = true;
-							} else {
-								$data = false;
-							}
 							break;
 
 						case 'multiple':
@@ -527,7 +519,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		$fieldType = $options['type'];
 
 		// -----------------------------------------------------------------------------
-		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select'])) {
+		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio', 'checkbox'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'input')) {
 				return $this->{$pluginName}->input($field, $options);

@@ -20,15 +20,6 @@ $(function () {
     // タイプを選択すると入力するフィールドが切り替わる
     $("#CuCustomFieldDefinitionFieldType").change(cuCustomFieldDefinitionFieldTypeChangeHandler);
 
-    // カスタムフィールド名の入力時、ラベル名が空の場合は名称を自動で入力する
-    $("#CuCustomFieldDefinitionName").change(function () {
-        $labelName = $("#CuCustomFieldDefinitionLabelName");
-        var labelNameValue = $labelName.val();
-        if (!labelNameValue) {
-            $labelName.val($("#CuCustomFieldDefinitionName").val());
-        }
-    });
-
     // 利用中フィールド名一覧を表示する
     $('#show_field_name_list').change(function () {
         if ($(this).prop('checked')) {
@@ -183,20 +174,6 @@ $(function () {
         $("#PreviewPrefList").hide();
 
         switch (value) {
-
-            case 'checkbox':
-                $("#RowCuCfDefaultValue").show();
-                $("#RowCuCfLabelName").show();
-
-                // バリデーション項目
-                $("#RowCuCfValidate").hide('fast');
-                $("#CuCustomFieldDefinitionValidateHANKAKUCHECK").parent().hide('fast');
-                $("#CuCustomFieldDefinitionValidateNUMERICCHECK").parent().hide('fast');
-                $("#CuCustomFieldDefinitionValidateNONCHECKCHECK").parent().show('fast');
-                $('#CuCustomFieldDefinitionValidateREGEXCHECK').parent().hide('fast');
-                $('#CuCfValidateRegexGroup').hide('fast');
-
-                break;
 
             case 'multiple':
                 $("#RowCuCfDefaultValue").show();

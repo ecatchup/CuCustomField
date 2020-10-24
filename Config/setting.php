@@ -48,7 +48,6 @@ $config['cuCustomField'] = [
 	// フィールドタイプ種別
 	'field_type' => [
 		'選択' => [
-			'checkbox' => 'チェックボックス',
 			'multiple' => 'マルチチェックボックス',
 			'pref' => '都道府県リスト'
 		],
