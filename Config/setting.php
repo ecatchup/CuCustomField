@@ -58,8 +58,7 @@ $config['cuCustomField'] = [
 			'radio' => 'ラジオボタン',
 			'checkbox' => 'チェックボックス',
 			'multiple' => 'マルチチェックボックス',
-			'pref' => '都道府県リスト',
-			'related' => '関連データ'
+			'pref' => '都道府県リスト'
 		],
 		'コンテンツ' => [
 			'wysiwyg' => 'Wysiwyg Editor',

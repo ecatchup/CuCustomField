@@ -15,13 +15,10 @@ $(function () {
 
     $("#CuCustomFieldDefinitionFieldName").focus();
 
-    $fieldType = $("#CuCustomFieldDefinitionFieldType").val();
-    cuCustomFieldDefinitionFieldTypeChangeHandler($fieldType);
+    cuCustomFieldDefinitionFieldTypeChangeHandler();
 
     // タイプを選択すると入力するフィールドが切り替わる
-    $("#CuCustomFieldDefinitionFieldType").change(function () {
-        cuCustomFieldDefinitionFieldTypeChangeHandler($("#CuCustomFieldDefinitionFieldType").val());
-    });
+    $("#CuCustomFieldDefinitionFieldType").change(cuCustomFieldDefinitionFieldTypeChangeHandler);
 
     // カスタムフィールド名の入力時、ラベル名が空の場合は名称を自動で入力する
     $("#CuCustomFieldDefinitionName").change(function () {
@@ -172,7 +169,8 @@ $(function () {
      *
      * @param {string} value フィールドタイプ
      */
-    function cuCustomFieldDefinitionFieldTypeChangeHandler(value) {
+    function cuCustomFieldDefinitionFieldTypeChangeHandler() {
+        var value = $("#CuCustomFieldDefinitionFieldType").val();
         $configTable1 = $('#CuCustomFieldDefinitionTable1');
         $configTable2 = $('#CuCustomFieldDefinitionTable2');
 
@@ -214,6 +212,7 @@ $(function () {
         $labelName.hide();
         $parentId.show();
         $required.show();
+        $("#CufcRelatedGroup").show();
 
         switch (value) {
             case 'text':

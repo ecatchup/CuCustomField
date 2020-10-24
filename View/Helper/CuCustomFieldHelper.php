@@ -14,6 +14,7 @@
  *
  * @property BcFormHelper $BcForm
  * @property BcHtmlHelper $BcHtml
+ * @property BcBaserHelper $BcBaser
  */
 class CuCustomFieldHelper extends AppHelper
 {
@@ -87,6 +88,7 @@ class CuCustomFieldHelper extends AppHelper
 		$this->publicConfigData = $this->CuCustomFieldValueModel->publicConfigData;
 		$this->publicFieldConfigData = $this->CuCustomFieldValueModel->publicFieldConfigData;
 		$this->publicFieldData = $this->CuCustomFieldValueModel->publicFieldData;
+		$this->loadPluginHelper();
 	}
 
 	/**
@@ -227,6 +229,18 @@ class CuCustomFieldHelper extends AppHelper
 		// 記事のコンテンツID
 		$contentId = $post['BlogPost']['blog_content_id'];
 
+		// -----------------------------------------------------------------------------
+		$fieldConfig = $this->publicFieldConfigData[$contentId];
+		$fieldDefinition = $fieldConfig[$field];
+		$fieldType = $fieldDefinition['field_type'];
+		if($fieldType === 'related') {
+			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
+			if(method_exists($this->{$pluginName}, 'get')) {
+				return $this->{$pluginName}->get($fieldValue, $fieldDefinition);
+			}
+		}
+		// -----------------------------------------------------------------------------
+
 		foreach($this->publicFieldConfigData as $key => $fieldConfig) {
 			if ($contentId == $key) {
 				// 記事データには存在するが、記事に設定中のフィールド一覧にないものは利用しないために判定
@@ -306,9 +320,6 @@ class CuCustomFieldHelper extends AppHelper
 							} else {
 								$data = '';
 							}
-							break;
-						case 'related':
-							$data = $this->relatedRecord($fieldValue, $fieldConfig[$field]['option_meta']['related']);
 							break;
 						default:
 							$data = $fieldValue;
@@ -553,6 +564,15 @@ class CuCustomFieldHelper extends AppHelper
 	{
 		$fieldType = $options['type'];
 
+		// -----------------------------------------------------------------------------
+		if($fieldType === 'related') {
+			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
+			if(method_exists($this->{$pluginName}, 'input')) {
+				return $this->{$pluginName}->input($field, $options);
+			}
+		}
+		// -----------------------------------------------------------------------------
+
 		switch($fieldType) {
 			case 'date':
 				$options['type'] = 'datepicker';
@@ -579,9 +599,6 @@ class CuCustomFieldHelper extends AppHelper
 				break;
 			case 'file':
 				$formString = $this->file($field, $options);
-				break;
-			case 'related':
-				$formString = $this->related($field, $options);
 				break;
 			default:
 				$formString = $this->BcForm->input($field, $options);
@@ -936,31 +953,36 @@ class CuCustomFieldHelper extends AppHelper
 	}
 
 	/**
-	 * データソースから選択
-	 *
-	 * @param $fieldName
-	 * @param $options
-	 * @return string
+	 * プラグインのフィールド定義の入力欄を読み込む
 	 */
-	public function related($fieldName, $options) {
-		$related = $options['related'];
-		unset($options['related']);
-		$CuCustomFieldDefinition = ClassRegistry::init('CuCustomField.CuCustomFieldDefinition');
-		$list = $CuCustomFieldDefinition->getRelatedList($related['table'], $related['title_field'], $related['where_field'], $related['where_value']);
-		$options['type'] = 'select';
-		$options['options'] = ['' => '指定なし'] + $list;
-		return $formString = $this->BcForm->input($fieldName, $options);
+	public function loadPluginDefinitionInputs() {
+		$plugins = Configure::read('cuCustomField.plugins');
+		if($plugins) {
+			foreach($plugins as $plugin) {
+				$pluginPath = CakePlugin::path('CuCustomField') . 'Plugin' . DS . $plugin . DS;
+				if(file_exists($pluginPath . 'webroot' . DS . 'js' . DS . 'admin' . DS . 'definition_input.js')) {
+					$this->BcBaser->js($plugin . '.admin/definition_input', false);
+				}
+				if(file_exists($pluginPath . 'View' . DS . 'Elements' . DS . 'admin' . DS . 'definition_input.php')) {
+					$this->BcBaser->element($plugin . '.admin/definition_input');
+				}
+			}
+		}
 	}
 
 	/**
-	 * 関連データ
-	 * @param string $fieldValue
-	 * @param array $related
-	 * @return array|false
+	 * プラグインのヘルパーを読み込む
 	 */
-	public function relatedRecord ($fieldValue, $related) {
-		$CuCustomFieldDefinition = ClassRegistry::init('CuCustomField.CuCustomFieldDefinition');
-		return $CuCustomFieldDefinition->getRelatedRecord($related['table'], $fieldValue);
+	public function loadPluginHelper() {
+		$plugins = Configure::read('cuCustomField.plugins');
+		if($plugins) {
+			foreach($plugins as $plugin) {
+				$pluginPath = CakePlugin::path('CuCustomField') . 'Plugin' . DS . $plugin . DS;
+				if(file_exists($pluginPath . 'View' . DS . 'Helper' . DS . $plugin . 'Helper.php')) {
+					$this->{$plugin} = $this->_View->loadHelper($plugin . '.' . $plugin);
+				}
+			}
+		}
 	}
 
 }
