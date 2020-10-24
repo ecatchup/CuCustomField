@@ -202,8 +202,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		$data = '';
 		$_options = [
 			'novalue' => '',
-			'model' => 'CuCustomFieldValue',
-			'separator' => ', ',
+			'model' => 'CuCustomFieldValue'
 		];
 		$options = Hash::merge($_options, $options);
 		if (!$field) {
@@ -227,7 +226,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		$fieldConfig = $this->publicFieldConfigData[$contentId];
 		$fieldDefinition = $fieldConfig[$field];
 		$fieldType = $fieldDefinition['field_type'];
-		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio', 'checkbox', 'multiple', 'pref'])) {
+		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio', 'checkbox', 'multiple', 'pref', 'wysiwyg'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'get')) {
 				return $this->{$pluginName}->get($fieldValue, $fieldDefinition, $options);
@@ -493,7 +492,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		$fieldType = $options['type'];
 
 		// -----------------------------------------------------------------------------
-		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio', 'checkbox', 'multiple', 'pref'])) {
+		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio', 'checkbox', 'multiple', 'pref', 'wysiwyg'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'input')) {
 				return $this->{$pluginName}->input($field, $options);
@@ -502,17 +501,6 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		// -----------------------------------------------------------------------------
 
 		switch($fieldType) {
-			case 'wysiwyg':
-				$editorOptions = [
-					'editor' => $this->_View->viewVars['siteConfig']['editor'],
-					'editorEnterBr' => $this->_View->viewVars['siteConfig']['editor_enter_br'],
-					'editorWidth' => $options['width'],
-					'editorHeight' => $options['height'],
-					'editorToolType' => $options['editor_tool_type'],
-				];
-				$options = array_merge($editorOptions, $options);
-				$formString = $this->BcForm->ckeditor($field, $options);
-				break;
 			case 'googlemaps':
 				$formString = $this->_View->element('CuCustomField.admin/cu_custom_field_values/input_block/google_maps', ['definitions' => $options['definitions']]);
 				break;

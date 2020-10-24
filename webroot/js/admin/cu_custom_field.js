@@ -171,16 +171,6 @@ $(function () {
 
         switch (value) {
 
-            case 'wysiwyg':
-                $("#RowCuCfParentId").hide();
-                $("#RowCuCfRows").show('slow');
-                $("#CuCfRows").show('slow');
-                $("#CuCfRows").attr('placeholder', '200px');
-                $("#CuCfCols").show('slow');
-                $("#CuCfCols").attr('placeholder', '100%');
-                $("#CuCfEditorToolType").show('slow');
-                break;
-
             case 'googlemaps':
                 $("#RowCuCfParentId").hide();
                 $("#RowCuCfGoogleMaps").show('slow');
