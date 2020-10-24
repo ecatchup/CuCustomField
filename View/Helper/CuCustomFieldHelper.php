@@ -227,7 +227,7 @@ class CuCustomFieldHelper extends AppHelper
 		$fieldConfig = $this->publicFieldConfigData[$contentId];
 		$fieldDefinition = $fieldConfig[$field];
 		$fieldType = $fieldDefinition['field_type'];
-		if(in_array($fieldType, ['related', 'file', 'text', 'textarea'])) {
+		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'get')) {
 				return $this->{$pluginName}->get($fieldValue, $fieldDefinition, $options);
@@ -539,7 +539,7 @@ class CuCustomFieldHelper extends AppHelper
 		$fieldType = $options['type'];
 
 		// -----------------------------------------------------------------------------
-		if(in_array($fieldType, ['related', 'file', 'text', 'textarea'])) {
+		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date'])) {
 			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 			if(method_exists($this->{$pluginName}, 'input')) {
 				return $this->{$pluginName}->input($field, $options);
@@ -548,11 +548,6 @@ class CuCustomFieldHelper extends AppHelper
 		// -----------------------------------------------------------------------------
 
 		switch($fieldType) {
-			case 'date':
-				$options['type'] = 'datepicker';
-				$options['class'] = 'bca-textbox__input';
-				$formString = $this->BcForm->input($field, $options);
-				break;
 			case 'datetime':
 				$options['type'] = 'dateTimePicker';
 				$formString = $this->BcForm->input($field, $options);
