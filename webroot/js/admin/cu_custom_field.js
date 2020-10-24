@@ -184,14 +184,6 @@ $(function () {
 
         switch (value) {
 
-            case 'radio':
-                $("#RowCuCfDefaultValue").show();
-
-                $("#RowCuCfChoices").show('slow');
-                $("#RowCuCfSeparator").show('slow');
-                $("#RowCuCfLabelName").hide();
-                break;
-
             case 'checkbox':
                 $("#RowCuCfDefaultValue").show();
                 $("#RowCuCfLabelName").show();
