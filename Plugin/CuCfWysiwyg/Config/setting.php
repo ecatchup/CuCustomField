@@ -14,6 +14,6 @@
  */
 $config['cuCustomField'] = [
 	'field_type' => [
-		'選択' => [
+		'コンテンツ' => [
 			'wysiwyg' => 'Wysiwyg Editor'
 ]]];

@@ -171,11 +171,6 @@ $(function () {
 
         switch (value) {
 
-            case 'googlemaps':
-                $("#RowCuCfParentId").hide();
-                $("#RowCuCfGoogleMaps").show('slow');
-                break;
-
             case 'loop':
                 $("#RowCuCfParentId").hide();
                 $("#RowCuCfRequired").hide();

@@ -195,68 +195,29 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	 * @param array $post
 	 * @param string $field
 	 * @param array $options
-	 * @return mixes
+	 * @return string
 	 */
 	public function get($post = [], $field = '', $options = [])
 	{
-		$data = '';
-		$_options = [
+		$options = Hash::merge([
 			'novalue' => '',
 			'model' => 'CuCustomFieldValue'
-		];
-		$options = Hash::merge($_options, $options);
-		if (!$field) {
+		], $options);
+		if (!$field || !isset($post[$options['model']][$field])) {
 			return '';
 		}
-		if (!isset($post[$options['model']])) {
-			return '';
-		}
-		// カスタムフィールドで取得するモデル名
-		$modelName = $options['model'];
-		// カスタムフィールドの値。フィールド有無を判定し、ない場合は空文字を返す
-		if (!isset($post[$modelName][$field])) {
-			return '';
-		}
-		$fieldValue = $post[$modelName][$field];
-
+		$fieldValue = $post[$options['model']][$field];
 		// 記事のコンテンツID
 		$contentId = $post['BlogPost']['blog_content_id'];
 
-		// -----------------------------------------------------------------------------
 		$fieldConfig = $this->publicFieldConfigData[$contentId];
 		$fieldDefinition = $fieldConfig[$field];
 		$fieldType = $fieldDefinition['field_type'];
-		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio', 'checkbox', 'multiple', 'pref', 'wysiwyg'])) {
-			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
-			if(method_exists($this->{$pluginName}, 'get')) {
-				return $this->{$pluginName}->get($fieldValue, $fieldDefinition, $options);
-			}
+		$pluginName = 'CuCf' . Inflector::camelize($fieldType);
+		if(method_exists($this->{$pluginName}, 'get')) {
+			return $this->{$pluginName}->get($fieldValue, $fieldDefinition, $options);
 		}
-		// -----------------------------------------------------------------------------
-
-		foreach($this->publicFieldConfigData as $key => $fieldConfig) {
-			if ($contentId == $key) {
-				// 記事データには存在するが、記事に設定中のフィールド一覧にないものは利用しないために判定
-				if (!empty($fieldConfig[$field])) {
-					$fieldType = $fieldConfig[$field]['field_type'];
-					switch($fieldType) {
-
-						case 'wysiwyg':
-							$data = $fieldValue;
-							break;
-
-						case 'googlemaps':
-							$data = $fieldValue;
-							break;
-
-						default:
-							$data = $fieldValue;
-							break;
-					}
-				}
-			}
-		}
-		return $data;
+		return '';
 	}
 
 	/**
@@ -273,54 +234,6 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 			trigger_error(deprecatedMessage('ヘルパーメソッド：CuCustomFieldHelper::getPdcfData()', '1.0.0-beta', '1.0.0', '$this->CuCustomField->get() を利用してください。'), E_USER_DEPRECATED);
 		}
 		return $this->get($post, $field, $options);
-	}
-
-	/**
-	 * フィールド名を指定して、Googleマップの表示データを取得する
-	 *
-	 * @param array $post
-	 * @param string $field
-	 * @param array $options
-	 * @return string
-	 */
-	public function getGoogleMaps($post = [], $field = '', $options = [])
-	{
-		$data = $this->get($post, $field, $options);
-		if (!$data) {
-			return false;
-		}
-
-		$elementOptions = [
-			'googleMapsPopupText' => true,
-			'googleMapsWidth' => '100%',
-			'googleMapsHeight' => '400px',
-		];
-
-		foreach($elementOptions as $key => $var) {
-			if (isset($options[$key])) {
-				$data[$key] = $options[$key];
-			} else {
-				$data[$key] = $var;
-			}
-		}
-
-		return $this->BcBaser->getElement('CuCustomField.cu_custom_google_maps', $data);
-	}
-
-	/**
-	 * フィールド名を指定して、Googleマップのテキストデータを取得する
-	 *
-	 * @param array $post
-	 * @param string $field
-	 * @param array $options
-	 * @return string
-	 */
-	public function getGoogleMapsText($post = [], $field = '', $options = [])
-	{
-		$data = $this->get($post, $field, $options);
-		if (isset($data['google_maps_text'])) {
-			return $data['google_maps_text'];
-		}
 	}
 
 	/**
@@ -490,26 +403,11 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	public function input($field, $options = [])
 	{
 		$fieldType = $options['type'];
-
-		// -----------------------------------------------------------------------------
-		if(in_array($fieldType, ['related', 'file', 'text', 'textarea', 'date', 'datetime', 'select', 'radio', 'checkbox', 'multiple', 'pref', 'wysiwyg'])) {
-			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
-			if(method_exists($this->{$pluginName}, 'input')) {
-				return $this->{$pluginName}->input($field, $options);
-			}
+		$pluginName = 'CuCf' . Inflector::camelize($fieldType);
+		if(method_exists($this->{$pluginName}, 'input')) {
+			return $this->{$pluginName}->input($field, $options);
 		}
-		// -----------------------------------------------------------------------------
-
-		switch($fieldType) {
-			case 'googlemaps':
-				$formString = $this->_View->element('CuCustomField.admin/cu_custom_field_values/input_block/google_maps', ['definitions' => $options['definitions']]);
-				break;
-			default:
-				$formString = $this->BcForm->input($field, $options);
-				break;
-		}
-
-		return $formString;
+		return '';
 	}
 
 	/**

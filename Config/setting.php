@@ -47,10 +47,6 @@ $config['BcApp.adminNavigation'] = [
 $config['cuCustomField'] = [
 	// フィールドタイプ種別
 	'field_type' => [
-		'コンテンツ' => [
-			'wysiwyg' => 'Wysiwyg Editor',
-			'googlemaps' => 'Googleマップ'
-		],
 		'その他' => [
 			'loop' => 'ループ'
 		]
