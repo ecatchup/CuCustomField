@@ -307,8 +307,8 @@ class CuCustomFieldHelper extends AppHelper
 								$data = '';
 							}
 							break;
-						case 'datasource':
-							$data = $this->relatedData($fieldValue, $fieldConfig[$field]['option_meta']['datasource'], $options);
+						case 'related':
+							$data = $this->relatedRecord($fieldValue, $fieldConfig[$field]['option_meta']['related']);
 							break;
 						default:
 							$data = $fieldValue;
@@ -529,8 +529,8 @@ class CuCustomFieldHelper extends AppHelper
 					$_formOption['definitions'] = $data;
 					$formOption = Hash::merge($formOption, $_formOption);
 					break;
-				case 'datasource':
-					$_formOption['datasource'] = $data[$modelName]['option_meta']['datasource'];
+				case 'related':
+					$_formOption['related'] = $data[$modelName]['option_meta']['related'];
 					$formOption = Hash::merge($formOption, $_formOption);
 					break;
 				default:
@@ -580,8 +580,8 @@ class CuCustomFieldHelper extends AppHelper
 			case 'file':
 				$formString = $this->file($field, $options);
 				break;
-			case 'datasource':
-				$formString = $this->datasource($field, $options);
+			case 'related':
+				$formString = $this->related($field, $options);
 				break;
 			default:
 				$formString = $this->BcForm->input($field, $options);
@@ -942,10 +942,11 @@ class CuCustomFieldHelper extends AppHelper
 	 * @param $options
 	 * @return string
 	 */
-	public function datasource($fieldName, $options) {
-		$datasource = $options['datasource'];
-		unset($options['datasource']);
-		$list = $this->getRelatedList($datasource);
+	public function related($fieldName, $options) {
+		$related = $options['related'];
+		unset($options['related']);
+		$CuCustomFieldDefinition = ClassRegistry::init('CuCustomField.CuCustomFieldDefinition');
+		$list = $CuCustomFieldDefinition->getRelatedList($related['table'], $related['title_field'], $related['where_field'], $related['where_value']);
 		$options['type'] = 'select';
 		$options['options'] = ['' => '指定なし'] + $list;
 		return $formString = $this->BcForm->input($fieldName, $options);
@@ -954,48 +955,12 @@ class CuCustomFieldHelper extends AppHelper
 	/**
 	 * 関連データ
 	 * @param string $fieldValue
-	 * @param array $datasource
-	 * @param string $noValue
-	 * @return mixied|string
+	 * @param array $related
+	 * @return array|false
 	 */
-	public function relatedData ($fieldValue, $datasource, $options) {
-		$list = $this->getRelatedList($datasource, 'all');
-		foreach($list as $record) {
-			if($fieldValue === $record['CuCustomField']['id']) {
-				return $record['CuCustomField'];
-			}
-		}
+	public function relatedRecord ($fieldValue, $related) {
+		$CuCustomFieldDefinition = ClassRegistry::init('CuCustomField.CuCustomFieldDefinition');
+		return $CuCustomFieldDefinition->getRelatedRecord($related['table'], $fieldValue);
 	}
 
-	/**
-	 * 関連データリスト
-	 * @param array $datasource
-	 * @return array
-	 */
-	public function getRelatedList($datasource, $type = 'list') {
-		$db = ConnectionManager::getDataSource('default');
-		$table = $db->config['prefix'] . $datasource['table'];
-		$where = '';
-		if($datasource['entity_id']) {
-			$where = ' WHERE blog_content_id = ' . $datasource['entity_id'];
-		}
-		switch ($type) {
-			case 'all' :
-				$field = '*';
-				break;
-			default :
-				$field = 'CuCustomField.id, CuCustomField.' . $datasource['title'];
-
-		}
-		$sql = 'SELECT ' . $field . ' FROM ' . $table . ' AS CuCustomField';
-		if($where) {
-			$sql .= $where;
-		}
-		$record = $db->query($sql);
-		if($type === 'all') {
-			return $record;
-		} else {
-			return Hash::combine($record, '{n}.CuCustomField.id', '{n}.CuCustomField.' . $datasource['title']);
-		}
-	}
 }

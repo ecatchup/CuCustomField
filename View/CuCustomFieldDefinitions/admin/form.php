@@ -156,7 +156,7 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/separator', ['currentModelName' => $currentModelName]) ?>
 		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/auto_convert', ['currentModelName' => $currentModelName, 'customFieldConfig' => $customFieldConfig]) ?>
 		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/google_maps', ['currentModelName' => $currentModelName]) ?>
-		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/datasource_etc', ['currentModelName' => $currentModelName]) ?>
+		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/related_etc', ['currentModelName' => $currentModelName]) ?>
 		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/text_etc', ['currentModelName' => $currentModelName]) ?>
 		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/textarea_etc', ['currentModelName' => $currentModelName, 'customFieldConfig' => $customFieldConfig]) ?>
 		<?php $this->BcBaser->element('admin/cu_custom_field_definitions/input_block/checkbox_etc', ['currentModelName' => $currentModelName]) ?>
