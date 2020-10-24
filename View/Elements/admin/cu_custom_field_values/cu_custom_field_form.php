@@ -43,7 +43,7 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 							<!-- 表示 -->
 							<div id="loop-<?php echo $definition['CuCustomFieldDefinition']['field_name'] ?>" class="cucf-loop">
 
-							<?php if($this->request->data['CuCustomFieldValue'][$definition['CuCustomFieldDefinition']['field_name']]): ?>
+							<?php if(!empty($this->request->data['CuCustomFieldValue'][$definition['CuCustomFieldDefinition']['field_name']])): ?>
 								<?php foreach($this->request->data['CuCustomFieldValue'][$definition['CuCustomFieldDefinition']['field_name']] as $key => $value): ?>
 								<div id="CucfLoop<?php echo $definition['CuCustomFieldDefinition']['field_name'] . '-' . $key ?>" class="cucf-loop-block">
 									<table class="bca-form-table">

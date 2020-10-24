@@ -134,50 +134,15 @@ $(function () {
         }
     });
 
-    $("#CuCustomFieldDefinitionParentId").change(cuCustomFieldDefinitionParentIdChangeHandler);
-
-    cuCustomFieldDefinitionParentIdChangeHandler();
-
-    function cuCustomFieldDefinitionParentIdChangeHandler() {
-        var rowPrepend = $("#RowCuCfPrepend");
-        var rowAppend = $("#RowCuCfAppend");
-        var rowDescription = $("#RowCuCfDescription");
-        if($("#CuCustomFieldDefinitionParentId").val()) {
-            rowPrepend.hide();
-            rowAppend.hide();
-            rowDescription.hide();
-        } else {
-            rowPrepend.show('slow');
-            rowAppend.show('slow');
-            rowDescription.show('slow');
-        }
-    }
     /**
      * タイプの値によってフィールドの表示設定を行う
-     *
-     * @param {string} value フィールドタイプ
      */
     function cuCustomFieldDefinitionFieldTypeChangeHandler() {
-        var value = $("#CuCustomFieldDefinitionFieldType").val();
-
         // 管理システム表示設定の「初期値」、「入力欄前に表示」、「入力欄後に表示」、「このフィールドの説明文」行以外の行
         // この４つの行はほとんどのフィールドタイプで表示されるので、除外した行を取得
         $hideTrs = $('#CuCustomFieldDefinitionTable2')
             .find('tr')
             .not('#RowCuCfPrepend, #RowCuCfAppend, #RowCuCfDescription, #RowCuCfDefaultValue, #RowCuCfRequired')
             .hide();
-
-        $("#RowCuCfParentId").show();
-
-        switch (value) {
-
-            case 'loop':
-                $("#RowCuCfParentId").hide();
-                $("#RowCuCfRequired").hide();
-                $("#CuCustomFieldDefinitionParentId").val('');
-                $("#CuCustomFieldDefinitionRequired").attr('checked', false);
-                break;
-
-        }
     }
 });
