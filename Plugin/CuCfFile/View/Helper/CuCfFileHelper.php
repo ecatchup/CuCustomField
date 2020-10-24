@@ -10,7 +10,7 @@
  */
 
 /**
- * Class CuCfRelatedHelper
+ * Class CuCfFileHelper
  *
  * @property BcHtmlHelper $BcHtml
  * @property CuCustomFieldHelper $CuCustomField

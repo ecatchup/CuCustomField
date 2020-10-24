@@ -21,7 +21,7 @@ if(!empty($this->request->data['CuCustomFieldDefinition']['id'])) {
 	$id = $this->request->data['CuCustomFieldDefinition']['id'];
 }
 $this->BcBaser->css('CuCustomField.admin/cu_custom_field', ['inline' => false]);
-$this->BcBaser->js('CuCustomField.admin/cu_custom_field', true, ['id' => 'CuCustomFieldDefinitionScript',
+$this->BcBaser->js('CuCustomField.admin/cu_custom_field', false, ['id' => 'CuCustomFieldDefinitionScript',
 	'data-id' => $id,
 	'data-config-id' => $configId
 ]);

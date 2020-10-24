@@ -17,22 +17,22 @@
 ?>
 
 
-<tr id="Row<?php echo $currentModelName . Inflector::camelize('validate'); ?>Group">
-		<th class="col-head bca-form-table__label">
+<tr id="RowCuCfValidate">
+		<th class="bca-form-table__label">
 			<?php echo $this->BcForm->label('CuCustomFieldDefinition.validate', '入力値チェック') ?>
 		</th>
-		<td class="col-input bca-form-table__input">
+		<td class="bca-form-table__input">
 			<?php echo $this->BcForm->input('CuCustomFieldDefinition.validate', ['type' => 'select', 'multiple' => 'checkbox', 'options' => $customFieldConfig['validate']]) ?>
 			<?php echo $this->BcForm->error('CuCustomFieldDefinition.validate') ?>
 
-			<div id="CuCustomFieldDefinitionValidateRegexBox" class="display-none" style="clear: both;">
+			<div id="CuCfValidateRegexGroup" class="display-none" style="clear: both;">
 				<?php echo $this->BcForm->label('CuCustomFieldDefinition.validate_regex', '正規表現入力') ?>&nbsp;<span
 					class="required bca-label"
 					data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span>
 				<?php echo $this->BcForm->input('CuCustomFieldDefinition.validate_regex',
 					['type' => 'text', 'size' => 45, 'maxlength' => 255, 'placeholder' => '例：/^[a-z]+$/i']) ?>
 				<i class="bca-icon--question-circle btn help bca-help"></i>
-				<div id="helptextCuCustomFieldDefinitionValidateRegex" class="helptext">
+				<div class="helptext">
 					<ul>
 						<li>正規表現（preg_match）を用いて入力データのチェックができます。/〜/ の形式で入力してください。</li>
 						<li>ご入力の正規表現自体の正誤チェックは行いません。</li>
@@ -41,8 +41,8 @@
 					</ul>
 				</div>
 				<span id="CheckValueResultValidateRegex" class="display-none">
-				<div class="error-message duplicate-error-message">正規表現を入力してください。</div>
-			</span>
+					<div class="error-message duplicate-error-message">正規表現を入力してください。</div>
+				</span>
 				<?php echo $this->BcForm->error('CuCustomFieldDefinition.validate_regex') ?>
 				<br/>
 				<?php echo $this->BcForm->label('CuCustomFieldDefinition.validate_regex_message', 'エラー用文言') ?>

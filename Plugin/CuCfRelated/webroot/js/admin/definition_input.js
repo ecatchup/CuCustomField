@@ -16,11 +16,9 @@ $(function(){
     switchRelated();
 
     function switchRelated() {
-        var relatedGroup = $("#CufcRelatedGroup");
+        var relatedGroup = $("#RowCuCfRelated");
         if(fieldType.val() === 'related') {
             relatedGroup.show('slow');
-        } else {
-            relatedGroup.hide();
         }
     }
 });

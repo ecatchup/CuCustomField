@@ -15,7 +15,7 @@
 ?>
 
 
-<tr id="CufcRelatedGroup">
+<tr id="RowCuCfRelated">
 	<th class="bca-form-table__label">
 		その他の設定
 	</th>

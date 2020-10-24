@@ -11,12 +11,11 @@
 
 /**
  * @var BcAppView $this
- * @var string $currentModelName
  */
 ?>
 
 
-<tr id="Row<?php echo $currentModelName . Inflector::camelize('description'); ?>">
+<tr id="RowCuCfDescription">
 	<th class="col-head bca-form-table__label">
 		<?php echo $this->BcForm->label('CuCustomFieldDefinition.description', 'このフィールドの説明文') ?>
 	</th>

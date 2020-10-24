@@ -115,9 +115,9 @@ $(function () {
     $('#CuCustomFieldDefinitionValidateREGEXCHECK').change(function () {
         $value = $(this).prop('checked');
         if ($value) {
-            $('#CuCustomFieldDefinitionValidateRegexBox').show('slow');
+            $('#CuCfValidateRegexGroup').show('slow');
         } else {
-            $('#CuCustomFieldDefinitionValidateRegexBox').hide('high');
+            $('#CuCfValidateRegexGroup').hide('high');
         }
     });
 
@@ -151,17 +151,17 @@ $(function () {
     cuCustomFieldDefinitionParentIdChangeHandler();
 
     function cuCustomFieldDefinitionParentIdChangeHandler() {
-        var prepend = $("#RowCuCustomFieldDefinitionPrepend");
-        var append = $("#RowCuCustomFieldDefinitionAppend");
-        var description = $("#RowCuCustomFieldDefinitionDescription");
+        var rowPrepend = $("#RowCuCfPrepend");
+        var rowAppend = $("#RowCuCfAppend");
+        var rowDescription = $("#RowCuCfDescription");
         if($("#CuCustomFieldDefinitionParentId").val()) {
-            prepend.hide();
-            append.hide();
-            description.hide();
+            rowPrepend.hide();
+            rowAppend.hide();
+            rowDescription.hide();
         } else {
-            prepend.show('slow');
-            append.show('slow');
-            description.show('slow');
+            rowPrepend.show('slow');
+            rowAppend.show('slow');
+            rowDescription.show('slow');
         }
     }
     /**
@@ -171,182 +171,125 @@ $(function () {
      */
     function cuCustomFieldDefinitionFieldTypeChangeHandler() {
         var value = $("#CuCustomFieldDefinitionFieldType").val();
-        $configTable1 = $('#CuCustomFieldDefinitionTable1');
-        $configTable2 = $('#CuCustomFieldDefinitionTable2');
 
         // 管理システム表示設定の「初期値」、「入力欄前に表示」、「入力欄後に表示」、「このフィールドの説明文」行以外の行
         // この４つの行はほとんどのフィールドタイプで表示されるので、除外した行を取得
-        $hideTrs = $configTable2.find('tr').not('#RowCuCustomFieldDefinitionPrepend, '
-            + '#RowCuCustomFieldDefinitionAppend, #RowCuCustomFieldDefinitionDescription, '
-            + '#RowCuCustomFieldDefinitionDefaultValue, #RowCuCustomFieldDefinitionLabelName');
+        $hideTrs = $('#CuCustomFieldDefinitionTable2')
+            .find('tr')
+            .not('#RowCuCfPrepend, #RowCuCfAppend, #RowCuCfDescription, #RowCuCfDefaultValue, #RowCuCfRequired')
+            .hide();
 
-        $defaultValue = $("#RowCuCustomFieldDefinitionDefaultValue");
-        $previewPrefList = $("#PreviewPrefList");
-        $validateGroup = $("#RowCuCustomFieldDefinitionValidateGroup");
-        $validateHankaku = $("#CuCustomFieldDefinitionValidateHANKAKUCHECK");
-        $validateNumeric = $("#CuCustomFieldDefinitionValidateNUMERICCHECK");
-        $validateNonCheckCheck = $("#CuCustomFieldDefinitionValidateNONCHECKCHECK");
-        $validateRegex = $('#CuCustomFieldDefinitionValidateREGEXCHECK');
-        $validateRegexBox = $('#CuCustomFieldDefinitionValidateRegexBox');
-        $sizeGroup = $("#RowCuCustomFieldDefinitionSizeGroup");
-        $relatedGroup = $("#RowCuCustomFieldDefinitionRelatedGroup");
-        $size = $("#RowCuCustomFieldDefinitionSize");
-        $maxLength = $("#RowCuCustomFieldDefinitionMaxLenght");
-        $labelName = $("#RowCuCustomFieldDefinitionLabelName");
-        $counter = $("#RowCuCustomFieldDefinitionCounter");
-        $placeholder = $("#RowCuCustomFieldDefinitionPlaceholder");
-        $rowsGroup = $("#RowCuCustomFieldDefinitionRowsGroup");
-        $rows = $("#CuCustomFieldDefinitionRows");
-        $cols = $("#CuCustomFieldDefinitionCols");
-        $editorToolType = $("#RowCuCustomFieldDefinitionEditorToolType");
-        $choices = $("#RowCuCustomFieldDefinitionChoices");
-        $separator = $("#RowCuCustomFieldDefinitionSeparator");
-        $autoConvert = $("#RowCuCustomFieldDefinitionAutoConvert");
-        $googlemapsGroup = $("#RowCuCustomFieldDefinitionGoogleMapsGroup");
-        $parentId = $("#RowCuCustomFieldDefinitionParentId");
-        $required = $("#RowCuCustomFieldDefinitionRequired");
-
-        $hideTrs.hide();
-        $previewPrefList.hide();
-        $defaultValue.hide();
-        $labelName.hide();
-        $parentId.show();
-        $required.show();
+        $("#RowCuCfParentId").show();
+        $("#PreviewPrefList").hide();
 
         switch (value) {
-            case 'text':
-                $defaultValue.show();
-
-                // バリデーション項目
-                $validateGroup.show('slow');
-                $validateHankaku.parent().show('slow');
-                $validateNumeric.parent().show('slow');
-                $validateNonCheckCheck.parent().hide('fast');
-                $validateRegex.parent().show('slow');
-                // 正規表現チェックが有効に指定されている場合は、専用の入力欄を表示する
-                if ($validateRegex.prop('checked')) {
-                    $validateRegexBox.show('fast');
-                }
-
-                $sizeGroup.show('slow');
-                $size.show('slow');
-                $maxLength.show('slow');
-                $counter.show('slow');
-                $placeholder.show('slow');
-                $autoConvert.show('slow');
-                break;
-
             case 'textarea':
-                $defaultValue.show();
+                $("#RowCuCfDefaultValue").show();
 
                 // バリデーション項目
-                $validateGroup.show('slow');
-                $validateHankaku.parent().show('slow');
-                $validateNumeric.parent().show('slow');
-                $validateNonCheckCheck.parent().hide('fast');
-                $validateRegex.parent().show('slow');
+                $("#RowCuCfValidate").show('slow');
+                $("#CuCustomFieldDefinitionValidateHANKAKUCHECK").parent().show('slow');
+                $("#CuCustomFieldDefinitionValidateNUMERICCHECK").parent().show('slow');
+                $("#CuCustomFieldDefinitionValidateNONCHECKCHECK").parent().hide('fast');
+                $('#CuCustomFieldDefinitionValidateREGEXCHECK').parent().show('slow');
                 // 正規表現チェックが有効に指定されている場合は、専用の入力欄を表示する
-                if ($validateRegex.prop('checked')) {
-                    $validateRegexBox.show('fast');
+                if ($('#CuCustomFieldDefinitionValidateREGEXCHECK').prop('checked')) {
+                    $('#CuCfValidateRegexGroup').show('fast');
                 }
 
-                $sizeGroup.show('slow');
-                $size.hide('fast');
-                $maxLength.hide('fast');
-                $counter.show('slow');
+                $("#RowCuCfSize").show('slow');
+                $("#CuCfSize").hide('fast');
+                $("#CuCfMaxLength").hide('fast');
+                $("#CuCfCounter").show('slow');
 
-                $placeholder.show('slow');
+                $("#RowCuCfPlaceholder").show('slow');
 
-                $rowsGroup.show('slow');
-                $rows.show('slow');
-                $rows.attr('placeholder', '3');
-                $cols.show('slow');
-                $cols.attr('placeholder', '40');
-                $editorToolType.hide('fast');
+                $("#RowCuCfRows").show('slow');
+                $("#CuCfRows").show('slow');
+                $("#CuCfRows").attr('placeholder', '3');
+                $("#CuCfCols").show('slow');
+                $("#CuCfCols").attr('placeholder', '40');
+                $("#CuCfEditorToolType").hide('fast');
 
-                $autoConvert.show('slow');
-                $labelName.hide();
+                $("#RowCuCfAutoConvert").show('slow');
+                $("#RowCuCfLabelName").hide();
                 break;
 
             case 'date':
             case 'datetime':
-                $parentId.hide();
-                $defaultValue.show();
+                $("#RowCuCfParentId").hide();
+                $("#RowCuCfDefaultValue").show();
                 break;
 
             case 'select':
-                $defaultValue.show();
-                $choices.show('slow');
-                $labelName.hide();
+                $("#RowCuCfDefaultValue").show();
+                $("#RowCuCfChoices").show('slow');
+                $("#RowCuCfLabelName").hide();
                 break;
 
             case 'radio':
-                $defaultValue.show();
+                $("#RowCuCfDefaultValue").show();
 
-                $choices.show('slow');
-                $separator.show('slow');
-                $labelName.hide();
+                $("#RowCuCfChoices").show('slow');
+                $("#RowCuCfSeparator").show('slow');
+                $("#RowCuCfLabelName").hide();
                 break;
 
             case 'checkbox':
-                $defaultValue.show();
-                $labelName.show();
+                $("#RowCuCfDefaultValue").show();
+                $("#RowCuCfLabelName").show();
 
                 // バリデーション項目
-                $validateGroup.hide('fast');
-                $validateHankaku.parent().hide('fast');
-                $validateNumeric.parent().hide('fast');
-                $validateNonCheckCheck.parent().show('fast');
-                $validateRegex.parent().hide('fast');
-                $validateRegexBox.hide('fast');
+                $("#RowCuCfValidate").hide('fast');
+                $("#CuCustomFieldDefinitionValidateHANKAKUCHECK").parent().hide('fast');
+                $("#CuCustomFieldDefinitionValidateNUMERICCHECK").parent().hide('fast');
+                $("#CuCustomFieldDefinitionValidateNONCHECKCHECK").parent().show('fast');
+                $('#CuCustomFieldDefinitionValidateREGEXCHECK').parent().hide('fast');
+                $('#CuCfValidateRegexGroup').hide('fast');
 
                 break;
 
             case 'multiple':
-                $defaultValue.show();
+                $("#RowCuCfDefaultValue").show();
 
                 // バリデーション項目
-                $validateGroup.show('slow');
-                $validateHankaku.parent().hide('fast');
-                $validateNumeric.parent().hide('fast');
-                $validateNonCheckCheck.parent().show('slow');
-                $validateRegex.parent().hide('fast');
-                $validateRegexBox.hide('fast');
+                $("#RowCuCfValidate").show('slow');
+                $("#CuCustomFieldDefinitionValidateHANKAKUCHECK").parent().hide('fast');
+                $("#CuCustomFieldDefinitionValidateNUMERICCHECK").parent().hide('fast');
+                $("#CuCustomFieldDefinitionValidateNONCHECKCHECK").parent().show('slow');
+                $('#CuCustomFieldDefinitionValidateREGEXCHECK').parent().hide('fast');
+                $('#CuCfValidateRegexGroup').hide('fast');
 
-                $choices.show('slow');
+                $("#RowCuCfChoices").show('slow');
                 break;
 
             case 'pref':
-                $previewPrefList.show();
-                $defaultValue.show();
+                $("#PreviewPrefList").show();
+                $("#RowCuCfDefaultValue").show();
                 break;
 
             case 'wysiwyg':
-                $parentId.hide();
-                $rowsGroup.show('slow');
-                $rows.show('slow');
-                $rows.attr('placeholder', '200px');
-                $cols.show('slow');
-                $cols.attr('placeholder', '100%');
-                $editorToolType.show('slow');
+                $("#RowCuCfParentId").hide();
+                $("#RowCuCfRows").show('slow');
+                $("#CuCfRows").show('slow');
+                $("#CuCfRows").attr('placeholder', '200px');
+                $("#CuCfCols").show('slow');
+                $("#CuCfCols").attr('placeholder', '100%');
+                $("#CuCfEditorToolType").show('slow');
                 break;
 
             case 'googlemaps':
-                $parentId.hide();
-                $googlemapsGroup.show('slow');
+                $("#RowCuCfParentId").hide();
+                $("#RowCuCfGoogleMaps").show('slow');
                 break;
 
             case 'loop':
-                $parentId.hide();
-                $required.hide();
+                $("#RowCuCfParentId").hide();
+                $("#RowCuCfRequired").hide();
                 $("#CuCustomFieldDefinitionParentId").val('');
                 $("#CuCustomFieldDefinitionRequired").attr('checked', false);
                 break;
 
-            case 'related':
-                $relatedGroup.show();
-                $defaultValue.show();
-                break;
         }
     }
 });

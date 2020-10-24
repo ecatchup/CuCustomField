@@ -8,7 +8,11 @@ class CuCustomFieldUtil {
 		$plugins = [];
 		if(!empty($files[0])) {
 			foreach($files[0] as $pluginName) {
-				loadPlugin($pluginName, 999);
+				if(Configure::read('BcRequest.asset')) {
+					CakePlugin::load($pluginName);
+				} else {
+					loadPlugin($pluginName, 999);
+				}
 				$plugins[] = $pluginName;
 			}
 		}

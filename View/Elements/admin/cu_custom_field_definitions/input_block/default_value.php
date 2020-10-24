@@ -16,17 +16,17 @@
 ?>
 
 
-<tr id="Row<?php echo $currentModelName . Inflector::camelize('default_value'); ?>">
-	<th class="col-head bca-form-table__label">
+<tr id="RowCuCfDefaultValue">
+	<th class="bca-form-table__label">
 		<?php echo $this->BcForm->label('CuCustomFieldDefinition.default_value', '初期値') ?>
 	</th>
-	<td class="col-input bca-form-table__input">
+	<td class="bca-form-table__input">
 		<?php echo $this->BcForm->input('CuCustomFieldDefinition.default_value', [
 			'type' => 'text', 'size' => 60, 'maxlength' => 255, 'counter' => true,
 			'placeholder' => 'カスタムフィールドの入力欄の初期値を指定します'
 		]) ?>
 		<i class="bca-icon--question-circle btn help bca-help"></i>
-		<div id="helptextCuCustomFieldDefinitionDefaultValue" class="helptext">
+		<div class="helptext">
 			<h5 class="weight-bold">ラジオボタン、セレクトボックスの場合</h5>
 			<ul>
 				<li>選択肢の入力内容のラベル名（キー）を指定してください。</li>

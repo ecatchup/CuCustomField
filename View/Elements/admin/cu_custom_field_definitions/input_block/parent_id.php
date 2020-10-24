@@ -11,19 +11,18 @@
 
 /**
  * @var BcAppView $this
- * @var string $currentModelName
  */
 ?>
 
 
 <?php if(!empty($loops)): ?>
-		<tr id="Row<?php echo $currentModelName . Inflector::camelize('parent_id'); ?>">
-			<th class="col-head bca-form-table__label">
-				<?php echo $this->BcForm->label('CuCustomFieldDefinition.parent_id', 'ループグループ') ?>
-			</th>
-			<td class="col-input bca-form-table__input" colspan="3">
-				<?php echo $this->BcForm->input('CuCustomFieldDefinition.parent_id', ['type' => 'select', 'options' => $loops]) ?>
-				<?php echo $this->BcForm->error('CuCustomFieldDefinition.parent_id') ?>
-			</td>
-		</tr>
+<tr id="RowCuCfParentId">
+	<th class="bca-form-table__label">
+		<?php echo $this->BcForm->label('CuCustomFieldDefinition.parent_id', 'ループグループ') ?>
+	</th>
+	<td class="bca-form-table__input" colspan="3">
+		<?php echo $this->BcForm->input('CuCustomFieldDefinition.parent_id', ['type' => 'select', 'options' => $loops]) ?>
+		<?php echo $this->BcForm->error('CuCustomFieldDefinition.parent_id') ?>
+	</td>
+</tr>
 <?php endif ?>
