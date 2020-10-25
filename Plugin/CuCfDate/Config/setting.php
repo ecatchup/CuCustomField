@@ -14,6 +14,6 @@
  */
 $config['cuCustomField'] = [
 	'field_type' => [
-		'基本' => [
+		'日付' => [
 			'date' => '日付（年月日）'
 ]]];

@@ -44,12 +44,6 @@ $config['BcApp.adminNavigation'] = [
  * カスタムフィールド用設定
  */
 $config['cuCustomField'] = [
-	// フィールドタイプ種別
-	'field_type' => [
-		'その他' => [
-			'loop' => 'ループ'
-		]
-	],
 	// エディターのタイプ
 	'editor_tool_type' => [
 		'simple' => 'Simple',
