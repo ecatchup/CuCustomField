@@ -24,8 +24,12 @@ class CuCfMultipleHelper extends CuCustomFieldAppHelper {
 	 * @param array $options
 	 * @return string
 	 */
-	public function input ($fieldName, $options) {
-		$options['type'] = 'select';
+	public function input ($fieldName, $definition, $options) {
+		$options = array_merge([
+			'type' => 'select',
+			'multiple' => 'checkbox',
+			'options' => (isset($definition['choices'])) ? $this->textToArray($definition['choices']) : [],
+		], $options);
 		return $this->CuCustomField->BcForm->input($fieldName, $options);
 	}
 

@@ -23,7 +23,13 @@ class CuCfTextareaHelper extends AppHelper {
 	 * @param array $options
 	 * @return string
 	 */
-	public function input ($fieldName, $options) {
+	public function input ($fieldName, $definition, $options) {
+		$options = array_merge([
+			'type' => 'textarea',
+			'rows' => (isset($definition['rows'])) ? $definition['rows'] : '',
+			'cols' => (isset($definition['cols'])) ? $definition['cols'] : '',
+			'placeholder' => (isset($definition['placeholder'])) ? $definition['placeholder'] : ''
+		], $options);
 		return $this->CuCustomField->BcForm->input($fieldName, $options);
 	}
 

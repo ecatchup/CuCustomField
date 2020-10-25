@@ -24,8 +24,11 @@ class CuCfSelectHelper extends CuCustomFieldAppHelper {
 	 * @param array $options
 	 * @return string
 	 */
-	public function input ($fieldName, $options) {
-		$options['options'] = ['' => '指定しない'] + $options['options'];
+	public function input ($fieldName, $definition, $options) {
+		$options = array_merge([
+			'type' => 'select',
+			'options' => (isset($definition['choices'])) ? ['' => '指定しない'] + $this->textToArray($definition['choices']) : []
+		], $options);
 		return $this->CuCustomField->BcForm->input($fieldName, $options);
 	}
 

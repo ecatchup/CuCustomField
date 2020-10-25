@@ -23,7 +23,16 @@ class CuCfTextHelper extends AppHelper {
 	 * @param array $options
 	 * @return string
 	 */
-	public function input ($fieldName, $options) {
+	public function input ($fieldName, $definition, $options) {
+		$options = array_merge([
+			'type' => 'text',
+			'size' => (isset($definition['size'])) ? $definition['size'] : '',
+			'max_length' => (isset($definition['max_length'])) ? $definition['max_length'] : '255',
+			'placeholder' => (isset($definition['placeholder'])) ? $definition['placeholder'] : ''
+		], $options);
+		if(!empty($definition['counter'])) {
+			$options['counter'] = true;
+		}
 		return $this->CuCustomField->BcForm->input($fieldName, $options);
 	}
 

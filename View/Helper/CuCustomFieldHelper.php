@@ -237,175 +237,21 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	}
 
 	/**
-	 * フォームのタイプを判定して、タイプ別の入力フォームを生成する
-	 *
-	 * @param array $data
-	 * @param string $section モデル名を指定: 複数モデルのデータの場合、ここで指定したモデル名のデータを利用する
-	 * @param array $options
-	 * @return array
-	 */
-	public function getFormOption($data = [], $section = '', $options = [])
-	{
-		$formOption = [];
-
-		if ($data) {
-			$modelName = key($data);
-			// モデル名の指定を優先する
-			if ($section) {
-				$modelName = $section;
-			}
-			// フィールドのタイプを判定用に設定する
-			$fieldType = $data[$modelName]['field_type'];
-			$_formOption = [
-				'type' => $fieldType,
-			];
-
-			switch($fieldType) {
-				case 'text':
-					if ($data[$modelName]['size']) {
-						$_formOption = array_merge($_formOption, ['size' => $data[$modelName]['size']]);
-					}
-					if ($data[$modelName]['max_length']) {
-						$_formOption = array_merge($_formOption, ['maxlength' => $data[$modelName]['max_length']]);
-					} else {
-						$_formOption = array_merge($_formOption, ['maxlength' => '255']);
-					}
-					if ($data[$modelName]['counter']) {
-						$_formOption = array_merge($_formOption, ['counter' => $data[$modelName]['counter']]);
-					}
-					if ($data[$modelName]['placeholder']) {
-						$_formOption = array_merge($_formOption, ['placeholder' => $data[$modelName]['placeholder']]);
-					}
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-
-				case 'textarea':
-					if ($data[$modelName]['rows']) {
-						$_formOption = array_merge($_formOption, ['rows' => $data[$modelName]['rows']]);
-					}
-					if ($data[$modelName]['cols']) {
-						$_formOption = array_merge($_formOption, ['cols' => $data[$modelName]['cols']]);
-					}
-					if ($data[$modelName]['placeholder']) {
-						$_formOption = array_merge($_formOption, ['placeholder' => $data[$modelName]['placeholder']]);
-					}
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-
-				case 'date':
-					if ($data[$modelName]['size']) {
-						$_formOption = array_merge($_formOption, ['size' => $data[$modelName]['size']]);
-					} else {
-						$_formOption = array_merge($_formOption, ['size' => 12]);
-					}
-					if ($data[$modelName]['max_length']) {
-						$_formOption = array_merge($_formOption, ['maxlength' => $data[$modelName]['max_length']]);
-					} else {
-						$_formOption = array_merge($_formOption, ['maxlength' => 10]);
-					}
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-
-				case 'datetime':
-					if ($data[$modelName]['size']) {
-						$_formOption = array_merge($_formOption, ['size' => $data[$modelName]['size']]);
-					} else {
-						$_formOption = array_merge($_formOption, ['size' => 12]);
-					}
-					if ($data[$modelName]['max_length']) {
-						$_formOption = array_merge($_formOption, ['maxlength' => $data[$modelName]['max_length']]);
-					} else {
-						$_formOption = array_merge($_formOption, ['maxlength' => 10]);
-					}
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-
-				case 'select':
-					if ($data[$modelName]['choices']) {
-						$option = $this->textToArray($data[$modelName]['choices']);
-						$_formOption = array_merge($_formOption, ['options' => $option]);
-					}
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-
-				case 'radio':
-					if ($data[$modelName]['choices']) {
-						$option = $this->textToArray($data[$modelName]['choices']);
-						$_formOption = array_merge($_formOption, ['options' => $option]);
-					}
-					if ($data[$modelName]['separator']) {
-						$_formOption = array_merge($_formOption, ['separator' => $data[$modelName]['separator']]);
-					}
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-
-				case 'checkbox':
-					if ($data[$modelName]['label_name']) {
-						$_formOption = array_merge($_formOption, ['label' => $data[$modelName]['label_name']]);
-					}
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-
-				case 'multiple':
-					if ($data[$modelName]['choices']) {
-						$option = $this->textToArray($data[$modelName]['choices']);
-						$_formOption = array_merge($_formOption, ['options' => $option, $fieldType => 'checkbox']);
-					}
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-
-				case 'pref':
-					$_formOption['type'] = 'select';
-					$_formOption = array_merge($_formOption, ['options' => $this->BcText->prefList()]);
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-
-				case 'wysiwyg':
-					if ($data[$modelName]['rows']) {
-						$_formOption = array_merge($_formOption, ['height' => $data[$modelName]['rows']]);
-					} else {
-						$_formOption = array_merge($_formOption, ['height' => '200px']);
-					}
-					if ($data[$modelName]['cols']) {
-						$_formOption = array_merge($_formOption, ['width' => $data[$modelName]['cols']]);
-					} else {
-						$_formOption = array_merge($_formOption, ['width' => '100%']);
-					}
-					$_formOption = array_merge($_formOption, [
-						'editor_tool_type' => $data[$modelName]['editor_tool_type'],
-					]);
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-				case 'googlemaps':
-					$_formOption['definitions'] = $data;
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-				case 'related':
-					$_formOption['related'] = $data[$modelName]['option_meta']['related'];
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-				default:
-					$formOption = Hash::merge($formOption, $_formOption);
-					break;
-			}
-		}
-
-		return $formOption;
-	}
-
-	/**
 	 * タイプに応じたフォームの入力形式を出力する
 	 *
 	 * @param string $field
 	 * @param array $options
 	 * @return string
 	 */
-	public function input($field, $options = [])
+	public function input($field, $definition, $options = [])
 	{
-		$fieldType = $options['type'];
+		if(isset($definition['CuCustomFieldDefinition'])) {
+			$definition = $definition['CuCustomFieldDefinition'];
+		}
+		$fieldType = $definition['field_type'];
 		$pluginName = 'CuCf' . Inflector::camelize($fieldType);
 		if(method_exists($this->{$pluginName}, 'input')) {
-			return $this->{$pluginName}->input($field, $options);
+			return $this->{$pluginName}->input($field, $definition, $options);
 		}
 		return '';
 	}

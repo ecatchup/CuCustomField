@@ -23,29 +23,25 @@
 		<?php echo $this->BcForm->input('google_maps_address', ['type' => 'text', 'name' => '', 'class' => 'bca-textbox__input petit-google_maps_address']) ?>
 		<?php echo $this->BcForm->button('入力住所から地図を設定', ['type' => 'button', 'class' => 'bca-btn petit-set_google_maps_setting', 'size' => 40]) ?>
 	</div>
-	<?php echo '緯度' . $this->CuCustomField->input("CuCustomFieldValue.{$definitions['CuCustomFieldDefinition']['field_name']}.google_maps_latitude", [
-		'type' => 'text',
+	<?php echo '緯度' . $this->CuCustomField->input("CuCustomFieldValue.{$definitions['field_name']}.google_maps_latitude", ['field_type' => 'text'], [
 		'class' => 'bca-textbox__input petit-google_maps_latitude',
-		'default' => $definitions['CuCustomFieldDefinition']['google_maps_latitude'],
+		'default' => $definitions['google_maps_latitude'],
 		'size' => 22
 	]) ?>
-	<?php echo '経度' . $this->CuCustomField->input("CuCustomFieldValue.{$definitions['CuCustomFieldDefinition']['field_name']}.google_maps_longitude", [
-		'type' => 'text',
+	<?php echo '経度' . $this->CuCustomField->input("CuCustomFieldValue.{$definitions['field_name']}.google_maps_longitude", ['field_type' => 'text'], [
 		'class' => 'bca-textbox__input petit-google_maps_longitude',
-		'default' => $definitions['CuCustomFieldDefinition']['google_maps_longitude'],
+		'default' => $definitions['google_maps_longitude'],
 		'size' => 22
 	]) ?>
-	<?php echo 'ズーム値' . $this->CuCustomField->input("CuCustomFieldValue.{$definitions['CuCustomFieldDefinition']['field_name']}.google_maps_zoom", [
-		'type' => 'text',
+	<?php echo 'ズーム値' . $this->CuCustomField->input("CuCustomFieldValue.{$definitions['field_name']}.google_maps_zoom", ['field_type' => 'text'], [
 		'class' => 'bca-textbox__input petit-google_maps_zoom',
-		'default' => $definitions['CuCustomFieldDefinition']['google_maps_zoom'],
+		'default' => $definitions['google_maps_zoom'],
 		'size' => 4
 	]) ?>
 	<br>
-	<?php echo 'ポップアップテキスト' . $this->CuCustomField->input("CuCustomFieldValue.{$definitions['CuCustomFieldDefinition']['field_name']}.google_maps_text", [
-		'type' => 'text',
+	<?php echo 'ポップアップテキスト' . $this->CuCustomField->input("CuCustomFieldValue.{$definitions['field_name']}.google_maps_text", ['field_type' => 'text'], [
 		'class' => 'bca-textbox__input petit-google_maps_text',
-		'default' => $definitions['CuCustomFieldDefinition']['google_maps_text'],
+		'default' => $definitions['google_maps_text'],
 		'size' => 60
 	]) ?>
 <?php else: ?>

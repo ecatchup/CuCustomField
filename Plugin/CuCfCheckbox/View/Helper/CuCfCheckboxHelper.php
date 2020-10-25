@@ -24,7 +24,11 @@ class CuCfCheckboxHelper extends CuCustomFieldAppHelper {
 	 * @param array $options
 	 * @return string
 	 */
-	public function input ($fieldName, $options) {
+	public function input ($fieldName, $definition, $options) {
+		$options = array_merge([
+			'type' => 'checkbox',
+			'label' => (isset($definition['label_name'])) ? $definition['label_name'] : ''
+		], $options);
 		return $this->CuCustomField->BcForm->input($fieldName, $options);
 	}
 

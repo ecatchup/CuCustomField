@@ -36,7 +36,10 @@ class CuCfFileHelper extends AppHelper {
 	 * @param array $options
 	 * @return string
 	 */
-	public function input ($fieldName, $options) {
+	public function input ($fieldName, $definition, $options) {
+		$options = array_merge([
+			'type' => 'file'
+		], $options);
 		// ファイル
 		$output = $this->CuCustomField->BcForm->input($fieldName, $options);
 		// 保存値

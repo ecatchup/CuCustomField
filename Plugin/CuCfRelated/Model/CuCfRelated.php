@@ -64,6 +64,7 @@ class CuCfRelated extends AppModel {
 		$db = $this->getDataSource();
 		$prefixedTable = $db->config['prefix'] . $table;
 		$sql = "SELECT id, {$titleField} FROM {$prefixedTable}";
+		$params = [];
 		if($whereField && $this->existField($table, $whereField)) {
 			$sql .= " WHERE {$whereField} = ?";
 			$params[] = $whereValue;

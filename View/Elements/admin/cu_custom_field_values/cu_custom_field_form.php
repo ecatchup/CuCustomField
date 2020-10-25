@@ -56,7 +56,10 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 												<?php endif ?>
 											</th>
 											<td class="bca-form-table__input">
-												<?php echo $this->CuCustomField->input("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}.{$key}.{$child['CuCustomFieldDefinition']['field_name']}", $this->CuCustomField->getFormOption($child, 'CuCustomFieldDefinition')) ?>
+												<?php echo $this->CuCustomField->input(
+													"CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}.{$key}.{$child['CuCustomFieldDefinition']['field_name']}",
+													$child
+												) ?>
 											</td>
 										</tr>
 										<?php endforeach ?>
@@ -84,7 +87,10 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 											<?php endif ?>
 										</th>
 										<td class="bca-form-table__input">
-											<?php echo $this->CuCustomField->input("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}.__loop-src__.{$child['CuCustomFieldDefinition']['field_name']}", $this->CuCustomField->getFormOption($child, 'CuCustomFieldDefinition')) ?>
+											<?php echo $this->CuCustomField->input(
+												"CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}.__loop-src__.{$child['CuCustomFieldDefinition']['field_name']}",
+												$child
+											) ?>
 										</td>
 									</tr>
 								<?php endforeach ?>
@@ -105,7 +111,10 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 							</div>
 						<?php else: ?>
 
-						<?php echo $this->CuCustomField->input("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}", $this->CuCustomField->getFormOption($definition, 'CuCustomFieldDefinition')) ?>
+						<?php echo $this->CuCustomField->input(
+							"CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}",
+							$definition
+						) ?>
 
 						<?php endif ?>
 

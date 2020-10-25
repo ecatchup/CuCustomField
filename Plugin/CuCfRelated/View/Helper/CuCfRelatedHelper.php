@@ -23,13 +23,14 @@ class CuCfRelatedHelper extends AppHelper {
 	 * @param array $options
 	 * @return string
 	 */
-	public function input ($fieldName, $options) {
-		$related = $options['related'];
-		unset($options['related']);
+	public function input ($fieldName, $definition, $options) {
+		$related = $definition['option_meta']['related'];
 		$CuCfRelated = ClassRegistry::init('CuCfRelated.CuCfRelated');
 		$list = $CuCfRelated->getRelatedList($related['table'], $related['title_field'], $related['where_field'], $related['where_value']);
-		$options['type'] = 'select';
-		$options['options'] = ['' => '指定なし'] + $list;
+		$options = array_merge([
+			'type' => 'select',
+			'options' => ['' => '指定なし'] + $list,
+		], $options);
 		return $this->CuCustomField->BcForm->input($fieldName, $options);
 	}
 

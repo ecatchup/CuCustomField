@@ -26,9 +26,13 @@ class CuCfDateHelper extends AppHelper {
 	 * @param array $options
 	 * @return string
 	 */
-	public function input ($fieldName, $options) {
-		$options['type'] = 'datepicker';
-		$options['class'] = 'bca-textbox__input';
+	public function input ($fieldName, $definition, $options) {
+		$options = array_merge([
+			'type' => 'datepicker',
+			'size' => (isset($definition['size'])) ? $definition['size'] : '12',
+			'maxlength' => (isset($definition['max_length'])) ? $definition['max_length'] : '10',
+			'class' => 'bca-textbox__input'
+		], $options);
 		return $this->CuCustomField->BcForm->input($fieldName, $options);
 	}
 

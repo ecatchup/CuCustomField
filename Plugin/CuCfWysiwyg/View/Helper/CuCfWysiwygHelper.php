@@ -31,15 +31,14 @@ class CuCfWysiwygHelper extends CuCustomFieldAppHelper {
 	 * @param array $options
 	 * @return string
 	 */
-	public function input ($fieldName, $options) {
-		$editorOptions = [
+	public function input ($fieldName, $definition, $options) {
+		$options = array_merge([
+			'editorHeight' => ($definition['rows']) ? $definition['rows'] : '200px',
+			'editorWidth' => ($definition['cols']) ? $definition['cols'] : '100%',
 			'editor' => $this->_View->viewVars['siteConfig']['editor'],
 			'editorEnterBr' => $this->_View->viewVars['siteConfig']['editor_enter_br'],
-			'editorWidth' => $options['width'],
-			'editorHeight' => $options['height'],
-			'editorToolType' => $options['editor_tool_type'],
-		];
-		$options = array_merge($editorOptions, $options);
+			'editorToolType' => $definition['editor_tool_type'],
+		], $options);
 		return $this->CuCustomField->BcForm->ckeditor($fieldName, $options);
 	}
 

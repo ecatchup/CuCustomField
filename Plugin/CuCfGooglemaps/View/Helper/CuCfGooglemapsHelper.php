@@ -31,8 +31,8 @@ class CuCfGooglemapsHelper extends CuCustomFieldAppHelper {
 	 * @param array $options
 	 * @return string
 	 */
-	public function input ($fieldName, $options) {
-		return $this->_View->element('CuCfGooglemaps.admin/googlemaps', ['definitions' => $options['definitions']]);
+	public function input ($fieldName, $definition, $options) {
+		return $this->_View->element('CuCfGooglemaps.admin/googlemaps', ['definitions' => $definition]);
 	}
 
 	/**

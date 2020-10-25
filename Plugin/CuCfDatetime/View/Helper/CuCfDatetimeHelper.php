@@ -26,8 +26,12 @@ class CuCfDatetimeHelper extends AppHelper {
 	 * @param array $options
 	 * @return string
 	 */
-	public function input ($fieldName, $options) {
-		$options['type'] = 'dateTimePicker';
+	public function input ($fieldName, $definition, $options) {
+		$options = array_merge([
+			'type' => 'dateTimePicker',
+			'size' => (isset($definition['size'])) ? $definition['size'] : '12',
+			'maxlength' => (isset($definition['max_length'])) ? $definition['max_length'] : '10',
+		], $options);
 		return $this->CuCustomField->BcForm->input($fieldName, $options);
 	}
 
