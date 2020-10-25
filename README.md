@@ -40,6 +40,11 @@ CustomField プラグインは、ブログ記事に入力欄を追加できるba
 | 4.3.0 | 3.0.0 | 未承認 | 動作可 |
 | 4.4.1 | 4.0.0 | 承認 | 動作可 |
 
+## オリジナルのフィールドタイプを追加
+
+オリジナルのフィールドタイプを baserCMSのプラグインとして作成することができます。
+`/docs/CREATE_FIELD_TYPE.md` を参考にしてください。
+
 ## Thanks ##
 
 - [https://basercms.net](http://basercms.net/)
