@@ -211,6 +211,9 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		$contentId = $post['BlogPost']['blog_content_id'];
 
 		$fieldConfig = $this->publicFieldConfigData[$contentId];
+		if(empty($fieldConfig[$field])) {
+			return '';
+		}
 		$fieldDefinition = $fieldConfig[$field];
 		$fieldType = $fieldDefinition['field_type'];
 		$pluginName = 'CuCf' . Inflector::camelize($fieldType);
@@ -453,7 +456,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		$plugins = Configure::read('cuCustomField.plugins');
 		if($plugins) {
 			foreach($plugins as $plugin => $value) {
-				$pluginPath = CakePlugin::path('CuCustomField') . 'Plugin' . DS . $plugin . DS;
+				$pluginPath = $value['path'];
 				if(file_exists($pluginPath . 'webroot' . DS . 'js' . DS . 'admin' . DS . 'definition_input.js')) {
 					$this->BcBaser->js($plugin . '.admin/definition_input', false);
 				}

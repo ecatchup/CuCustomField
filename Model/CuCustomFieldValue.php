@@ -153,20 +153,8 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 			$config = $config['CuCustomFieldDefinition'];
 			if ($keyArray[1] == $config['field_name']) {
 				if ($config['auto_convert'] == 'CONVERT_HANKAKU') {
-					switch($config['field_type']) {
-						case 'text':
-							// 全角英数字を半角に変換する処理を行う
-							$data['value'] = mb_convert_kana($data['value'], 'a');
-							break;
-
-						case 'textarea':
-							// 全角英数字を半角に変換する処理を行う
-							$data['value'] = mb_convert_kana($data['value'], 'a');
-							break;
-
-						default:
-							break;
-					}
+					// 全角英数字を半角に変換する処理を行う
+					$data['value'] = mb_convert_kana($data['value'], 'a');
 				}
 			}
 		}

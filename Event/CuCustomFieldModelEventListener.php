@@ -358,86 +358,33 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 	protected function _setValidate($data = [])
 	{
 		$validation = [];
-		$fieldType = '';
-		$fieldName = '';
-
+		$map = [
+			'required' => 'notBlank',
+			'max_length' => 'maxLength',
+			'validate' => [
+				'HANKAKU_CHECK' => 'alphaNumeric',
+				'NUMERIC_CHECK' => 'numeric',
+				'REGEX_CHECK' => 'regexCheck',
+				'NONCHECK_CHECK' => 'multiple'
+			]
+		];
 		foreach($data as $key => $fieldConfig) {
-			$fieldType = $fieldConfig['CuCustomFieldDefinition']['field_type'];
 			$fieldName = $fieldConfig['CuCustomFieldDefinition']['field_name'];
 			$fieldRule = [];
-
-			// 必須項目のバリデーションルールを設定する
-			if (!empty($fieldConfig['CuCustomFieldDefinition']['required'])) {
-				$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule('notBlank'));
-				$validation[$fieldName] = $fieldRule;
-			}
-
-			switch($fieldType) {
-				// フィールドタイプがテキストの場合は、最大文字数制限をチェックする
-				case 'text':
-					if ($fieldConfig['CuCustomFieldDefinition']['max_length']) {
-						$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule('maxLength', ['number' => $fieldConfig['CuCustomFieldDefinition']['max_length']]));
-						$validation[$fieldName] = $fieldRule;
+			foreach($map as $checkType => $rule) {
+				if($key !== 'validate') {
+					if (!empty($fieldConfig['CuCustomFieldDefinition'][$checkType])) {
+						$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule($rule, $fieldConfig['CuCustomFieldDefinition']));
 					}
-					break;
-
-				default:
-					break;
-			}
-
-			// 入力値チェックを設定する
-			if (!empty($fieldConfig['CuCustomFieldDefinition']['validate'])) {
-
-				switch($fieldType) {
-					// フィールドタイプがテキストの場合
-					case 'text':
-						foreach($fieldConfig['CuCustomFieldDefinition']['validate'] as $key => $rule) {
-							if ($rule == 'HANKAKU_CHECK') {
-								$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule('alphaNumeric'));
-								$validation[$fieldName] = $fieldRule;
-							}
-							if ($rule == 'NUMERIC_CHECK') {
-								$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule('numeric'));
-								$validation[$fieldName] = $fieldRule;
-							}
-							if ($rule == 'REGEX_CHECK') {
-								$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule('regexCheck', ['validate_regex_message' => $fieldConfig['CuCustomFieldDefinition']['validate_regex_message']]));
-								$validation[$fieldName] = $fieldRule;
-							}
+				} else {
+					foreach($rule as $validateType => $validateRule) {
+						if(!empty($fieldConfig['CuCustomFieldDefinition']['validate'][$validateType])) {
+							$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule($validateRule, $fieldConfig['CuCustomFieldDefinition']));
 						}
-						break;
-					// フィールドタイプがテキストエリアの場合
-					case 'textarea':
-						foreach($fieldConfig['CuCustomFieldDefinition']['validate'] as $key => $rule) {
-							if ($rule == 'HANKAKU_CHECK') {
-								$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule('alphaNumeric'));
-								$validation[$fieldName] = $fieldRule;
-							}
-							if ($rule == 'NUMERIC_CHECK') {
-								$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule('numeric'));
-								$validation[$fieldName] = $fieldRule;
-							}
-							if ($rule == 'REGEX_CHECK') {
-								$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule('regexCheck', ['validate_regex_message' => $fieldConfig['CuCustomFieldDefinition']['validate_regex_message']]));
-								$validation[$fieldName] = $fieldRule;
-							}
-						}
-						break;
-					// フィールドタイプがマルチチェックボックスの場合
-					case 'multiple':
-						foreach($fieldConfig['CuCustomFieldDefinition']['validate'] as $key => $rule) {
-							if ($rule == 'NONCHECK_CHECK') {
-								$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule('notBlank', ['not_empty' => 'multiple', 'not_empty_message' => '必ず1つ以上選択してください。']
-								));
-								$validation[$fieldName] = $fieldRule;
-							}
-						}
-						break;
-
-					default:
-						break;
+					}
 				}
 			}
+			$validation[$fieldName] = $fieldRule;
 		}
 
 		$keyValueValidate = ['CuCustomFieldValue' => $validation];
@@ -451,28 +398,27 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 	 * @param array $options
 	 * @return array
 	 */
-	protected function _getValidationRule($rule = '', $options = [])
+	protected function _getValidationRule($rule = '', $definition = [])
 	{
-		$_options = [
-			'number' => '',
-			'not_empty' => 'notBlank',
-			'not_empty_message' => '必須項目です。',
-			'validate_regex_message' => '入力エラーが発生しました。',
-		];
-		$options = array_merge($_options, $options);
-
 		$validation = [
 			'notBlank' => [
 				'notBlank' => [
-					'rule' => [$options['not_empty']],
-					'message' => $options['not_empty_message'],
+					'rule' => ['notBlank'],
+					'message' => '必須項目です。',
+					'required' => true,
+				],
+			],
+			'multiple' => [
+				'notBlank' => [
+					'rule' => ['multiple'],
+					'message' => '必ず1つ以上選択してください。',
 					'required' => true,
 				],
 			],
 			'maxLength' => [
 				'maxLength' => [
-					'rule' => ['maxLength', $options['number']],
-					'message' => $options['number'] . '文字以内で入力してください。',
+					'rule' => ['maxLength', $definition['max_length']],
+					'message' => $definition['max_length'] . '文字以内で入力してください。',
 				],
 			],
 			'alphaNumeric' => [
@@ -490,7 +436,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			'regexCheck' => [
 				'regexCheck' => [
 					'rule' => ['regexCheck'],
-					'message' => $options['validate_regex_message'],
+					'message' => ($definition['validate_regex_message']) ? $definition['validate_regex_message'] : '入力エラーが発生しました。',
 				],
 			],
 		];

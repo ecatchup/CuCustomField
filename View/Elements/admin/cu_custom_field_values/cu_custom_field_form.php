@@ -26,6 +26,11 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 	<table class="form-table section bca-form-table" id="CuCustomFieldTable">
 	<?php foreach($definitions as $keyFieldConfig => $definition): ?>
 		<?php if ($this->CuCustomField->judgeStatus($definition)): ?>
+			<?php
+				if($definition['CuCustomFieldDefinition']['field_type'] === 'loop' && empty($definition['CuCustomFieldDefinition']['children'])){
+					continue;
+				}
+			?>
 				<tr>
 					<th class="col-head bca-form-table__label">
 						<?php echo $this->BcForm->label("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}", $definition['CuCustomFieldDefinition']['name']) ?>
@@ -43,7 +48,7 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 							<!-- 表示 -->
 							<div id="loop-<?php echo $definition['CuCustomFieldDefinition']['field_name'] ?>" class="cucf-loop">
 
-							<?php if(!empty($this->request->data['CuCustomFieldValue'][$definition['CuCustomFieldDefinition']['field_name']])): ?>
+							<?php if(is_array($this->request->data['CuCustomFieldValue'][$definition['CuCustomFieldDefinition']['field_name']])): ?>
 								<?php foreach($this->request->data['CuCustomFieldValue'][$definition['CuCustomFieldDefinition']['field_name']] as $key => $value): ?>
 								<div id="CucfLoop<?php echo $definition['CuCustomFieldDefinition']['field_name'] . '-' . $key ?>" class="cucf-loop-block">
 									<table class="bca-form-table">
@@ -70,7 +75,8 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 									]) ?>
 								</div>
 								<?php endforeach ?>
-
+							<?php else : ?>
+								<?php $key = 0; ?>
 							<?php endif ?>
 
 							</div>

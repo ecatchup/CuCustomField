@@ -36,7 +36,7 @@ class CuCfFileBehavior extends ModelBehavior
 			$deleteAction = true;
 		}
 		$definition = $model->getFieldDefinition($data['relate_id'], $key);
-		if (!is_array($definition) || $definition['field_type'] === 'file') {
+		if ($definition && (!is_array($definition) || $definition['field_type'] === 'file')) {
 			list(, $fieldName) = explode('.', $key);
 			$beforeValue = $model->getSection($data['relate_id'], 'CuCustomFieldValue', $fieldName);
 			if ($deleteAction) {

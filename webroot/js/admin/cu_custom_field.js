@@ -167,7 +167,7 @@ $(function () {
     /**
      * タイプの値によって入力欄の表示設定を行う
      */
-    function fieldTypeChangeHandler() {
+    function fieldTypeChangeHandler(e) {
         $hideTrs = $('#CuCustomFieldDefinitionTable2')
             .find('tr')
             .not('#RowCuCfPrepend, #RowCuCfAppend, #RowCuCfDescription, #RowCuCfDefaultValue, #RowCuCfRequired')
@@ -180,7 +180,16 @@ $(function () {
             parentIdChangeHandler();
             $("#CuCustomFieldDefinitionRequired").attr('checked', false);
         } else {
+            $("#RowCuCfRequired").show();
             $("#RowCuCfParentId").show();
+        }
+        if(e !== undefined) {
+            // バリデーション系は値が残っていると意図しない処理になってしまうので切り替えの度に初期化
+            $("#CuCustomFieldDefinitionValidateHANKAKUCHECK").attr('checked', false);
+            $("#CuCustomFieldDefinitionValidateNUMERICCHECK").attr('checked', false);
+            $("#CuCustomFieldDefinitionValidateREGEXCHECK").attr('checked', false);
+            $("#CuCustomFieldDefinitionValidateNONCHECKCHECK").attr('checked', false);
+            $("#CuCustomFieldDefinitionMaxLength").val('');
         }
     }
 
