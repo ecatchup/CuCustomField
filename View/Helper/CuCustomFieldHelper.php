@@ -452,7 +452,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	public function loadPluginDefinitionInputs() {
 		$plugins = Configure::read('cuCustomField.plugins');
 		if($plugins) {
-			foreach($plugins as $plugin) {
+			foreach($plugins as $plugin => $value) {
 				$pluginPath = CakePlugin::path('CuCustomField') . 'Plugin' . DS . $plugin . DS;
 				if(file_exists($pluginPath . 'webroot' . DS . 'js' . DS . 'admin' . DS . 'definition_input.js')) {
 					$this->BcBaser->js($plugin . '.admin/definition_input', false);
@@ -470,11 +470,16 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	public function loadPluginHelper() {
 		$plugins = Configure::read('cuCustomField.plugins');
 		if($plugins) {
-			foreach($plugins as $plugin) {
-				$pluginPath = CakePlugin::path('CuCustomField') . 'Plugin' . DS . $plugin . DS;
-				if(file_exists($pluginPath . 'View' . DS . 'Helper' . DS . $plugin . 'Helper.php')) {
-					$this->{$plugin} = $this->_View->loadHelper($plugin . '.' . $plugin);
-					$this->{$plugin}->CuCustomField = $this;
+			foreach($plugins as $plugin => $value) {
+				$pluginPath = $value['path'];
+				if(!empty($value['fieldType'])) {
+					foreach($value['fieldType'] as $fieldType) {
+						$helper = 'CuCf' . Inflector::camelize($fieldType);
+						if(file_exists($pluginPath . 'View' . DS . 'Helper' . DS . $helper . 'Helper.php')) {
+							$this->{$helper} = $this->_View->loadHelper($plugin . '.' . $helper);
+							$this->{$helper}->CuCustomField = $this;
+						}
+					}
 				}
 			}
 		}

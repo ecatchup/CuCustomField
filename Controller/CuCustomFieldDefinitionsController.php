@@ -141,7 +141,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		}
 
 		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name');
-		$this->set('loops', [null => '指定しない'] + $this->CuCustomFieldDefinition->getLoopList($configId));
+		$this->set('loops', $this->CuCustomFieldDefinition->getLoopList($configId));
 		$this->set(compact('fieldNameList', 'configId', 'deletable'));
 		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');
@@ -177,7 +177,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 		}
 
 		$fieldNameList = $this->CuCustomFieldDefinition->getControlSource('field_name');
-		$this->set('loops', [null => '指定しない'] + $this->CuCustomFieldDefinition->getLoopList($configId));
+		$this->set('loops', $this->CuCustomFieldDefinition->getLoopList($configId));
 		$this->set(compact('fieldNameList', 'configId', 'deletable'));
 		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
 		$this->render('form');
@@ -360,8 +360,8 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	 */
 	public function admin_ajax_check_duplicate()
 	{
+		$this->autoRender = false;
 		Configure::write('debug', 0);
-		$this->layout = null;
 		$result = true;
 
 		if (!$this->request->is('ajax')) {
@@ -403,9 +403,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 				$result = true;
 			}
 		}
-
-		$this->set('result', $result);
-		$this->render('ajax_result');
+		echo $result;
 	}
 
 }

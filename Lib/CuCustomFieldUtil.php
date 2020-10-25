@@ -5,17 +5,36 @@ class CuCustomFieldUtil {
 		App::build(['Plugin' => $path], App::PREPEND);
 		$Folder = new Folder($path);
 		$files = $Folder->read(true, true, false);
-		$plugins = [];
-		if(!empty($files[0])) {
-			foreach($files[0] as $pluginName) {
-				if(Configure::read('BcRequest.asset')) {
-					CakePlugin::load($pluginName);
-				} else {
-					loadPlugin($pluginName, 999);
-				}
-				$plugins[] = $pluginName;
-			}
+		if(empty($files[0])) {
+			return;
 		}
-		Configure::write('cuCustomField.plugins', $plugins);
+		if(Configure::read('BcRequest.asset')) {
+			foreach($files[0] as $pluginName) {
+				CakePlugin::load($pluginName);
+			}
+		} else {
+			$plugins = [];
+			$fieldTypeAll = Configure::read('cuCustomField.field_type');
+			Configure::write('cuCustomField.field_type', []);
+			foreach($files[0] as $pluginName) {
+				loadPlugin($pluginName, 999);
+				$fieldTypeSetting = Configure::read('cuCustomField.field_type');
+				$fieldTypes = [];
+				if($fieldTypeSetting) {
+					foreach($fieldTypeSetting as $group) {
+						$fieldTypes += array_keys($group);
+					}
+				}
+				$plugins[$pluginName] = [
+					'name' => $pluginName,
+					'fieldType' => $fieldTypes,
+					'path' => CakePlugin::path($pluginName)
+				];
+				$fieldTypeAll = array_merge_recursive($fieldTypeAll, $fieldTypeSetting);
+				Configure::write('cuCustomField.field_type', []);
+			}
+			Configure::write('cuCustomField.field_type', $fieldTypeAll);
+			Configure::write('cuCustomField.plugins', $plugins);
+		}
 	}
 }
