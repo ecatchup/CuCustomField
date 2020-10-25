@@ -13,15 +13,45 @@
  */
 $(function () {
 
-    $("#CuCustomFieldDefinitionFieldName").focus();
+    var fieldType = $("#CuCustomFieldDefinitionFieldType");
+    var parentId = $("#CuCustomFieldDefinitionParentId");
+    var name = $("#CuCustomFieldDefinitionName");
+    var fieldName = $("#CuCustomFieldDefinitionFieldName");
+    var validateRegex = $('#CuCustomFieldDefinitionValidateRegex');
+    var showFieldNameList = $('#show_field_name_list');
+    var validateRegexCheck = $('#CuCustomFieldDefinitionValidateREGEXCHECK');
+    var btnSave = $("#BtnSave");
 
-    cuCustomFieldDefinitionFieldTypeChangeHandler();
+    fieldName.focus();
+    fieldTypeChangeHandler();
+    parentIdChangeHandler();
 
-    // タイプを選択すると入力するフィールドが切り替わる
-    $("#CuCustomFieldDefinitionFieldType").change(cuCustomFieldDefinitionFieldTypeChangeHandler);
+    // 編集画面のときのみ実行する（削除ボタンの有無で判定）
+    if ($('#BtnDelete').html()) {
+        $('#BeforeFieldName').hide();
+        btnSave.click(function () {
+            $beforeFieldName = $('#BeforeFieldName').html();
+            $inputFieldName = $('#CuCustomFieldDefinitionFieldName').val();
+            if ($beforeFieldName !== $inputFieldName) {
+                if (!confirm('フィールド名を変更した場合、これまでの記事でこのフィールドに入力していた内容は引き継がれません。\n本当によろしいですか？')) {
+                    $('#BeforeFieldNameComment').css('visibility', 'visible');
+                    $('#BeforeFieldName').show();
+                    return false;
+                }
+            }
+        });
+    }
+
+    fieldType.change(fieldTypeChangeHandler);
+
+    parentId.change(parentIdChangeHandler);
+    // カスタムフィールド名、ラベル名、フィールド名の入力時、リアルタイムで重複チェックを行う
+    name.keyup(checkDuplicateValueChangeHandler);
+
+    fieldName.keyup(checkDuplicateValueChangeHandler);
 
     // 利用中フィールド名一覧を表示する
-    $('#show_field_name_list').change(function () {
+    showFieldNameList.change(function () {
         if ($(this).prop('checked')) {
             $('#FieldNameList').show('slow');
         } else {
@@ -29,32 +59,80 @@ $(function () {
         }
     });
 
-    // カスタムフィールド名、ラベル名、フィールド名の入力時、リアルタイムで重複チェックを行う
-    $("#CuCustomFieldDefinitionName").keyup(checkDuplicateValueChengeHandler);
-    $("#CuCustomFieldDefinitionFieldName").keyup(checkDuplicateValueChengeHandler);
+    // 正規表現入力欄が空欄になった際はメッセージを表示して入力促す
+    validateRegex.change(function () {
+        if (!$(this).val()) {
+            $('#CheckValueResultValidateRegex').show('slow');
+        } else {
+            $('#CheckValueResultValidateRegex').hide();
+        }
+    });
 
-    // 重複があればメッセージを表示する
-    function checkDuplicateValueChengeHandler() {
+    // submit時の処理
+    btnSave.click(function () {
+        // 正規表現チェックが有効の場合に、正規表現入力欄が空の場合は submit させない
+        if (validateRegexCheck.prop('checked')) {
+            $validateRegex = validateRegex.val();
+            if (!$validateRegex) {
+                alert('正規表現入力欄が未入力です。');
+                return false;
+            }
+        }
+    });
+
+    // 正規表現チェックのチェック時に、専用の入力欄を表示する
+    validateRegexCheck.change(function () {
+        $value = $(this).prop('checked');
+        if ($value) {
+            $('#CuCfValidateRegexGroup').show('slow');
+        } else {
+            $('#CuCfValidateRegexGroup').hide('high');
+        }
+    });
+
+    /**
+     * ループ行変更時処理
+     */
+    function parentIdChangeHandler() {
+        var rowPrepend = $("#RowCuCfPrepend");
+        var rowAppend = $("#RowCuCfAppend");
+        var rowDescription = $("#RowCuCfDescription");
+        if(parentId.val()) {
+            rowPrepend.hide();
+            rowAppend.hide();
+            rowDescription.hide();
+        } else {
+            rowPrepend.show('slow');
+            rowAppend.show('slow');
+            rowDescription.show('slow');
+        }
+    }
+
+    /**
+     * 重複があればメッセージを表示する
+     */
+    function checkDuplicateValueChangeHandler() {
         var fieldId = this.id;
         var options = {};
+        var script = $("#CuCustomFieldDefinitionScript");
         // 本来であれば編集時のみ必要な値だが、actionによる条件分岐でビュー側に値を設定しなかった場合、
         // Controllerでの取得値が文字列での null となってしまうため、常に設定し取得している
-        var id = $("#CuCustomFieldDefinitionScript").attr('data-id');
-        var configId = $("#CuCustomFieldDefinitionScript").attr('data-config-id');
+        var id = script.attr('data-id');
+        var configId = script.attr('data-config-id');
 
         switch (fieldId) {
             case 'CuCustomFieldDefinitionName':
                 options = {
                     "data[CuCustomFieldDefinition][id]": id,
                     "data[CuCustomFieldDefinition][config_id]": configId,
-                    "data[CuCustomFieldDefinition][name]": $("#CuCustomFieldDefinitionName").val()
+                    "data[CuCustomFieldDefinition][name]": name.val()
                 };
                 break;
             case 'CuCustomFieldDefinitionFieldName':
                 options = {
                     "data[CuCustomFieldDefinition][id]": id,
                     "data[CuCustomFieldDefinition][config_id]": configId,
-                    "data[CuCustomFieldDefinition][field_name]": $("#CuCustomFieldDefinitionFieldName").val()
+                    "data[CuCustomFieldDefinition][field_name]": fieldName.val()
                 };
                 break;
         }
@@ -86,63 +164,24 @@ $(function () {
         });
     }
 
-    // 編集画面のときのみ実行する（削除ボタンの有無で判定）
-    if ($('#BtnDelete').html()) {
-        $('#BeforeFieldName').hide();
-        $("#BtnSave").click(function () {
-            $beforeFieldName = $('#BeforeFieldName').html();
-            $inputFieldName = $('#CuCustomFieldDefinitionFieldName').val();
-            if ($beforeFieldName !== $inputFieldName) {
-                if (!confirm('フィールド名を変更した場合、これまでの記事でこのフィールドに入力していた内容は引き継がれません。\n本当によろしいですか？')) {
-                    $('#BeforeFieldNameComment').css('visibility', 'visible');
-                    $('#BeforeFieldName').show();
-                    return false;
-                }
-            }
-        });
-    }
-
-    // 正規表現チェックのチェック時に、専用の入力欄を表示する
-    $('#CuCustomFieldDefinitionValidateREGEXCHECK').change(function () {
-        $value = $(this).prop('checked');
-        if ($value) {
-            $('#CuCfValidateRegexGroup').show('slow');
-        } else {
-            $('#CuCfValidateRegexGroup').hide('high');
-        }
-    });
-
-    // 正規表現入力欄が空欄になった際はメッセージを表示して入力促す
-    $('#CuCustomFieldDefinitionValidateRegex').change(function () {
-        if (!$(this).val()) {
-            $('#CheckValueResultValidateRegex').show('slow');
-        } else {
-            $('#CheckValueResultValidateRegex').hide();
-        }
-    });
-
-    // submit時の処理
-    $("#BtnSave").click(function () {
-        // 正規表現チェックが有効の場合に、正規表現入力欄が空の場合は submit させない
-        $validateRegexCheck = $('#CuCustomFieldDefinitionValidateREGEXCHECK');
-        if ($validateRegexCheck.prop('checked')) {
-            $validateRegex = $('#CuCustomFieldDefinitionValidateRegex').val();
-            if (!$validateRegex) {
-                alert('正規表現入力欄が未入力です。');
-                return false;
-            }
-        }
-    });
-
     /**
-     * タイプの値によってフィールドの表示設定を行う
+     * タイプの値によって入力欄の表示設定を行う
      */
-    function cuCustomFieldDefinitionFieldTypeChangeHandler() {
-        // 管理システム表示設定の「初期値」、「入力欄前に表示」、「入力欄後に表示」、「このフィールドの説明文」行以外の行
-        // この４つの行はほとんどのフィールドタイプで表示されるので、除外した行を取得
+    function fieldTypeChangeHandler() {
         $hideTrs = $('#CuCustomFieldDefinitionTable2')
             .find('tr')
             .not('#RowCuCfPrepend, #RowCuCfAppend, #RowCuCfDescription, #RowCuCfDefaultValue, #RowCuCfRequired')
             .hide();
+        if(fieldType.val() === 'loop') {
+            $("#RowCuCfParentId").hide();
+            $("#RowCuCfDefaultValue").hide();
+            $("#RowCuCfRequired").hide();
+            parentId.val('');
+            parentIdChangeHandler();
+            $("#CuCustomFieldDefinitionRequired").attr('checked', false);
+        } else {
+            $("#RowCuCfParentId").show();
+        }
     }
+
 });

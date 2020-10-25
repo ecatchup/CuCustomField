@@ -42,7 +42,6 @@ $config['BcApp.adminNavigation'] = [
 
 /**
  * カスタムフィールド用設定
- *
  */
 $config['cuCustomField'] = [
 	// フィールドタイプ種別
