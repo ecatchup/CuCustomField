@@ -216,9 +216,13 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		}
 		$fieldDefinition = $fieldConfig[$field];
 		$fieldType = $fieldDefinition['field_type'];
-		$pluginName = 'CuCf' . Inflector::camelize($fieldType);
-		if(method_exists($this->{$pluginName}, 'get')) {
-			return $this->{$pluginName}->get($fieldValue, $fieldDefinition, $options);
+		if($fieldType === 'loop') {
+			return $fieldValue;
+		} else {
+			$pluginName = 'CuCf' . Inflector::camelize($fieldType);
+			if(method_exists($this->{$pluginName}, 'get')) {
+				return $this->{$pluginName}->get($fieldValue, $fieldDefinition, $options);
+			}
 		}
 		return '';
 	}
