@@ -63,6 +63,10 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		$this->loadPluginHelper();
 	}
 
+	/**
+	 * setup
+	 * @param $contentId
+	 */
 	public function setup($contentId) {
 		if(empty($this->publicFieldConfigData)) {
 			$this->CuCustomFieldValueModel->setup($contentId);
@@ -71,30 +75,22 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	}
 
 	/**
-	 * フィールド名を指定して、プチカスタムフィールドのフィールド設定内容を取得する
+	 * フィールド名を指定して、カスタムフィールドのフィールド設定内容を取得する
 	 *
 	 * @param string $field
 	 * @param array $options
 	 * @return string
 	 */
-	public function getField($field = '', $options = [])
+	public function getFieldAttribute($post, $field, $attribute = 'label_name')
 	{
 		$data = '';
-		$_options = [
-			'field' => 'label_name',
-		];
-		$options = Hash::merge($_options, $options);
-		if (!$field) {
-			return '';
-		}
-
 		// コンテンツのIDを設定
-		$contentId = $this->_View->viewVars['blogContent']['BlogContent']['id'];
+		$contentId = $post['BlogPost']['id'];
 		$this->setup($contentId);
 		foreach($this->publicFieldConfigData as $key => $fieldConfig) {
 			if ($contentId == $key) {
 				if (isset($fieldConfig[$field])) {
-					$data = $fieldConfig[$field][$options['field']];
+					$data = $fieldConfig[$field][$attribute];
 				} else {
 					$data = '';
 				}
@@ -160,21 +156,6 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	}
 
 	/**
-	 * フィールド名を指定して、プチカスタムフィールドのフィールド設定内容を取得する
-	 *
-	 * @param string $field
-	 * @param array $options
-	 * @return string
-	 */
-	public function getPdcfDataField($field = '', $options = [])
-	{
-		if (Configure::read('debug') > 0) {
-			trigger_error(deprecatedMessage('ヘルパーメソッド：CuCustomFieldHelper::getPdcfDataField()', '1.0.0-beta', '1.0.0', '$this->CuCustomField->getField() を利用してください。'), E_USER_DEPRECATED);
-		}
-		return $this->getField($field, $options);
-	}
-
-	/**
 	 * フィールド名を指定して、プチカスタムフィールドのデータを取得する
 	 *
 	 * @param array $post
@@ -188,17 +169,32 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 			'novalue' => '',
 			'model' => 'CuCustomFieldValue'
 		], $options);
-		if (!$field || !isset($post[$options['model']][$field])) {
+
+		if (!$field) {
 			return '';
 		}
-		$fieldValue = $post[$options['model']][$field];
-		// 記事のコンテンツID
-		$contentId = $post['BlogPost']['blog_content_id'];
+		if(isset($post[$options['model']][$field])) {
+			$fieldValue = $post[$options['model']][$field];
+		} elseif(isset($post[$field])) {
+			$fieldValue = $post[$field];
+		} else {
+			return '';
+		}
+
+		if(isset($post['BlogPost']['blog_content_id'])) {
+			$contentId = $post['BlogPost']['blog_content_id'];
+		} elseif(isset($this->publicFieldConfigData)) {
+			$contentId = key($this->publicFieldConfigData);
+		} else {
+			return '';
+		}
+
 		$this->setup($contentId);
 		$fieldConfig = $this->publicFieldConfigData[$contentId];
 		if(empty($fieldConfig[$field])) {
 			return '';
 		}
+
 		$fieldDefinition = $fieldConfig[$field];
 		$fieldType = $fieldDefinition['field_type'];
 		if($fieldType === 'loop') {
@@ -210,22 +206,6 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 			}
 		}
 		return '';
-	}
-
-	/**
-	 * フィールド名を指定して、プチカスタムフィールドのデータを取得する
-	 *
-	 * @param array $post
-	 * @param string $field
-	 * @param array $options
-	 * @return mixes
-	 */
-	public function getPdcfData($post = [], $field = '', $options = [])
-	{
-		if (Configure::read('debug') > 0) {
-			trigger_error(deprecatedMessage('ヘルパーメソッド：CuCustomFieldHelper::getPdcfData()', '1.0.0-beta', '1.0.0', '$this->CuCustomField->get() を利用してください。'), E_USER_DEPRECATED);
-		}
-		return $this->get($post, $field, $options);
 	}
 
 	/**
@@ -316,7 +296,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	}
 
 	/**
-	 * 未使用状態を判定する
+	 * 利用状態を判定する
 	 *
 	 * @param array $data
 	 * @param string $modelName
@@ -365,7 +345,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	 * @param array $options
 	 * @return void
 	 */
-	public function showCuCustomField($post = [], $options = [])
+	public function showCustomField($post = [], $options = [])
 	{
 		$_options = [
 			'template' => 'cu_custom_field_block'

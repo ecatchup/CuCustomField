@@ -18,11 +18,17 @@ class CuCfFileBehavior extends ModelBehavior
 	public $saveDir = null;
 	public $beforeValue = [];
 	public $deleteAction = [];
+	public $config = [];
 
 	public function __construct()
 	{
 		parent::__construct();
 		$this->saveDir = WWW_ROOT . 'files' . DS . 'cu_custom_field' . DS;
+	}
+
+	public function setup(Model $model, $config = [])
+	{
+		$this->config = $config;
 	}
 
 	public function beforeSave(Model $model, $options = [])
@@ -143,8 +149,8 @@ class CuCfFileBehavior extends ModelBehavior
 		$year = date('Y');
 		$month = date('m');
 		$Folder = new Folder();
-		$Folder->create($this->saveDir . $year . DS . $month . DS, 0777);
-		$baseFileName = $year . '/' . $month . '/' . CakeText::uuid();
+		$Folder->create($this->saveDir . $this->config['type'] . DS . $this->config['contentId'] . DS . $year . DS . $month . DS, 0777);
+		$baseFileName = $this->config['type'] . '/' . $this->config['contentId'] . '/' . $year . '/' . $month . '/' . CakeText::uuid();
 		$fileName = $baseFileName . '.' . $ext;
 		if (in_array($ext, ['png', 'gif', 'jpeg', 'jpg'])) {
 			$thumbName = $baseFileName . '_thumb.' . $ext;

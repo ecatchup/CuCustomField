@@ -181,7 +181,20 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 		/* @var CuCustomFieldConfig $$CustomFieldConfig */
 		$CustomFieldConfig = ClassRegistry::init('CuCustomField.CuCustomFieldConfig');
 		$config = $CustomFieldConfig->find('first', [
-				'conditions' => ['CuCustomFieldConfig.content_id' => $contentId],
+				'conditions' => [
+					'CuCustomFieldConfig.content_id' => $contentId,
+					'CuCustomFieldDefinition.status' => true
+				],
+				'joins' => [
+					[
+						'table' => 'cu_custom_field_definitions',
+						'alias' => 'CuCustomFieldDefinition',
+						'type' => 'inner',
+						'conditions' => [
+							'CuCustomFieldDefinition.config_id = CuCustomFieldConfig.id'
+						]
+					]
+				],
 				'recursive' => 1]
 		);
 		if (is_array($config) && empty($config['CuCustomFieldDefinition'])) {
@@ -207,6 +220,9 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 * @param $contentId
 	 */
 	public function setup($contentId) {
+		if(isset($this->publicFieldConfigData[$contentId])) {
+			return;
+		}
 		$definition = $this->getFieldDefinition($contentId);
 		if($definition) {
 			$this->publicFieldConfigData[$contentId] = Hash::combine($definition, '{n}.field_name', '{n}');
