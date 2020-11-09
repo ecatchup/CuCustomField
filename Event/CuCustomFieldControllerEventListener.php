@@ -175,6 +175,13 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 					'order' => 'CuCustomFieldDefinition.lft ASC',
 					'recursive' => -1,
 				]);
+				if($definitions) {
+					foreach($definitions as $key => $definition) {
+						if($definition['CuCustomFieldDefinition']['field_type'] === 'loop') {
+							$definitions[$key]['CuCustomFieldDefinition']['children'] = $this->CuCustomFieldDefinitionModel->children($definition['CuCustomFieldDefinition']['id']);
+						}
+					}
+				}
 				$Controller->set('definitions', $definitions);
 
 				// フィールド設定から初期値を生成
