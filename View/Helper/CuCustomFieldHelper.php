@@ -42,25 +42,11 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	public $CuCustomFieldValueModel = null;
 
 	/**
-	 * カスタムフィールドへの入力データ
-	 *
-	 * @var array
-	 */
-	public $publicFieldData = [];
-
-	/**
 	 * カスタムフィールドのフィールド別設定データ
 	 *
 	 * @var array
 	 */
 	public $publicFieldConfigData = [];
-
-	/**
-	 * カスタムフィールド設定データ
-	 *
-	 * @var array
-	 */
-	public $publicConfigData = [];
 
 	/**
 	 * constructor
@@ -73,17 +59,15 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	{
 		parent::__construct($View, $settings);
 		$this->customFieldConfig = Configure::read('cuCustomField');
-
-		// 記事に設定されているカスタムフィールド情報を取得する
-		if (ClassRegistry::isKeySet('CuCustomField.CuCustomFieldValue')) {
-			$this->CuCustomFieldValueModel = ClassRegistry::getObject('CuCustomField.CuCustomFieldValue');
-		} else {
-			$this->CuCustomFieldValueModel = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
-		}
-		$this->publicConfigData = $this->CuCustomFieldValueModel->publicConfigData;
-		$this->publicFieldConfigData = $this->CuCustomFieldValueModel->publicFieldConfigData;
-		$this->publicFieldData = $this->CuCustomFieldValueModel->publicFieldData;
+		$this->CuCustomFieldValueModel = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
 		$this->loadPluginHelper();
+	}
+
+	public function setup($contentId) {
+		if(empty($this->publicFieldConfigData)) {
+			$this->CuCustomFieldValueModel->setup($contentId);
+			$this->publicFieldConfigData = $this->CuCustomFieldValueModel->publicFieldConfigData;
+		}
 	}
 
 	/**
@@ -106,7 +90,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 
 		// コンテンツのIDを設定
 		$contentId = $this->_View->viewVars['blogContent']['BlogContent']['id'];
-
+		$this->setup($contentId);
 		foreach($this->publicFieldConfigData as $key => $fieldConfig) {
 			if ($contentId == $key) {
 				if (isset($fieldConfig[$field])) {
@@ -127,6 +111,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	 */
 	public function getFieldConfigList($contentId)
 	{
+		$this->setup($contentId);
 		foreach($this->publicFieldConfigData as $key => $fieldConfigList) {
 			if ($contentId == $key) {
 				return $fieldConfigList;
@@ -209,7 +194,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		$fieldValue = $post[$options['model']][$field];
 		// 記事のコンテンツID
 		$contentId = $post['BlogPost']['blog_content_id'];
-
+		$this->setup($contentId);
 		$fieldConfig = $this->publicFieldConfigData[$contentId];
 		if(empty($fieldConfig[$field])) {
 			return '';

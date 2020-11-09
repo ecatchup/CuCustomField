@@ -76,25 +76,11 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	public $fieldConfig = [];
 
 	/**
-	 * カスタムフィールドへの入力データ
-	 *
-	 * @var array
-	 */
-	public $publicFieldData = [];
-
-	/**
 	 * カスタムフィールドのフィールド別設定データ
 	 *
 	 * @var array
 	 */
 	public $publicFieldConfigData = [];
-
-	/**
-	 * カスタムフィールド設定データ
-	 *
-	 * @var array
-	 */
-	public $publicConfigData = [];
 
 	/**
 	 * beforeSave
@@ -187,7 +173,7 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 * @param $fieldName
 	 * @return false|mixed
 	 */
-	public function getFieldDefinition($relateId, $fieldName)
+	public function getFieldDefinition($relateId, $fieldName = '')
 	{
 		/* @var BlogPost $BlogPost */
 		$BlogPost = ClassRegistry::init('Blog.BlogPost');
@@ -211,6 +197,17 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 			return false;
 		} else {
 			return $config['CuCustomFieldDefinition'];
+		}
+	}
+
+	/**
+	 * Setup
+	 * @param $contentId
+	 */
+	public function setup($contentId) {
+		$definition = $this->getFieldDefinition($contentId);
+		if($definition) {
+			$this->publicFieldConfigData[$contentId] = Hash::combine($definition, '{n}.field_name', '{n}');
 		}
 	}
 

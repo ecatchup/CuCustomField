@@ -17,7 +17,7 @@
  *
  * フィールドのラベル名を表示する: $this->CuCustomField->get($post, 'example_field_name');
  * フィールドの入力内容を表示する: $this->CuCustomField->get('example_field_name');
- *
+ * TODO: 見直し要
  */
 $this->BcBaser->css('PetitCustomField.petit_custom_field');
 ?>

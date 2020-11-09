@@ -216,7 +216,6 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			// KeyValue 側のモデル情報をリセット
 			$this->CuCustomFieldValueModel->Behaviors->KeyValue->KeyValue = $this->CuCustomFieldValueModel;
 
-			$contentId = '';
 			// カスタムフィールドの設定情報を取得するため、記事のブログコンテンツIDからカスタムフィールド側のコンテンツIDを取得する
 			if (!empty($value['BlogPost']['blog_content_id'])) {
 				$contentId = $value['BlogPost']['blog_content_id'];
@@ -234,26 +233,10 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 					// カスタムフィールドデータを結合
 					$event->data[0][$key][$this->CuCustomFieldValueModel->name] = $data;
 				}
-
-				// PetitCustomFieldConfigMeta::afterFind で KeyValue のモデル情報が CuCustomFieldConfig に切り替わる
-				$fieldConfigField = $this->CuCustomFieldConfigModel->CuCustomFieldDefinition->find('all', [
-					'conditions' => [
-						'CuCustomFieldDefinition.config_id' => $configData['CuCustomFieldConfig']['id']
-					],
-					'order' => 'CuCustomFieldDefinition.lft ASC',
-					'recursive' => -1,
-				]);
-				if ($contentId) {
-					$defaultFieldValue[$contentId] = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition');
-				} else {
-					$defaultFieldValue = Hash::combine($fieldConfigField, '{n}.CuCustomFieldDefinition.field_name', '{n}.CuCustomFieldDefinition');
-				}
-				//$this->CuCustomFieldValueModel->fieldConfig = $fieldConfigField;
-				// カスタムフィールドへの入力データ
-				$this->CuCustomFieldValueModel->publicFieldData = $data;
-				// カスタムフィールドのフィールド別設定データ
-				$this->CuCustomFieldValueModel->publicFieldConfigData = $defaultFieldValue;
 			}
+		}
+		if(!empty($contentId)) {
+			$this->CuCustomFieldValueModel->setup($contentId);
 		}
 	}
 

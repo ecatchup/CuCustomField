@@ -93,9 +93,6 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 		if ($Controller->BcContents->preview) {
 			if (!empty($Controller->request->data['CuCustomFieldValue'])) {
 				$Controller->viewVars['post']['CuCustomFieldValue'] = $Controller->request->data['CuCustomFieldValue'];
-
-				$this->CuCustomFieldValueModel->publicConfigData = $this->cuCustomFieldConfigs;
-
 				$fieldConfigField = $this->CuCustomFieldConfigModel->PetitCustomFieldConfigMeta->find('all', [
 					'conditions' => [
 						'CuCustomFieldDefinition.config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id']
@@ -213,7 +210,6 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 			'recurseve' => -1,
 		]);
 		$this->CuCustomFieldValueModel = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
-		$this->CuCustomFieldValueModel->publicConfigData = $this->cuCustomFieldConfigs;
 		$this->CuCustomFieldDefinitionModel = ClassRegistry::init('CuCustomField.CuCustomFieldDefinition');
 	}
 
