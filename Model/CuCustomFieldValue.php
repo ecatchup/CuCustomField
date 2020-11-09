@@ -188,7 +188,9 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 			return false;
 		}
 		if ($fieldName) {
-			list(, $fieldName) = explode('.', $fieldName);
+			if(strpos($fieldName, '.') !== false) {
+				list(, $fieldName) = explode('.', $fieldName);
+			}
 			foreach($config['CuCustomFieldDefinition'] as $definition) {
 				if ($definition['field_name'] === $fieldName) {
 					return $definition;

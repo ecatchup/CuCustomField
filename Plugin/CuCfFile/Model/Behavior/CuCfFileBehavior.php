@@ -35,29 +35,89 @@ class CuCfFileBehavior extends ModelBehavior
 			$key = $matches[1];
 			$deleteAction = true;
 		}
-		$definition = $model->getFieldDefinition($data['relate_id'], $key);
-		if ($definition && (!is_array($definition) || $definition['field_type'] === 'file')) {
-			list(, $fieldName) = explode('.', $key);
-			$beforeValue = $model->getSection($data['relate_id'], 'CuCustomFieldValue', $fieldName);
-			if ($deleteAction) {
-				if ($data['value']) {
-					$targetRecord = $model->find('first', ['conditions' => ['relate_id' => $data['relate_id'], 'key' => $key], 'recursive' => -1]);
+		$relateId = $data['relate_id'];
+		$definition = $model->getFieldDefinition($relateId, $key);
+		if($definition['field_type'] === 'loop') {
+			$value = [];
+			if($data['value']) {
+				foreach($data['value'] as $i => $set) {
+					if (!$set) {
+						$value[$i] = $set;
+						break;
+					}
+					$deleteTarget = [];
+					foreach($set as $setKey => $setValue) {
+						if (!empty($deleteTarget[$setKey])) {
+							$value[$i][$setKey] = '';
+							continue;
+						}
+						if (preg_match('/(.+)_delete$/', $setKey, $matches)) {
+							$setKey = $matches[1];
+							$deleteAction = true;
+						} else {
+							$deleteAction = false;
+						}
+						$definition = $model->getFieldDefinition($relateId, $setKey);
+						$beforeValue = $this->getBeforeValue($model, $relateId, $this->getBareFieldName($setKey), $definition['parent_id'], $i);
+						if ($deleteAction) {
+							if ($setValue) {
+								$deleteTarget[$setKey] = true;
+								$this->deleteFile($beforeValue);
+							}
+						} else {
+							if($definition && (!is_array($definition) || $definition['field_type'] === 'file')) {
+								$value[$i][$setKey] = $this->saveFile($setValue, $beforeValue);
+							} else {
+								$value[$i][$setKey] = $setValue;
+							}
+						}
+					}
+				}
+			}
+		} else {
+			$beforeValue = $this->getBeforeValue($model, $relateId, $this->getBareFieldName($key));
+			if($deleteAction) {
+				if(!empty($data['value'])) {
+					$targetRecord = $model->find('first', ['conditions' => ['relate_id' => $relateId, 'key' => $key], 'recursive' => -1]);
 					$targetRecord['CuCustomFieldValue']['value'] = '';
 					$model->save($targetRecord, ['callbacks' => false, 'validate' => false]);
 					$this->deleteFile($beforeValue);
 				}
 				return false;
 			} else {
-				if ($data['value']['size'] === 0) {
-					return false;
+				if($definition && (!is_array($definition) || $definition['field_type'] === 'file')){
+					$value = $this->saveFile($data['value'], $beforeValue);
+				} else {
+					$value = $data['value'];
 				}
-				$result = $this->saveFile($data['value'], $beforeValue);
-			}
-			if ($result !== false) {
-				$model->data['CuCustomFieldValue']['value'] = $result;
 			}
 		}
+		$model->data['CuCustomFieldValue']['value'] = $value;
 		return true;
+	}
+
+	public function getBareFieldName($fieldName) {
+		if(strpos($fieldName, '.') !== false) {
+			list(, $fieldName) = explode('.', $fieldName);
+		}
+		return $fieldName;
+	}
+
+	public function getBeforeValue($model, $relateId, $fieldName, $parentId = null, $loopRow = null) {
+		if(!empty($parentId)) {
+			// 親のフィールド名を取得
+			$definitionModel = ClassRegistry::init('CuCustomField.CuCustomFieldDefinition');
+			$parentName = $definitionModel->field('name', ['id' => $parentId]);
+			$parentValue = $model->getSection($relateId, 'CuCustomFieldValue', $parentName);
+			if(!empty($parentValue[$loopRow][$fieldName])) {
+				$beforeValue = $parentValue[$loopRow][$fieldName];
+			} else {
+				$beforeValue = '';
+			}
+		} else {
+			$beforeValue = $model->getSection($relateId, 'CuCustomFieldValue', $fieldName);
+		}
+		return $beforeValue;
 	}
 
 	/**
@@ -71,10 +131,13 @@ class CuCfFileBehavior extends ModelBehavior
 	public function saveFile($value, $beforeValue)
 	{
 		if (empty($value)) {
-			return false;
+			return '';
 		}
 		if (!is_array($value) || $value['error'] !== 0) {
-			return false;
+			return $beforeValue;
+		}
+		if($value['size'] === 0) {
+			return $beforeValue;
 		}
 		$ext = decodeContent($value['type'], $value['name']);
 		$year = date('Y');
