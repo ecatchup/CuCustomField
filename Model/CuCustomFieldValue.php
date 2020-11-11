@@ -173,11 +173,8 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 * @param $fieldName
 	 * @return false|mixed
 	 */
-	public function getFieldDefinition($relateId, $fieldName = '')
+	public function getFieldDefinition($contentId, $fieldName = '')
 	{
-		/* @var BlogPost $BlogPost */
-		$BlogPost = ClassRegistry::init('Blog.BlogPost');
-		$contentId = $BlogPost->field('blog_content_id', ['BlogPost.id' => $relateId]);
 		/* @var CuCustomFieldConfig $$CustomFieldConfig */
 		$CustomFieldConfig = ClassRegistry::init('CuCustomField.CuCustomFieldConfig');
 		$config = $CustomFieldConfig->find('first', [

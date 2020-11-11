@@ -42,7 +42,9 @@ class CuCfFileBehavior extends ModelBehavior
 			$deleteAction = true;
 		}
 		$relateId = $data['relate_id'];
-		$definition = $model->getFieldDefinition($relateId, $key);
+		$BlogPost = ClassRegistry::init('Blog.BlogPost');
+		$contentId = $BlogPost->field('blog_content_id', ['BlogPost.id' => $relateId]);
+		$definition = $model->getFieldDefinition($contentId, $key);
 		if($definition['field_type'] === 'loop') {
 			$value = [];
 			if($data['value']) {
@@ -63,7 +65,9 @@ class CuCfFileBehavior extends ModelBehavior
 						} else {
 							$deleteAction = false;
 						}
-						$definition = $model->getFieldDefinition($relateId, $setKey);
+						$BlogPost = ClassRegistry::init('Blog.BlogPost');
+						$contentId = $BlogPost->field('blog_content_id', ['BlogPost.id' => $relateId]);
+						$definition = $model->getFieldDefinition($contentId, $setKey);
 						$beforeValue = $this->getBeforeValue($model, $relateId, $this->getBareFieldName($setKey), $definition['parent_id'], $i);
 						if ($deleteAction) {
 							if ($setValue) {

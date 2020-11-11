@@ -68,7 +68,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	 * @param $contentId
 	 */
 	public function setup($contentId) {
-		if(empty($this->publicFieldConfigData)) {
+		if(!isset($this->publicFieldConfigData[$contentId])) {
 			$this->CuCustomFieldValueModel->setup($contentId);
 			$this->publicFieldConfigData = $this->CuCustomFieldValueModel->publicFieldConfigData;
 		}

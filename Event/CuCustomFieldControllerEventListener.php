@@ -93,7 +93,7 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 		if ($Controller->BcContents->preview) {
 			if (!empty($Controller->request->data['CuCustomFieldValue'])) {
 				$Controller->viewVars['post']['CuCustomFieldValue'] = $Controller->request->data['CuCustomFieldValue'];
-				$fieldConfigField = $this->CuCustomFieldConfigModel->PetitCustomFieldConfigMeta->find('all', [
+				$fieldConfigField = $this->CuCustomFieldConfigModel->CuCustomFieldDefinition->find('all', [
 					'conditions' => [
 						'CuCustomFieldDefinition.config_id' => $this->cuCustomFieldConfigs['CuCustomFieldConfig']['id']
 					],
