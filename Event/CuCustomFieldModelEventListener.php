@@ -355,13 +355,13 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$fieldName = $fieldConfig['CuCustomFieldDefinition']['field_name'];
 			$fieldRule = [];
 			foreach($map as $checkType => $rule) {
-				if($key !== 'validate') {
+				if($checkType !== 'validate') {
 					if (!empty($fieldConfig['CuCustomFieldDefinition'][$checkType])) {
 						$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule($rule, $fieldConfig['CuCustomFieldDefinition']));
 					}
 				} else {
 					foreach($rule as $validateType => $validateRule) {
-						if(!empty($fieldConfig['CuCustomFieldDefinition']['validate'][$validateType])) {
+						if(in_array($validateType, $fieldConfig['CuCustomFieldDefinition']['validate'])) {
 							$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule($validateRule, $fieldConfig['CuCustomFieldDefinition']));
 						}
 					}
