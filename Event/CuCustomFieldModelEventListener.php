@@ -361,7 +361,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 					}
 				} else {
 					foreach($rule as $validateType => $validateRule) {
-						if(in_array($validateType, $fieldConfig['CuCustomFieldDefinition']['validate'])) {
+						if(is_array($fieldConfig['CuCustomFieldDefinition']['validate']) && in_array($validateType, $fieldConfig['CuCustomFieldDefinition']['validate'])) {
 							$fieldRule = Hash::merge($fieldRule, $this->_getValidationRule($validateRule, $fieldConfig['CuCustomFieldDefinition']));
 						}
 					}
@@ -383,10 +383,20 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 	 */
 	protected function _getValidationRule($rule = '', $definition = [])
 	{
+		if($rule === 'notBlank' && $definition['field_type'] === 'file') {
+			$rule = 'notFileEmpty';
+		}
 		$validation = [
 			'notBlank' => [
 				'notBlank' => [
 					'rule' => ['notBlank'],
+					'message' => '必須項目です。',
+					'required' => true,
+				],
+			],
+			'notFileEmpty' => [
+				'notFileEmpty' => [
+					'rule' => ['notFileEmpty'],
 					'message' => '必須項目です。',
 					'required' => true,
 				],

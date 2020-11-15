@@ -77,15 +77,29 @@ class CuCfFileHelper extends AppHelper {
 	 *
 	 * @param mixed $fieldValue
 	 * @param array $fieldDefinition
+	 * @param array $options
+	 * 	- output : 出力形式
+	 * 		- tag : 画像の場合は画像タグ、ファイルの場合はリンク
+	 * 		- url : ファイルのURL
 	 * @return mixed
 	 */
 	public function get($fieldValue, $fieldDefinition, $options) {
+		$options = array_merge([
+			'output' => 'tag'
+		], $options);
+
 		if($fieldValue) {
-			if(in_array(pathinfo($fieldValue, PATHINFO_EXTENSION), ['png', 'gif', 'jpeg', 'jpg'])) {
-				$data = $this->uploadImage($fieldValue, $options);
+			if($options['output'] === 'tag') {
+				if(in_array(pathinfo($fieldValue, PATHINFO_EXTENSION), ['png', 'gif', 'jpeg', 'jpg'])) {
+					$data = $this->uploadImage($fieldValue, $options);
+				} else {
+					$options['label'] = $fieldDefinition['name'];
+					$data = $this->fileLink($fieldValue, $options);
+				}
+			} elseif($options['output'] === 'url') {
+				$data = $this->saveUrl . $fieldValue;
 			} else {
-				$options['label'] = $fieldDefinition['name'];
-				$data = $this->fileLink($fieldValue, $options);
+				$data = $fieldValue;
 			}
 		} else {
 			$data = '';
