@@ -109,7 +109,7 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 
 							<div class="cucf-loop-add">
 								<?php echo $this->BcForm->button('追加', [
-									'class' => 'bca-btn',
+									'class' => 'bca-btn btn-add-loop',
 									'id' => 'BtnAddLoop',
 									'data-src' => $definition['CuCustomFieldDefinition']['field_name'],
 									'data-count' => $key + 1

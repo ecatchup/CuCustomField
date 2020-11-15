@@ -9,7 +9,7 @@
  */
 
 $(function(){
-    $('#BtnAddLoop').click(function(){
+    $('.btn-add-loop').click(function(){
         var srcFieldName = $(this).attr('data-src');
         var count = $(this).attr('data-count');
         var clone = $("#CufcLoopSrc" + srcFieldName).clone();
@@ -24,7 +24,7 @@ $(function(){
         });
         $("#loop-" + srcFieldName).append(clone);
         clone.slideDown(150);
-        $('#BtnAddLoop').attr('data-count', Number(count) + 1);
+        $(this).attr('data-count', Number(count) + 1);
         return false;
     });
     $(".btn-delete-loop").click(deleteLoopBlock);
