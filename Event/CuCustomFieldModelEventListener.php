@@ -99,7 +99,11 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			}
 		}
 		$request = Router::getRequest();
-		if ($request->query) {
+		$customSearch = true;
+		if(isset($event->data[0]['customSearch']) && $event->data[0]['customSearch'] === false) {
+			$customSearch = false;
+		}
+		if ($request->query && $customSearch) {
 			$Model->bindModel(['hasMany' => [
 				'CuCustomFieldValue' => [
 					'className' => 'CuCustomField.CuCustomFieldValue',
@@ -119,9 +123,6 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$conditions = $query['conditions'];
 		}
 		foreach($get as $key => $value) {
-			if(strtoupper($key) === 'ORDER' && (strtoupper($value) === 'DESC' || strtoupper($value) === 'ASC')) {
-				continue;
-			}
 			if($value) {
 				$conditions[] = [
 					'key' => 'CuCustomFieldValue.' . $key,
