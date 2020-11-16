@@ -119,10 +119,15 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$conditions = $query['conditions'];
 		}
 		foreach($get as $key => $value) {
-			$conditions[] = [
-				'key' => 'CuCustomFieldValue.' . $key,
-				'value LIKE' => '%' . $value . '%'
-			];
+			if(strtoupper($key) === 'ORDER' && (strtoupper($value) === 'DESC' || strtoupper($value) === 'ASC')) {
+				continue;
+			}
+			if($value) {
+				$conditions[] = [
+					'key' => 'CuCustomFieldValue.' . $key,
+					'value LIKE' => '%' . $value . '%'
+				];
+			}
 		}
 		$query['conditions'] = $conditions;
 		$query['joins'][] = [
