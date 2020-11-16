@@ -125,14 +125,14 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			];
 		}
 		$query['conditions'] = $conditions;
-		$query['joins'] = [[
+		$query['joins'][] = [
 			'table' => 'cu_custom_field_values',
 			'alias' => 'CuCustomFieldValue',
 			'type' => 'left',
 			'conditions' => [
 				'BlogPost.id = CuCustomFieldValue.relate_id'
 			]
-		]];
+		];
 		if ($query['fields']) {
 			if (is_array($query['fields'])) {
 				$query['fields'][0] = 'DISTINCT ' . $query['fields'][0];
