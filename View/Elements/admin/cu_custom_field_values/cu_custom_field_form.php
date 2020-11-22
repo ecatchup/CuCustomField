@@ -53,6 +53,7 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 								<div id="CucfLoop<?php echo $definition['CuCustomFieldDefinition']['field_name'] . '-' . $key ?>" class="cucf-loop-block">
 									<table class="bca-form-table">
 										<?php foreach($definition['CuCustomFieldDefinition']['children'] as $child): ?>
+										<?php if ($this->CuCustomField->judgeStatus($child)): ?>
 										<tr>
 											<th class="bca-form-table__label">
 												<?php echo $this->BcForm->label("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}.{$key}.{$child['CuCustomFieldDefinition']['field_name']}", $child['CuCustomFieldDefinition']['name']) ?>
@@ -67,6 +68,7 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 												) ?>
 											</td>
 										</tr>
+										<?php endif ?>
 										<?php endforeach ?>
 									</table>
 									<?php echo $this->BcForm->button('削除', [
@@ -85,6 +87,7 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 							<div id="CufcLoopSrc<?php echo $definition['CuCustomFieldDefinition']['field_name'] ?>" class="cucf-loop-block" hidden>
 								<table class="bca-form-table">
 								<?php foreach($definition['CuCustomFieldDefinition']['children'] as $child): ?>
+									<?php if ($this->CuCustomField->judgeStatus($child)): ?>
 									<tr>
 										<th class="bca-form-table__label">
 											<?php echo $this->BcForm->label("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}.__loop-src__.{$child['CuCustomFieldDefinition']['field_name']}", $child['CuCustomFieldDefinition']['name']) ?>
@@ -99,6 +102,7 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 											) ?>
 										</td>
 									</tr>
+									<?php endif ?>
 								<?php endforeach ?>
 								</table>
 								<?php echo $this->BcForm->button('削除', [
