@@ -1,55 +1,41 @@
-# カスタムフィールド プラグイン
+# CuCustomField
 
-CustomField プラグインは、ブログ記事に入力欄を追加できるbaserCMS専用のプラグインです。
+CuCustomField プラグインは、ブログ記事にオリジナルの入力欄を追加できる baserCMS 用のプラグインです。
 
-* カスタムフィールド設定管理: 利用するカスタムフィールドをコンテンツ毎（ブログ毎）に管理できます。
-* カスタムフィールド管理: コンテンツ毎のカスタムフィールドの並び順、所属コンテンツの編集ができます。
-* カスタムフィールド編集管理: カスタムフィールド内容を編集できます。
-
+* カスタムフィールド設定管理: 利用するカスタムフィールドをブログコンテンツごとに管理できます。
+* フィールド定義管理: コンテンツごとにフィールド定義の追加、編集、削除、並び順の変更ができます。
+* フィールド定義は、標準でテキスト、テキストエリア、日付（年月日）、日付（年月日時間）、チェックボックス、マルチチェックボックス、都道府県リスト、ラジオボタン、関連データ、セレクトボックス、ファイルアップロード、Google Maps、Wysiwyg Editor、ループに対応しています。
 
 ## Installation
 
-1. 圧縮ファイルを解凍後、BASERCMS/app/Plugin/CustomField に配置します。
-2. 管理システムのプラグイン管理にアクセスし、表示されている CustomField プラグイン をインストール（有効化）して下さい。
-3. カスタムフィールド設定一覧画面にアクセスし、利用するコンテンツ毎に有効化します。
-4. カスタムフィールド設定一覧画面の「新規追加」よりフィールドを追加します。
-5. フィールド追加後、ブログ記事の投稿画面にアクセスすると、入力項目が追加されてます。
+1. 圧縮ファイルを解凍後、`/app/Plugin/CuCustomField` として配置します。
+2. 管理システムのプラグイン管理にアクセスし、表示されている CuCustomField プラグイン をインストール（有効化）して下さい。
 
 
-### Use Sample
+## Settings
 
-公開側での利用サンプルは以下のエレメントを参照してください。
-
-* /CustomField/View/Elements/blog_custom_field_block.php
-
-
-## Uses Config
-
-ブログカスタムフィールド設定画面では、ブログ別に以下の設定を行う事ができます。
-
-* カスタムフィールドの利用の有無を選択できます。
-* カスタムフィールドの表示位置を選択できます。
+1. プラグイン管理よりカスタムフィールド設定一覧画面にアクセスし、「新規設定追加」より、利用するブログコンテンツを選択します。
+2. 「フィールド作成」ボタンよりフィールドを追加します。追加が完了するとフィールド一覧に遷移します。
+3. 必要に応じてさらにフィールドを追加します。
+4. その後、ブログ記事の投稿画面にアクセスすると、入力項目が追加されていることを確認します。
 
 
-## CU確認済バージョン
+## Edit View
 
-| baserCMSバージョン | プラグインバージョン | ステータス | コメント |
-| ---- | ---- | ---- | ---- |
-| 4.0.9 | 2.0.0 | 未承認 | 動作可 |
-| 4.2.0 | 2.0.4 | 未承認 | 動作可 |
-| 4.3.0 | 3.0.0 | 未承認 | 動作可 |
-| 4.4.1 | 4.0.0 | 承認 | 動作可 |
+フロントエンドでカスタムフィールドのデータを読み出すには、テンプレートに関数の記述が必要です。以下のエレメント内の利用サンプルを参考にしてください。
 
-## オリジナルのフィールドタイプを追加
+* `/CuCustomField/View/Elements/blog_custom_field_block.php`
+
+## Add Original Field Type
 
 オリジナルのフィールドタイプを baserCMSのプラグインとして作成することができます。
-`/docs/CREATE_FIELD_TYPE.md` を参考にしてください。
+[オリジナルのフィールドタイプを追加する](https://github.com/ecatchup/CuCustomField/blob/master/docs/CREATE_FIELD_TYPE.md) を参考にしてください。
 
-## Thanks ##
+
+## Thanks
 
 - [https://basercms.net](http://basercms.net/)
 - [https://wiki.basercms.net/](http://wiki.basercms.net/)
-- [https://doc.basercms.net/](http://doc.basercms.net/)
-- [https://cakephp.jp](https://cakephp.org)
+- [https://cakephp.org](https://cakephp.org)
 - [Cake Development Corporation](https://cakedc.com)
 - [DerEuroMark](https://www.dereuromark.de/)
