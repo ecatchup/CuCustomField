@@ -110,16 +110,15 @@ class CuCfFileBehavior extends ModelBehavior
 			} else {
 				if($value) {
 					foreach($value as $i => $set) {
-//						if ($i === '__loop-src__') {
-//							continue;
-//						}
-//						if (!$set) {
-//							$value[$i] = $set;
-//							break;
-//						}
-//						foreach($set as $setKey => $setValue) {
-//
-//						}
+						foreach($set as $setKey => $setValue) {
+							if (preg_match('/(.+)_saved$/', $setKey, $matches)) {
+								$targetKey = $matches[1];
+								if (empty($model->data['CuCustomFieldValue'][$key][$i][$targetKey]['name'])) {
+									$model->data['CuCustomFieldValue'][$key][$i][$targetKey] = $setValue;
+									unset($model->data['CuCustomFieldValue'][$key][$i][$setKey]);
+								}
+							}
+						}
 					}
 				}
 			}
@@ -163,7 +162,7 @@ class CuCfFileBehavior extends ModelBehavior
 				if($tmp) {
 					return false;
 				}
-				$this->checkAndDeleteFile($model, $relateId, $srcKey, $data['value']);
+				$this->checkAndDeleteFile($model, $relateId, $srcKey, $data['value'], null, $tmp);
 				return false;
 			} else {
 				$model->data['CuCustomFieldValue']['value'] = $this->checkAndSaveFile($model, $relateId, $key, $data['value'], null, $tmp);
@@ -187,13 +186,10 @@ class CuCfFileBehavior extends ModelBehavior
 						}
 						$srcKey = $this->isDeleteAction($setKey);
 						if($srcKey) {
-							if($tmp) {
-								continue;
-							}
 							if($setValue) {
 								$deleteTarget[$srcKey] = true;
 							}
-							$this->checkAndDeleteFile($model, $relateId, 'CuCustomFieldValue.' . $srcKey, $setValue, $i);
+							$this->checkAndDeleteFile($model, $relateId, 'CuCustomFieldValue.' . $srcKey, $setValue, $i, $tmp);
 						} else {
 							$result = $this->checkAndSaveFile($model, $relateId, 'CuCustomFieldValue.' . $setKey, $setValue, $i, $tmp);
 							if($result !== false) {
@@ -228,7 +224,7 @@ class CuCfFileBehavior extends ModelBehavior
 	 * @param $value
 	 * @param null $loopRow
 	 */
-	public function checkAndDeleteFile($model, $relateId, $key, $value, $loopRow = null) {
+	public function checkAndDeleteFile($model, $relateId, $key, $value, $loopRow = null, $tmp = false) {
 		if(empty($value)) {
 			return;
 		}
@@ -243,7 +239,7 @@ class CuCfFileBehavior extends ModelBehavior
 			$targetRecord['CuCustomFieldValue']['value'] = '';
 			$model->save($targetRecord, ['callbacks' => false, 'validate' => false]);
 		}
-		$this->deleteFile($beforeValue);
+		$this->deleteFile($beforeValue, $tmp);
 	}
 
 	/**
@@ -359,19 +355,22 @@ class CuCfFileBehavior extends ModelBehavior
 	 * @param string $value
 	 * @return |null
 	 */
-	public function deleteFile($value)
+	public function deleteFile($value, $tmp = false)
 	{
 		if (!$value || strpos($value, '.') === false) {
 			return false;
 		}
-		$filePath = $this->saveDir . $value;
-		list($baseFileName, $ext) = explode('.', $value);
-		$thumbPath = $this->saveDir . $baseFileName . '_thumb.' . $ext;
-		if (file_exists($filePath)) {
-			unlink($filePath);
-		}
-		if (file_exists($thumbPath)) {
-			unlink($thumbPath);
+
+		if(!$tmp) {
+			$filePath = $this->saveDir . $value;
+			list($baseFileName, $ext) = explode('.', $value);
+			$thumbPath = $this->saveDir . $baseFileName . '_thumb.' . $ext;
+			if (file_exists($filePath)) {
+				unlink($filePath);
+			}
+			if (file_exists($thumbPath)) {
+				unlink($thumbPath);
+			}
 		}
 		return null;
 	}
@@ -395,7 +394,9 @@ class CuCfFileBehavior extends ModelBehavior
 				$newDetail['value'] = $value;
 				$newDetail['model'] = 'CuCustomFieldValue';
 				$this->checkField($Model, $newDetail, true);
-				$data['CuCustomFieldValue'][$field] = $Model->data['CuCustomFieldValue']['value'];
+				if(isset($Model->data['CuCustomFieldValue']['value'])) {
+					$data['CuCustomFieldValue'][$field] = $Model->data['CuCustomFieldValue']['value'];
+				}
 			}
 		}
 		return $data;

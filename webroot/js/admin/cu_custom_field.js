@@ -97,14 +97,18 @@ $(function () {
         var rowPrepend = $("#RowCuCfPrepend");
         var rowAppend = $("#RowCuCfAppend");
         var rowDescription = $("#RowCuCfDescription");
+        var rowRequired = $("#RowCuCfRequired");
         if(parentId.val()) {
             rowPrepend.hide();
             rowAppend.hide();
             rowDescription.hide();
+            rowRequired.hide();
+            $("input[name='data[CuCustomFieldDefinition][required]']").prop('checked', false);
         } else {
             rowPrepend.show('slow');
             rowAppend.show('slow');
             rowDescription.show('slow');
+            rowRequired.show('slow');
         }
     }
 

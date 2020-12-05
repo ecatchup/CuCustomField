@@ -45,15 +45,6 @@ class CuCfFileHelper extends AppHelper {
 		// 保存値
 		$value = $this->CuCustomField->value($fieldName);
 
-//		if(is_array($value)) {
-//			$data = $this->request->data['CuCustomFieldValue'];
-//			foreach ($data as $key => $v) {
-//				if ($definition['field_name'] . '_hidden' == $key) {
-//					$value = $v;
-//				}
-//			}
-//		}
-
 		if ($value && is_string($value) && strpos($value, '.') !== false) {
 			// 削除
 			$delCheckTag = $this->BcHtml->tag('span',
