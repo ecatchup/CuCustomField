@@ -140,7 +140,13 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 				if($definitions) {
 					foreach($definitions as $key => $definition) {
 						if($definition['CuCustomFieldDefinition']['field_type'] === 'loop') {
-							$definitions[$key]['CuCustomFieldDefinition']['children'] = $this->CuCustomFieldDefinitionModel->children($definition['CuCustomFieldDefinition']['id']);
+							$children = $this->CuCustomFieldDefinitionModel->children($definition['CuCustomFieldDefinition']['id']);
+							foreach($children as $i => $child) {
+								if(!$child['CuCustomFieldDefinition']['status']) {
+									unset($children[$i]);
+								}
+							}
+							$definitions[$key]['CuCustomFieldDefinition']['children'] = $children;
 						}
 					}
 				}
@@ -182,7 +188,13 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 				if($definitions) {
 					foreach($definitions as $key => $definition) {
 						if($definition['CuCustomFieldDefinition']['field_type'] === 'loop') {
-							$definitions[$key]['CuCustomFieldDefinition']['children'] = $this->CuCustomFieldDefinitionModel->children($definition['CuCustomFieldDefinition']['id']);
+							$children = $this->CuCustomFieldDefinitionModel->children($definition['CuCustomFieldDefinition']['id']);
+							foreach($children as $i => $child) {
+								if(!$child['CuCustomFieldDefinition']['status']) {
+									unset($children[$i]);
+								}
+							}
+							$definitions[$key]['CuCustomFieldDefinition']['children'] = $children;
 						}
 					}
 				}
