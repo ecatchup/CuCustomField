@@ -181,12 +181,13 @@ $(function () {
             $("#RowCuCfDefaultValue").hide();
             $("#RowCuCfRequired").hide();
             parentId.val('');
-            parentIdChangeHandler();
             $("#CuCustomFieldDefinitionRequired").attr('checked', false);
         } else {
+            $("#RowCuCfDefaultValue").show();
             $("#RowCuCfRequired").show();
             $("#RowCuCfParentId").show();
         }
+        parentIdChangeHandler();
         if(e !== undefined) {
             // バリデーション系は値が残っていると意図しない処理になってしまうので切り替えの度に初期化
             $("#CuCustomFieldDefinitionValidateHANKAKUCHECK").attr('checked', false);

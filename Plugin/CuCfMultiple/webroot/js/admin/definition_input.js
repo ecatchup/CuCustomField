@@ -13,11 +13,16 @@ $(function(){
     var fieldType = $("#CuCustomFieldDefinitionFieldType");
 
     fieldType.change(switchRelated);
+    $("#CuCustomFieldDefinitionParentId").change(switchRelated);
     switchRelated();
 
     function switchRelated() {
         if(fieldType.val() === 'multiple') {
-            $("#RowCuCfValidate").show('slow');
+            if(!$("#CuCustomFieldDefinitionParentId").val()) {
+                $("#RowCuCfValidate").show('slow');
+            } else {
+                $("#RowCuCfValidate").hide();
+            }
             $("#RowCuCfChoices").show('slow');
             $("#CuCustomFieldDefinitionValidateHANKAKUCHECK").parent().hide('fast');
             $("#CuCustomFieldDefinitionValidateNUMERICCHECK").parent().hide('fast');
