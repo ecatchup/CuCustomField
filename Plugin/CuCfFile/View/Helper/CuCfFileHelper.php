@@ -76,8 +76,8 @@ class CuCfFileHelper extends AppHelper {
 					['target' => '_blank', 'class' => 'bca-btn']
 				) . '</p>';
 			}
-//			$output = $output . $this->CuCustomField->BcForm->input($fieldName . '_hidden', ['type' => 'hidden', 'value' => $value]);
-			$output = $output . $delCheckTag . '<br>' . $fileLinkTag;
+			$hidden = $this->CuCustomField->BcForm->input($fieldName . '_saved', ['type' => 'hidden', 'value' => $value]);
+			$output .= $hidden . $delCheckTag . '<br>' . $fileLinkTag;
 		}
 		return $output;
 	}

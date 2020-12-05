@@ -19,7 +19,10 @@ $this->BcBaser->js('CuCustomField.admin/google_maps', false);
 $this->BcBaser->js('CuCustomField.admin/cu_custom_field_values', false);
 $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => false]);
 ?>
-
+<?php echo $this->CuCustomField->BcForm->input(
+	"CuCustomFieldValue.relate_id",
+	['type' => 'hidden', 'value' => $this->request->data['BlogPost']['id']]
+) ?>
 
 <?php if ($definitions): ?>
 
@@ -48,7 +51,8 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 							<!-- 表示 -->
 							<div id="loop-<?php echo $definition['CuCustomFieldDefinition']['field_name'] ?>" class="cucf-loop">
 
-							<?php if(is_array($this->request->data['CuCustomFieldValue'][$definition['CuCustomFieldDefinition']['field_name']])): ?>
+							<?php if(!empty($this->request->data['CuCustomFieldValue'][$definition['CuCustomFieldDefinition']['field_name']]) &&
+									is_array($this->request->data['CuCustomFieldValue'][$definition['CuCustomFieldDefinition']['field_name']])): ?>
 								<?php foreach($this->request->data['CuCustomFieldValue'][$definition['CuCustomFieldDefinition']['field_name']] as $key => $value): ?>
 								<div id="CucfLoop<?php echo $definition['CuCustomFieldDefinition']['field_name'] . '-' . $key ?>" class="cucf-loop-block">
 									<table class="bca-form-table">

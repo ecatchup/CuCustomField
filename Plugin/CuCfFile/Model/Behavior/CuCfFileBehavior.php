@@ -93,13 +93,34 @@ class CuCfFileBehavior extends ModelBehavior
 	 */
 	public function beforeValidate(Model $model, $options = [])
 	{
-		$data = $model->data['CuCustomFieldValue'];
-		foreach ($data as $key => $value) {
-			if (preg_match('/(.+)_hidden$/', $key, $matches)) {
-				$targetKey = $matches[1];
-				if(empty($model->data['CuCustomFieldValue'][$targetKey]['name'])) {
-					$model->data['CuCustomFieldValue'][$targetKey] = $value;
-					unset($model->data['CuCustomFieldValue'][$key]);
+		$contentId = $this->BlogPost->field('blog_content_id', ['BlogPost.id' => $model->data['CuCustomFieldValue']['relate_id']]);
+		foreach ($model->data['CuCustomFieldValue'] as $key => $value) {
+			if($key === 'relate_id') {
+				continue;
+			}
+			$definition = $model->getFieldDefinition($contentId, 'CuCustomFieldValue.' . $key);
+			if(!$definition || $definition['field_type'] !== 'loop') {
+				if (preg_match('/(.+)_saved$/', $key, $matches)) {
+					$targetKey = $matches[1];
+					if (empty($model->data['CuCustomFieldValue'][$targetKey]['name'])) {
+						$model->data['CuCustomFieldValue'][$targetKey] = $value;
+						unset($model->data['CuCustomFieldValue'][$key]);
+					}
+				}
+			} else {
+				if($value) {
+					foreach($value as $i => $set) {
+//						if ($i === '__loop-src__') {
+//							continue;
+//						}
+//						if (!$set) {
+//							$value[$i] = $set;
+//							break;
+//						}
+//						foreach($set as $setKey => $setValue) {
+//
+//						}
+					}
 				}
 			}
 		}
@@ -128,6 +149,9 @@ class CuCfFileBehavior extends ModelBehavior
 	{
 		if(isset($data['CuCustomFieldValue'])) {
 			$data = $data['CuCustomFieldValue'];
+		}
+		if($data['key'] === 'CuCustomFieldValue.relate_id') {
+			return false;
 		}
 		$key = $data['key'];
 		$relateId = $data['relate_id'];

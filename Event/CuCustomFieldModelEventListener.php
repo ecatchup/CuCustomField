@@ -361,6 +361,9 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			]
 		];
 		foreach($data as $key => $fieldConfig) {
+			if(!empty($fieldConfig['CuCustomFieldDefinition']['parent_id'])) {
+				continue;
+			}
 			$fieldName = $fieldConfig['CuCustomFieldDefinition']['field_name'];
 			$fieldRule = [];
 			foreach($map as $checkType => $rule) {

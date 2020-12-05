@@ -156,6 +156,13 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 				} else {
 					$Controller->request->data['CuCustomFieldValue'] = $defalut['CuCustomFieldValue'];
 				}
+
+				// バリデーションエラーが発生した際、ファイルフィールドが配列状態になってしまうため
+				// 変換されたデータを格納しなおしファイルを表示する。
+				if($this->CuCustomFieldValueModel->validationErrors) {
+					$Controller->request->data['CuCustomFieldValue'] = $this->CuCustomFieldValueModel->data['CuCustomFieldValue'];
+				}
+
 			}
 		}
 
