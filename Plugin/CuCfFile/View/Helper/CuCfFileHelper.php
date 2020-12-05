@@ -44,6 +44,16 @@ class CuCfFileHelper extends AppHelper {
 		$output = $this->CuCustomField->BcForm->input($fieldName, $options);
 		// 保存値
 		$value = $this->CuCustomField->value($fieldName);
+
+//		if(is_array($value)) {
+//			$data = $this->request->data['CuCustomFieldValue'];
+//			foreach ($data as $key => $v) {
+//				if ($definition['field_name'] . '_hidden' == $key) {
+//					$value = $v;
+//				}
+//			}
+//		}
+
 		if ($value && is_string($value) && strpos($value, '.') !== false) {
 			// 削除
 			$delCheckTag = $this->BcHtml->tag('span',
@@ -66,7 +76,7 @@ class CuCfFileHelper extends AppHelper {
 					['target' => '_blank', 'class' => 'bca-btn']
 				) . '</p>';
 			}
-
+//			$output = $output . $this->CuCustomField->BcForm->input($fieldName . '_hidden', ['type' => 'hidden', 'value' => $value]);
 			$output = $output . $delCheckTag . '<br>' . $fileLinkTag;
 		}
 		return $output;
@@ -90,7 +100,11 @@ class CuCfFileHelper extends AppHelper {
 
 		if($fieldValue) {
 			if($options['output'] === 'tag') {
-				if(in_array(pathinfo($fieldValue, PATHINFO_EXTENSION), ['png', 'gif', 'jpeg', 'jpg'])) {
+				$checkValue = $fieldValue;
+				if(!empty($fieldValue['session_key'])) {
+					$checkValue = $fieldValue['session_key'];
+				}
+				if(in_array(pathinfo($checkValue, PATHINFO_EXTENSION), ['png', 'gif', 'jpeg', 'jpg'])) {
 					$data = $this->uploadImage($fieldValue, $options);
 				} else {
 					$options['label'] = $fieldDefinition['name'];
@@ -129,7 +143,12 @@ class CuCfFileHelper extends AppHelper {
 			if($thumb) {
 				$fieldValue = preg_replace('/^(.+\/)([^\/]+)(\.[a-z]+)$/', "$1$2_thumb$3", $fieldValue);
 			}
-			return $this->BcHtml->image($this->saveUrl . $fieldValue, $options);
+			if(!empty($fieldValue['session_key'])) {
+				$fileUrl = '/uploads/tmp/' . str_replace(['.', '/'], ['_', '_'], $fieldValue['session_key']);
+			} else {
+				$fileUrl = $this->saveUrl . $fieldValue;
+			}
+			return $this->BcHtml->image($fileUrl, $options);
 		}
 	}
 

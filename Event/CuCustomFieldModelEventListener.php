@@ -123,6 +123,9 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$conditions = $query['conditions'];
 		}
 		foreach($get as $key => $value) {
+			if($key === 'preview') {
+				continue;
+			}
 			if($value) {
 				$conditions[] = [
 					'key' => 'CuCustomFieldValue.' . $key,
