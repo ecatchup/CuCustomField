@@ -68,8 +68,7 @@ $class = ' class="' . implode(' ', $classies) . '"';
 		$this->BcBaser->link('',
 			[
 				'action' => 'ajax_unpublish',
-				$data['CuCustomFieldDefinition']['id'],
-				$data['CuCustomFieldConfig']['id']
+				$data['CuCustomFieldDefinition']['id']
 			],
 			[
 				'title' => __d('baser', '非公開'),
@@ -80,7 +79,6 @@ $class = ' class="' . implode(' ', $classies) . '"';
 		$this->BcBaser->link('',
 			[
 				'action' => 'ajax_publish',
-				$data['CuCustomFieldConfig']['id'],
 				$data['CuCustomFieldDefinition']['id']
 			],
 			[

@@ -235,12 +235,12 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	 * @param int $configId
 	 * @param int $id
 	 */
-	public function admin_ajax_unpublish($configId = null, $id = null)
+	public function admin_ajax_unpublish($id = null)
 	{
-		if (!$configId || !$id) {
+		if (!$id) {
 			$this->ajaxError(500, '無効な処理です。');
 		}
-		if ($this->_changeStatus($configId, $id, false)) {
+		if ($this->_changeStatus($id, false)) {
 			clearViewCache();
 			exit(true);
 		} else {
@@ -255,12 +255,12 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	 * @param int $configId
 	 * @param int $id
 	 */
-	public function admin_ajax_publish($configId = null, $id = null)
+	public function admin_ajax_publish($id = null)
 	{
-		if (!$configId || !$id) {
+		if (!$id) {
 			$this->ajaxError(500, '無効な処理です。');
 		}
-		if ($this->_changeStatus($configId, $id, true)) {
+		if ($this->_changeStatus($id, true)) {
 			clearViewCache();
 			exit(true);
 		} else {
@@ -278,7 +278,7 @@ class CuCustomFieldDefinitionsController extends CuCustomFieldAppController
 	 * @param boolean $status
 	 * @return boolean
 	 */
-	protected function _changeStatus($configId = null, $id = null, $status = false)
+	protected function _changeStatus($id = null, $status = false)
 	{
 		$data = $this->CuCustomFieldDefinition->find('first', [
 			'conditions' => ['id' => $id],
