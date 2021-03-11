@@ -102,7 +102,7 @@ class CuCfFileHelper extends AppHelper {
 					$data = $this->fileLink($fieldValue, $options);
 				}
 			} elseif($options['output'] === 'url') {
-				$data = $this->saveUrl . $fieldValue;
+				$data = is_string($fieldValue) ? $this->saveUrl . $fieldValue : '';
 			} else {
 				$data = $fieldValue;
 			}
