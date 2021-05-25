@@ -99,7 +99,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			}
 		}
 		$request = Router::getRequest();
-		$customSearch = true;
+		$customSearch = Configure::read('customSearch');
 		if(isset($event->data[0]['customSearch']) && $event->data[0]['customSearch'] === false) {
 			$customSearch = false;
 		}

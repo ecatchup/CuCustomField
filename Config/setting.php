@@ -78,3 +78,9 @@ $config['cuCustomField'] = [
 $config['cuCustomFieldConfig'] = [
 	'submenu' => false
 ];
+
+/**
+ * blogBlogPostBeforeFind
+ * 最近の投稿、ブログ記事前後移動を find する際に実行するかどうか
+ */
+$config['customSearch'] = true;
