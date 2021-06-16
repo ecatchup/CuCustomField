@@ -126,14 +126,14 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			if($key === 'preview') {
 				continue;
 			}
-			if($value) {
+			if($value && !is_array($value)) {
 				$conditions[] = [
 					'key' => 'CuCustomFieldValue.' . $key,
 					'value LIKE' => '%' . $value . '%'
 				];
 			}
 		}
-		$query['conditions'] = $conditions;
+		$query['conditions'] = $query['conditions'] ? array_merge_recursive($query['conditions'], $conditions) : $conditions;
 		$query['joins'][] = [
 			'table' => 'cu_custom_field_values',
 			'alias' => 'CuCustomFieldValue',
