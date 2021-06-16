@@ -74,7 +74,10 @@ $config['cuCustomField'] = [
 /**
  * カスタムフィールド管理画面表示用設定
  *
+ * submenu	bool
+ * customSearch	bool : 最近の投稿、ブログ記事前後移動を find する際に実行するかどうか
  */
 $config['cuCustomFieldConfig'] = [
-	'submenu' => false
+	'submenu' => false,
+	'customSearch' => true
 ];
