@@ -17,6 +17,10 @@ $(function(){
             $(this).attr('name', $(this).attr('name').replace('__loop-src__', count));
             $(this).attr('id', $(this).attr('id').replace('Loop-src', count));
         });
+        // label for属性もループ番号に変更
+        clone.find('label').each(function(){
+            $(this).attr('for', $(this).attr('for').replace('Loop-src', count));
+        });
         clone.attr('id', "CufcLoop" + srcFieldName + '-' + count);
         clone.find('.btn-delete-loop').each(function(){
             $(this).attr('data-delete-target', "CufcLoop" + srcFieldName + '-' + count);
