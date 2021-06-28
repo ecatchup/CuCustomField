@@ -111,7 +111,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 					'foreignKey' => 'relate_id',
 				]
 			]], false);
-			$event->data[0]['customSearch'] = $this->customSearchQuery($event->data[0], $request->query);
+			$event->data[0] = $this->customSearchQuery($event->data[0], $request->query);
 		}
 		return $event->data;
 	}
