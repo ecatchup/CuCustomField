@@ -54,6 +54,7 @@ class CuCfFileControllerEventListener extends BcControllerEventListener {
 		if(empty($controller->BcContents->preview)) {
 			return;
 		}
-		$controller->set('post', $controller->BlogPost->CuCustomFieldValue->saveTmpFile($controller->viewVars['post']));
+		$CuCustomFieldValue = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
+		$controller->set('post', $CuCustomFieldValue->saveTmpFile($controller->viewVars['post']));
 	}
 }
