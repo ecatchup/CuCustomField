@@ -104,14 +104,29 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$customSearch = false;
 		}
 		if ($request->query && $customSearch) {
-			$Model->bindModel(['hasMany' => [
-				'CuCustomFieldValue' => [
-					'className' => 'CuCustomField.CuCustomFieldValue',
-					'order' => 'id',
-					'foreignKey' => 'relate_id',
-				]
-			]], false);
-			$event->data[0] = $this->customSearchQuery($event->data[0], $request->query);
+			// keyのリストを取得
+			$keyArray = $this->getKeyList();
+			$searchQuery = [];
+
+			// クエリの判定
+			foreach ($request->query as $key => $query) {
+				// クエリがCuCustomFieldで使用されているkeyに含まれていれば$searchQueryの配列に追加
+				if(in_array($key, $keyArray)) {
+					$searchQuery[$key] = $query;
+				}
+			}
+
+			// $searchQueryにクエリが追加されていれば、処理を実行
+			if (!empty($searchQuery)) {
+				$Model->bindModel(['hasMany' => [
+					'CuCustomFieldValue' => [
+						'className' => 'CuCustomField.CuCustomFieldValue',
+						'order' => 'id',
+						'foreignKey' => 'relate_id',
+					]
+				]], false);
+				$event->data[0] = $this->customSearchQuery($event->data[0], $searchQuery);
+			}
 		}
 		return $event->data;
 	}
@@ -152,6 +167,28 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$query['fields'] = 'DISTINCT BlogPost.*';
 		}
 		return $query;
+	}
+
+	/**
+	 * CuCustomFieldで使用されているkeyのリストを取得（クエリの判定等で使用）
+	 *
+	 * @return array
+	 */
+	private function getKeyList()
+	{
+		if (ClassRegistry::isKeySet('CuCustomField.CuCustomFieldDefinition')) {
+			$CuCustomFieldDefinitionModel = ClassRegistry::getObject('CuCustomField.CuCustomFieldDefinition');
+		} else {
+			$CuCustomFieldDefinitionModel = ClassRegistry::init('CuCustomField.CuCustomFieldDefinition');
+		}
+		$list = $CuCustomFieldDefinitionModel->find('list', [
+			'fields' => ['field_name'],
+			'conditions' => [
+				'CuCustomFieldDefinition.status' => 1,
+			],
+			'recursive' => -1,
+		]);
+		return $list;
 	}
 
 	/**
