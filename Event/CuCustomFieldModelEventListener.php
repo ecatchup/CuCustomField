@@ -127,10 +127,19 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 				continue;
 			}
 			if($value && !is_array($value)) {
-				$conditions[] = [
-					'key' => 'CuCustomFieldValue.' . $key,
-					'value LIKE' => '%' . $value . '%'
-				];
+				if (strpos($value,'==') === false) {
+					$conditions[] = [
+						'key' => 'CuCustomFieldValue.' . $key,
+						'value LIKE' => '%' . $value . '%' // valueが1と10では同じ検索結果になる。
+					];
+				} else {
+					// 完全一致検索の場合は、?フィールドキー===フィールドバリューで入力する
+					$value = str_replace('==', '', $value);
+					$conditions[] = [
+						'key' => 'CuCustomFieldValue.' . $key,
+						'value' => $value
+					];
+				}
 			}
 		}
 		$query['conditions'] = $query['conditions'] ? array_merge_recursive($query['conditions'], $conditions) : $conditions;
