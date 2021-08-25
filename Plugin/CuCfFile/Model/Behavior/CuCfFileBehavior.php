@@ -384,7 +384,7 @@ class CuCfFileBehavior extends ModelBehavior
 	public function saveTmpFile(Model $Model, $data)
 	{
 		$this->Session->delete('Upload');
-		if($data['CuCustomFieldValue']) {
+		if(isset($data['CuCustomFieldValue']) && $data['CuCustomFieldValue']) {
 			foreach ($data['CuCustomFieldValue'] as $field => $value) {
 				$newDetail = [];
 				$section = 'CuCustomFieldValue';
