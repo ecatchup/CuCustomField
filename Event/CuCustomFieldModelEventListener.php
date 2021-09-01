@@ -109,15 +109,26 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$searchQuery = [];
 
 			// クエリの判定
+			$preview = false;
 			foreach ($request->query as $key => $query) {
+				if($key === 'preview') { // プレビューかどうかの判定
+					$preview = true;
+				}
+				// like検索の場合はkey:likeをつける
+				if (strpos($key, ':')) {
+					$check = explode(':', $key);
+					$checkKey = $check[0];
+				} else {
+					$checkKey = $key;
+				}
 				// クエリがCuCustomFieldで使用されているkeyに含まれていれば$searchQueryの配列に追加
-				if(in_array($key, $keyArray)) {
+				if(in_array($checkKey, $keyArray)) {
 					$searchQuery[$key] = $query;
 				}
 			}
 
 			// $searchQueryにクエリが追加されていれば、処理を実行
-			if (!empty($searchQuery)) {
+			if (!empty($searchQuery) || $preview === true) {
 				$Model->bindModel(['hasMany' => [
 					'CuCustomFieldValue' => [
 						'className' => 'CuCustomField.CuCustomFieldValue',
@@ -125,7 +136,9 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 						'foreignKey' => 'relate_id',
 					]
 				]], false);
-				$event->data[0] = $this->customSearchQuery($event->data[0], $searchQuery);
+				if (!empty($searchQuery)) {
+					$event->data[0] = $this->customSearchQuery($event->data[0], $searchQuery);
+				}
 			}
 		}
 		return $event->data;
@@ -142,17 +155,22 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 				continue;
 			}
 			if($value && !is_array($value)) {
-				if (strpos($value,'==') === false) {
-					$conditions[] = [
+				// like検索の場合はkey:likeをつける
+				$check = [];
+				if (strpos($key, ':')) {
+					$check = explode(':', $key);
+					$key = $check[0];
+				}
+
+				if (isset($check[1]) && strpos($check[1],'like') !== false) {
+					$conditions['or'][] = [
 						'key' => 'CuCustomFieldValue.' . $key,
-						'value LIKE' => '%' . $value . '%' // valueが1と10では同じ検索結果になる。
+						'value LIKE' => '%' . $value . '%' // like検索
 					];
 				} else {
-					// 完全一致検索の場合は、?フィールドキー===フィールドバリューで入力する
-					$value = str_replace('==', '', $value);
-					$conditions[] = [
+					$conditions['or'][] = [
 						'key' => 'CuCustomFieldValue.' . $key,
-						'value' => $value
+						'value' => $KeyValue // 完全一致検索
 					];
 				}
 			}
