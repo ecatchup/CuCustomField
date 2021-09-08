@@ -109,18 +109,12 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$searchQuery = [];
 
 			// クエリの判定
-			$preview = false;
 			foreach ($request->query as $key => $query) {
 				if($key === 'preview') { // プレビューかどうかの判定
-					$preview = true;
+					continue;
 				}
-				// like検索の場合はkey:likeをつける
-				if (strpos($key, ':')) {
-					$check = explode(':', $key);
-					$checkKey = $check[0];
-				} else {
-					$checkKey = $key;
-				}
+				// like検索の場合はkey:likeがついている
+				$checkKey = preg_replace('/\:like/', '', $key);
 				// クエリがCuCustomFieldで使用されているkeyに含まれていれば$searchQueryの配列に追加
 				if(in_array($checkKey, $keyArray)) {
 					$searchQuery[$key] = $query;
@@ -128,7 +122,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			}
 
 			// $searchQueryにクエリが追加されていれば、処理を実行
-			if (!empty($searchQuery) || $preview === true) {
+			if (!empty($searchQuery)) {
 				$Model->bindModel(['hasMany' => [
 					'CuCustomFieldValue' => [
 						'className' => 'CuCustomField.CuCustomFieldValue',
@@ -151,26 +145,17 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$conditions = $query['conditions'];
 		}
 		foreach($get as $key => $value) {
-			if($key === 'preview') {
-				continue;
-			}
 			if($value && !is_array($value)) {
-				// like検索の場合はkey:likeをつける
-				$check = [];
-				if (strpos($key, ':')) {
-					$check = explode(':', $key);
-					$key = $check[0];
-				}
-
-				if (isset($check[1]) && strpos($check[1],'like') !== false) {
+				// key:likeがついていればlike検索
+				if (preg_match('/^([^\:]+?)\:like$/', $key, $matches)) {
 					$conditions['or'][] = [
-						'key' => 'CuCustomFieldValue.' . $key,
-						'value LIKE' => '%' . $value . '%' // like検索
+						'key' => 'CuCustomFieldValue.' . $matches[1],
+						'value LIKE' => '%' . $value . '%'
 					];
 				} else {
 					$conditions['or'][] = [
 						'key' => 'CuCustomFieldValue.' . $key,
-						'value' => $KeyValue // 完全一致検索
+						'value' => $value // 完全一致検索
 					];
 				}
 			}
