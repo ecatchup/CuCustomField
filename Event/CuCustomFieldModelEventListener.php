@@ -114,7 +114,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 					continue;
 				}
 				// like検索の場合はkey:likeがついている
-				$checkKey = preg_replace('/\:like/', '', $key);
+				$checkKey = preg_replace('/\:like$/', '', $key);
 				// クエリがCuCustomFieldで使用されているkeyに含まれていれば$searchQueryの配列に追加
 				if(in_array($checkKey, $keyArray)) {
 					$searchQuery[$key] = $query;
