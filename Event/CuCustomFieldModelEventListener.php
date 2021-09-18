@@ -384,8 +384,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			return true;
 		}
 		$this->_setValidate($fieldConfigField);
-		// ブログ記事本体にエラーがない場合、beforeValidate で判定しないと、カスタムフィールド側でバリデーションエラーが起きない
-		if (!$this->CuCustomFieldValueModel->validateSection($Model->data, 'CuCustomFieldValue')) {
+		if (!$this->CuCustomFieldValueModel->validateValues($Model->data['CuCustomFieldValue'])) {
 			return false;
 		}
 		return true;
@@ -431,8 +430,22 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$validation[$fieldName] = $fieldRule;
 		}
 
-		$keyValueValidate = ['CuCustomFieldValue' => $validation];
-		$this->CuCustomFieldValueModel->keyValueValidate = $keyValueValidate;
+		// ファイルタイプ制限
+		foreach ($data as $key => $fieldConfig) {
+			if ($fieldConfig['CuCustomFieldDefinition']['field_type'] !== 'file') {
+				continue;
+			}
+			$fieldName = $fieldConfig['CuCustomFieldDefinition']['field_name'];
+			$fieldConfig['CuCustomFieldDefinition']['allow_file_exts']
+				= Configure::read('cuCustomField.allow_file_exts');
+			if (empty($validation[$fieldName])) {
+				$validation[$fieldName] = [];
+			}
+			$validation[$fieldName] = Hash::merge($validation[$fieldName],
+				$this->_getValidationRule('fileExt', $fieldConfig['CuCustomFieldDefinition']));
+		}
+
+		$this->CuCustomFieldValueModel->validate = $validation;
 	}
 
 	/**
@@ -493,6 +506,12 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 					'message' => ($definition['validate_regex_message']) ? $definition['validate_regex_message'] : '入力エラーが発生しました。',
 				],
 			],
+			'fileExt' => [
+				'fileExt' => [
+					'rule' => ['fileExt', $definition['allow_file_exts']],
+					'message' => '許可されていないファイルです。',
+				],
+			],
 		];
 		return $validation[$rule];
 	}
@@ -513,7 +532,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 
 		if (!$this->throwBlogPost) {
 			$this->setUpModel();
-			if (!$this->CuCustomFieldValueModel->saveSection($Model->id, $Model->data, 'CuCustomFieldValue')) {
+			if (!$this->CuCustomFieldValueModel->saveSection($Model->id, $Model->data, 'CuCustomFieldValue', null, false)) {
 				$this->log(sprintf('ブログ記事ID：%s のカスタムフィールドの保存に失敗', $Model->id));
 			}
 		}
@@ -551,7 +570,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 		$petitCustomFieldData = $this->CuCustomFieldValueModel->getSection($event->data['oldId'], $this->CuCustomFieldValueModel->name);
 		if ($petitCustomFieldData) {
 			$saveData[$this->CuCustomFieldValueModel->name] = $petitCustomFieldData;
-			$this->CuCustomFieldValueModel->saveSection($event->data['id'], $saveData, 'CuCustomFieldValue');
+			$this->CuCustomFieldValueModel->saveSection($event->data['id'], $saveData, 'CuCustomFieldValue', null, false);
 		}
 	}
 

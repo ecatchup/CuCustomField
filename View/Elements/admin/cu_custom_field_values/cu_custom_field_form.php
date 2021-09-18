@@ -70,6 +70,7 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 													"CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}.{$key}.{$child['CuCustomFieldDefinition']['field_name']}",
 													$child
 												) ?>
+												<?php echo $this->BcForm->error("CuCustomFieldValue.{$definition['CuCustomFieldDefinition']['field_name']}_{$key}_{$child['CuCustomFieldDefinition']['field_name']}") ?>
 											</td>
 										</tr>
 										<?php endif ?>
