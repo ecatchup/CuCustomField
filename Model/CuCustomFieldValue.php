@@ -36,17 +36,6 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	public $validate = [];
 
 	/**
-	 * KeyValue で利用するバリデーション
-	 * - actAs の validate 指定が空の際に、このプロパティ値が利用される
-	 * - モデル名をキーに指定しているのは、KeyValueBehavior の validateSection への対応のため
-	 *
-	 * @var array
-	 */
-	public $keyValueValidate = [
-		'CuCustomFieldValue' => [],
-	];
-
-	/**
 	 * 初期値を取得する
 	 *
 	 * @return array
@@ -224,6 +213,70 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 		if($definition) {
 			$this->publicFieldConfigData[$contentId] = Hash::combine($definition, '{n}.field_name', '{n}');
 		}
+	}
+
+	/**
+	 * バリデーション
+	 * @param $data
+	 */
+	public function validateValues($data) {
+		$validateSuccess = true;
+
+		// ループブロック以外に対するバリデーション
+		$this->set($data);
+		if (!$this->validates()) {
+			$validateSuccess = false;
+		}
+
+		// ループブロックに対するバリデーション
+
+		// - ループブロックを取得
+		$loopFieldNames = [];
+		foreach ($this->fieldConfig as $fieldConfig) {
+			if ($fieldConfig['CuCustomFieldDefinition']['field_type'] === 'loop') {
+				$loopFieldNames[] = $fieldConfig['CuCustomFieldDefinition']['name'];
+			}
+		}
+		$loopGroups = [];
+		foreach ($data as $fieldKey => $fieldValue) {
+			if (in_array($fieldKey, $loopFieldNames)) {
+				$loopGroups[$fieldKey] = $fieldValue;
+			}
+		}
+
+		// - ブロックごとにバリデーションを実行
+		foreach ($loopGroups as $loopGroupName => $loopGroup) {
+			foreach ($loopGroup as $loopBlockKey => $loopBlock) {
+				$modelValidate = $this->validate;
+				$this->validate = $this->getLoopBlockValidate($loopBlock);
+				$this->set($loopBlock);
+				if (!$this->validates()) {
+					$validateSuccess = false;
+				}
+				$this->validate = $modelValidate;
+				if ($this->validationErrors) {
+					foreach ($this->validationErrors as $fieldKey => $fieldError) {
+						$this->inValidate("{$loopGroupName}_{$loopBlockKey}_{$fieldKey}", $fieldError[0]);
+					}
+				}
+			}
+		}
+
+		return $validateSuccess;
+	}
+
+	/**
+	 * ループブロック中に存在するフィールドのバリデーションを取得
+	 * @param $loopBlock
+	 */
+	private function getLoopBlockValidate($loopBlock) {
+		$loopBlockValidate = [];
+		foreach ($loopBlock as $loopBlockFieldName => $loopBlockFieldValue) {
+			if (!empty($this->validate[$loopBlockFieldName])) {
+				$loopBlockValidate[$loopBlockFieldName] = $this->validate[$loopBlockFieldName];
+			}
+		}
+		return $loopBlockValidate;
 	}
 
 }
