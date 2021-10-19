@@ -99,19 +99,41 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			}
 		}
 		$request = Router::getRequest();
-		$customSearch = true;
+		$customSearch = Configure::read('cuCustomFieldConfig.customSearch');
 		if(isset($event->data[0]['customSearch']) && $event->data[0]['customSearch'] === false) {
 			$customSearch = false;
 		}
 		if ($request->query && $customSearch) {
-			$Model->bindModel(['hasMany' => [
-				'CuCustomFieldValue' => [
-					'className' => 'CuCustomField.CuCustomFieldValue',
-					'order' => 'id',
-					'foreignKey' => 'relate_id',
-				]
-			]], false);
-			$event->data[0] = $this->customSearchQuery($event->data[0], $request->query);
+			// keyのリストを取得
+			$keyArray = $this->getKeyList();
+			$searchQuery = [];
+
+			// クエリの判定
+			foreach ($request->query as $key => $query) {
+				if($key === 'preview') { // プレビューかどうかの判定
+					continue;
+				}
+				// like検索の場合はkey:likeがついている
+				$checkKey = preg_replace('/\:like$/', '', $key);
+				// クエリがCuCustomFieldで使用されているkeyに含まれていれば$searchQueryの配列に追加
+				if(in_array($checkKey, $keyArray)) {
+					$searchQuery[$key] = $query;
+				}
+			}
+
+			// $searchQueryにクエリが追加されていれば、処理を実行
+			if (!empty($searchQuery)) {
+				$Model->bindModel(['hasMany' => [
+					'CuCustomFieldValue' => [
+						'className' => 'CuCustomField.CuCustomFieldValue',
+						'order' => 'id',
+						'foreignKey' => 'relate_id',
+					]
+				]], false);
+				if (!empty($searchQuery)) {
+					$event->data[0] = $this->customSearchQuery($event->data[0], $searchQuery);
+				}
+			}
 		}
 		return $event->data;
 	}
@@ -123,17 +145,22 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$conditions = $query['conditions'];
 		}
 		foreach($get as $key => $value) {
-			if($key === 'preview') {
-				continue;
-			}
-			if($value) {
-				$conditions[] = [
-					'key' => 'CuCustomFieldValue.' . $key,
-					'value LIKE' => '%' . $value . '%'
-				];
+			if($value && !is_array($value)) {
+				// key:likeがついていればlike検索
+				if (preg_match('/^([^\:]+?)\:like$/', $key, $matches)) {
+					$conditions['or'][] = [
+						'key' => 'CuCustomFieldValue.' . $matches[1],
+						'value LIKE' => '%' . $value . '%'
+					];
+				} else {
+					$conditions['or'][] = [
+						'key' => 'CuCustomFieldValue.' . $key,
+						'value' => $value // 完全一致検索
+					];
+				}
 			}
 		}
-		$query['conditions'] = $conditions;
+		$query['conditions'] = $query['conditions'] ? array_merge_recursive($query['conditions'], $conditions) : $conditions;
 		$query['joins'][] = [
 			'table' => 'cu_custom_field_values',
 			'alias' => 'CuCustomFieldValue',
@@ -152,6 +179,28 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$query['fields'] = 'DISTINCT BlogPost.*';
 		}
 		return $query;
+	}
+
+	/**
+	 * CuCustomFieldで使用されているkeyのリストを取得（クエリの判定等で使用）
+	 *
+	 * @return array
+	 */
+	private function getKeyList()
+	{
+		if (ClassRegistry::isKeySet('CuCustomField.CuCustomFieldDefinition')) {
+			$CuCustomFieldDefinitionModel = ClassRegistry::getObject('CuCustomField.CuCustomFieldDefinition');
+		} else {
+			$CuCustomFieldDefinitionModel = ClassRegistry::init('CuCustomField.CuCustomFieldDefinition');
+		}
+		$list = $CuCustomFieldDefinitionModel->find('list', [
+			'fields' => ['field_name'],
+			'conditions' => [
+				'CuCustomFieldDefinition.status' => 1,
+			],
+			'recursive' => -1,
+		]);
+		return $list;
 	}
 
 	/**
@@ -335,8 +384,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			return true;
 		}
 		$this->_setValidate($fieldConfigField);
-		// ブログ記事本体にエラーがない場合、beforeValidate で判定しないと、カスタムフィールド側でバリデーションエラーが起きない
-		if (!$this->CuCustomFieldValueModel->validateSection($Model->data, 'CuCustomFieldValue')) {
+		if (!$this->CuCustomFieldValueModel->validateValues($Model->data['CuCustomFieldValue'])) {
 			return false;
 		}
 		return true;
@@ -382,8 +430,22 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			$validation[$fieldName] = $fieldRule;
 		}
 
-		$keyValueValidate = ['CuCustomFieldValue' => $validation];
-		$this->CuCustomFieldValueModel->keyValueValidate = $keyValueValidate;
+		// ファイルタイプ制限
+		foreach ($data as $key => $fieldConfig) {
+			if ($fieldConfig['CuCustomFieldDefinition']['field_type'] !== 'file') {
+				continue;
+			}
+			$fieldName = $fieldConfig['CuCustomFieldDefinition']['field_name'];
+			$fieldConfig['CuCustomFieldDefinition']['allow_file_exts']
+				= Configure::read('cuCustomField.allow_file_exts');
+			if (empty($validation[$fieldName])) {
+				$validation[$fieldName] = [];
+			}
+			$validation[$fieldName] = Hash::merge($validation[$fieldName],
+				$this->_getValidationRule('fileExt', $fieldConfig['CuCustomFieldDefinition']));
+		}
+
+		$this->CuCustomFieldValueModel->validate = $validation;
 	}
 
 	/**
@@ -444,6 +506,12 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 					'message' => ($definition['validate_regex_message']) ? $definition['validate_regex_message'] : '入力エラーが発生しました。',
 				],
 			],
+			'fileExt' => [
+				'fileExt' => [
+					'rule' => ['fileExt', $definition['allow_file_exts']],
+					'message' => '許可されていないファイルです。',
+				],
+			],
 		];
 		return $validation[$rule];
 	}
@@ -464,7 +532,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 
 		if (!$this->throwBlogPost) {
 			$this->setUpModel();
-			if (!$this->CuCustomFieldValueModel->saveSection($Model->id, $Model->data, 'CuCustomFieldValue')) {
+			if (!$this->CuCustomFieldValueModel->saveSection($Model->id, $Model->data, 'CuCustomFieldValue', null, false)) {
 				$this->log(sprintf('ブログ記事ID：%s のカスタムフィールドの保存に失敗', $Model->id));
 			}
 		}
@@ -502,7 +570,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 		$petitCustomFieldData = $this->CuCustomFieldValueModel->getSection($event->data['oldId'], $this->CuCustomFieldValueModel->name);
 		if ($petitCustomFieldData) {
 			$saveData[$this->CuCustomFieldValueModel->name] = $petitCustomFieldData;
-			$this->CuCustomFieldValueModel->saveSection($event->data['id'], $saveData, 'CuCustomFieldValue');
+			$this->CuCustomFieldValueModel->saveSection($event->data['id'], $saveData, 'CuCustomFieldValue', null, false);
 		}
 	}
 

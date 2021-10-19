@@ -95,14 +95,14 @@ class CuCfFileHelper extends AppHelper {
 				if(!empty($fieldValue['session_key'])) {
 					$checkValue = $fieldValue['session_key'];
 				}
-				if(in_array(pathinfo($checkValue, PATHINFO_EXTENSION), ['png', 'gif', 'jpeg', 'jpg'])) {
+				if(is_string($checkValue) && in_array(pathinfo($checkValue, PATHINFO_EXTENSION), ['png', 'gif', 'jpeg', 'jpg'])) {
 					$data = $this->uploadImage($fieldValue, $options);
 				} else {
 					$options['label'] = $fieldDefinition['name'];
 					$data = $this->fileLink($fieldValue, $options);
 				}
 			} elseif($options['output'] === 'url') {
-				$data = $this->saveUrl . $fieldValue;
+				$data = is_string($fieldValue) ? $this->saveUrl . $fieldValue : '';
 			} else {
 				$data = $fieldValue;
 			}
@@ -158,7 +158,7 @@ class CuCfFileHelper extends AppHelper {
 		$noValue = $options['novalue'];
 		$label = $options['label'];
 		unset($options['format'], $options['model'], $options['separator'], $options['novalue']);
-		if(!$fieldValue) {
+		if(!$fieldValue || !is_string($fieldValue)) {
 			return $noValue;
 		} else {
 			return $this->BcHtml->link($label, $this->saveUrl . $fieldValue, $options);

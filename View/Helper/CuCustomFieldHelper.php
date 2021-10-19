@@ -85,7 +85,7 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	{
 		$data = '';
 		// コンテンツのIDを設定
-		$contentId = $post['BlogPost']['id'];
+		$contentId = $post['BlogPost']['blog_content_id'];
 		$this->setup($contentId);
 		foreach($this->publicFieldConfigData as $key => $fieldConfig) {
 			if ($contentId == $key) {

@@ -30,8 +30,11 @@ class CuCfFileControllerEventListener extends BcControllerEventListener {
 		if(!$this->isAction(['BlogPosts.AdminAdd', 'BlogPosts.AdminEdit', 'Blog.Archives'])) {
 			return;
 		}
-		/* @var CuCustomFieldValue $CuCustomFieldValue */
 		$controller = $event->subject();
+		if(empty($controller->blogContent['BlogContent']['id'])) {
+			return;
+		}
+		/* @var CuCustomFieldValue $CuCustomFieldValue */
 		$CuCustomFieldValue = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
 		$CuCustomFieldValue->Behaviors->load('CuCfFile.CuCfFile', [
 			'type' => 'BlogPost',
@@ -54,6 +57,7 @@ class CuCfFileControllerEventListener extends BcControllerEventListener {
 		if(empty($controller->BcContents->preview)) {
 			return;
 		}
-		$controller->set('post', $controller->BlogPost->CuCustomFieldValue->saveTmpFile($controller->viewVars['post']));
+		$CuCustomFieldValue = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
+		$controller->set('post', $CuCustomFieldValue->saveTmpFile($controller->viewVars['post']));
 	}
 }
