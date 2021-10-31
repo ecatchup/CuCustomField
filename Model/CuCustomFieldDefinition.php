@@ -138,6 +138,12 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 					'message' => 'フィールドタイプを選択してください。',
 				],
 			],
+			'validate_regex' => [
+				'checkValidateRegex' => [
+					'rule' => ['checkValidateRegex'],
+					'message' => '正規表現を入力してください。',
+				],
+			],
 		],
 	];
 
@@ -180,6 +186,23 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 			if (preg_match("/^[a-zA-Z0-9\_]+$/", $check[key($check)])) {
 				return true;
 			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 入力値チェック: 正規表現
+	 * 正規表現選択時に正規表現が入力されているかチェック
+	 *
+	 * @param array $check 対象データ
+	 * @return    boolean
+	 */
+	public function checkValidateRegex($check)
+	{
+		if (!empty($this->data[$this->alias]['validate']) && in_array('REGEX_CHECK', $this->data[$this->alias]['validate'])) {
+			if (empty($this->data[$this->alias][key($check)])) {
 				return false;
 			}
 		}
@@ -384,5 +407,4 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 			return true;
 		}
 	}
-
 }

@@ -40,9 +40,6 @@
 						<li>エラーメッセージの指定がない場合は「入力エラーが発生しました。」となります。</li>
 					</ul>
 				</div>
-				<span id="CheckValueResultValidateRegex" class="display-none">
-					<div class="error-message duplicate-error-message">正規表現を入力してください。</div>
-				</span>
 				<?php echo $this->BcForm->error('CuCustomFieldDefinition.validate_regex') ?>
 				<br/>
 				<?php echo $this->BcForm->label('CuCustomFieldDefinition.validate_regex_message', 'エラー用文言') ?>

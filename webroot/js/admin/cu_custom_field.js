@@ -68,18 +68,6 @@ $(function () {
         }
     });
 
-    // submit時の処理
-    btnSave.click(function () {
-        // 正規表現チェックが有効の場合に、正規表現入力欄が空の場合は submit させない
-        if (validateRegexCheck.prop('checked')) {
-            $validateRegex = validateRegex.val();
-            if (!$validateRegex) {
-                alert('正規表現入力欄が未入力です。');
-                return false;
-            }
-        }
-    });
-
     // 正規表現チェックのチェック時に、専用の入力欄を表示する
     validateRegexCheck.change(function () {
         $value = $(this).prop('checked');
