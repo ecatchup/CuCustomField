@@ -36,6 +36,15 @@ CuCustomField プラグインは、ブログ記事にオリジナルの入力欄
 https://localhost/news/index?field_name_1=value_1&field_name_2=value_2
 ```
 
+## アップロードファイルの拡張子制限
+
+アップロードファイルは拡張子が以下のものを許可しています。  
+jpg, png, gif  
+それ以外の拡張子を許可する場合は以下の設定を変更してください。
+
+```
+$config['cuCustomField']['allow_file_exts']
+```
 　
 ## Add Original Field Type
 
