@@ -327,7 +327,13 @@ class CuCfFileBehavior extends ModelBehavior
 		if($tmp) {
 			$_fileName = str_replace(array('.', '/'), array('_', '_'), $fileName);
 			$this->Session->write('Upload.' . $_fileName . '.type', $value['type']);
-			$this->Session->write('Upload.' . $_fileName . '.data', file_get_contents($value['tmp_name']));
+			$data = file_get_contents($value['tmp_name']);
+			// コアのバージョンチェックしてVersion4.4.9以降はbase64_encodeを行う
+			$version = getVersion();
+			if ($version >= '4.4.9') {
+				$data = base64_encode($data);
+			}
+			$this->Session->write('Upload.' . $_fileName . '.data', $data);
 			$value['session_key'] = $fileName;
 			return $value;
 		} else {
@@ -383,7 +389,14 @@ class CuCfFileBehavior extends ModelBehavior
 	 */
 	public function saveTmpFile(Model $Model, $data)
 	{
-		$this->Session->delete('Upload');
+		// アイキャッチなどのBcUploadBehaviorのデータなどが
+		// 既にセットされている場合がある為、該当セッションのみ削除
+		$sessions = $this->Session->read('Upload');
+		foreach ($sessions as $key => $session) {
+			if (preg_match('/^' .  $this->config['type'] . '_(.+)$/', $key, $matches)) {
+				$this->Session->delete('Upload.' . $key);
+			}
+		}
 		if(isset($data['CuCustomFieldValue']) && $data['CuCustomFieldValue']) {
 			foreach ($data['CuCustomFieldValue'] as $field => $value) {
 				$newDetail = [];
@@ -393,9 +406,16 @@ class CuCfFileBehavior extends ModelBehavior
 				$newDetail['key'] = $key;
 				$newDetail['value'] = $value;
 				$newDetail['model'] = 'CuCustomFieldValue';
-				$this->checkField($Model, $newDetail, true);
-				if(isset($Model->data['CuCustomFieldValue']['value'])) {
+				if ($this->checkField($Model, $newDetail, true) &&
+					isset($Model->data['CuCustomFieldValue']['value'])) {
 					$data['CuCustomFieldValue'][$field] = $Model->data['CuCustomFieldValue']['value'];
+				}
+			}
+			// 削除するチェックボックスにチェックが入っている場合の処理
+			foreach ($data['CuCustomFieldValue'] as $field => $value) {
+				$srcKey = $this->isDeleteAction($field);
+				if ($srcKey && $data['CuCustomFieldValue'][$field]) {
+					unset($data['CuCustomFieldValue'][$srcKey]);
 				}
 			}
 		}
