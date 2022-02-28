@@ -52,6 +52,14 @@ $config['cuCustomField']['allow_file_exts']
 [オリジナルのフィールドタイプを追加する](https://github.com/ecatchup/CuCustomField/blob/master/docs/CREATE_FIELD_TYPE.md) を参考にしてください。
 
 　
+## 公開承認ワークフローとの連携
+
+CuCustomField は、公開承認ワークフロープラグイン（CuApprover）の下書きに対応しています。  
+イベントを駆使した複雑な仕組みとなっていますので、カスタマイズの際はこちらのドキュメントを参考にしてください。
+
+- [CuApproverとの連携](https://github.com/ecatchup/CuCustomField/blob/master/docs/COOPERATE_WITH_CU_APPROVER.md)
+
+　　
 ## Thanks
 
 - [https://basercms.net](http://basercms.net/)
