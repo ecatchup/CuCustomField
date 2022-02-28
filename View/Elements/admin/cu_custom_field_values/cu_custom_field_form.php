@@ -18,11 +18,15 @@ $this->BcBaser->js('https://maps.google.com/maps/api/js?key=' . $this->BcBaser->
 $this->BcBaser->js('CuCustomField.admin/google_maps', false);
 $this->BcBaser->js('CuCustomField.admin/cu_custom_field_values', false);
 $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => false]);
+echo $this->CuCustomField->BcForm->input(
+	"CuCustomFieldValue.no",
+	['type' => 'hidden']
+);
+echo $this->CuCustomField->BcForm->input(
+	"CuCustomFieldValue.id",
+	['type' => 'hidden']
+);
 ?>
-<?php echo $this->CuCustomField->BcForm->input(
-	"CuCustomFieldValue.relate_id",
-	['type' => 'hidden', 'value' => $this->request->data['BlogPost']['id']]
-) ?>
 
 <?php if ($definitions): ?>
 
@@ -76,7 +80,7 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 										<?php endif ?>
 										<?php endforeach ?>
 									</table>
-									<?php echo $this->BcForm->button('削除', [
+									<?php echo $this->BcForm->button(__d('baser', '削除'), [
 										'class' => 'btn-delete-loop bca-btn',
 										'data-delete-target' => 'CucfLoop' . $definition['CuCustomFieldDefinition']['field_name'] . '-' . $key
 									]) ?>
@@ -110,14 +114,14 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', ['inline' => f
 									<?php endif ?>
 								<?php endforeach ?>
 								</table>
-								<?php echo $this->BcForm->button('削除', [
+								<?php echo $this->BcForm->button(__d('baser', '削除'), [
 									'class' => 'btn-delete-loop bca-btn',
 									'data-delete-target' => 'CucfLoop' . $definition['CuCustomFieldDefinition']['field_name']
 								]) ?>
 							</div>
 
 							<div class="cucf-loop-add">
-								<?php echo $this->BcForm->button('追加', [
+								<?php echo $this->BcForm->button(__d('baser', '追加'), [
 									'class' => 'bca-btn btn-add-loop',
 									'id' => 'BtnAddLoop',
 									'data-src' => $definition['CuCustomFieldDefinition']['field_name'],

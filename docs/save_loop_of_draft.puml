@@ -1,0 +1,260 @@
+@startuml
+skinparam handwritten true
+skinparam backgroundColor white
+
+title カスタムフィールドのループフィールドのファイルを草稿に保存する流れ
+
+participant BlogController
+participant BlogPost
+participant BcUploadBehavior
+participant CuApproverApplicationBehavior
+participant CuApproverApplication
+participant CuCfApproverBehavior
+participant CuCfFileModelEventListener
+participant CuCustomFieldControllerEventListener
+participant CuCustomFieldModelEventListener
+participant CuCustomFieldValue
+participant CuCfFileBehavior
+participant CuApproverControllerEventListener
+
+
+[-> BlogController : startupProcess
+activate BlogController
+
+BlogController --> CuCustomFieldControllerEventListener : startup
+activate CuCustomFieldControllerEventListener
+
+note over CuCustomFieldControllerEventListener
+setupApprover
+カスタムフィールドにおける
+草稿定義を動的に作成
+endnote
+
+CuCustomFieldControllerEventListener -> CuCustomFieldValue : __construct
+
+activate CuCustomFieldValue
+
+CuCustomFieldValue -> CuCfFileBehavior : setup
+activate CuCfFileBehavior
+
+note over CuCfFileBehavior
+カスタムフィールドの本稿用の
+ファイルアップローダーを初期化
+endnote
+
+deactivate CuCustomFieldControllerEventListener
+
+CuCfFileBehavior --> BlogController
+
+note over BlogController
+edit
+endnote
+
+activate BlogPost
+
+BlogController -> BlogPost : save
+
+BlogPost --> CuCustomFieldModelEventListener : blogBlogPostBeforeValidate
+
+activate CuCustomFieldModelEventListener
+
+CuCustomFieldModelEventListener -> CuCustomFieldValue : validateValues
+
+CuCustomFieldValue --> CuCfFileBehavior : beforeValidate
+
+note over CuCfFileBehavior
+ループフィールドのファイル設定
+※ 送信データによって定義が変わるため
+beforeValidate 以降でないと設定できない
+endnote
+
+CuCfFileBehavior --> CuCustomFieldValue
+
+CuCustomFieldValue --> CuCfFileBehavior : afterValidate
+
+note over CuCfFileBehavior
+ループフィールドのデータを平データに変換
+endnote
+
+CuCfFileBehavior --> CuCustomFieldValue
+CuCustomFieldValue -> CuCustomFieldModelEventListener
+CuCustomFieldModelEventListener --> BlogPost
+
+deactivate CuCustomFieldModelEventListener
+
+BlogPost --> CuApproverApplicationBehavior : beforeValidate
+
+activate CuApproverApplicationBehavior
+
+CuApproverApplicationBehavior -> CuApproverApplication : setupFileUploader
+
+activate CuApproverApplication
+
+note over CuApproverApplication
+本稿用のファイルアップローダーをクローンし
+草稿用のファイルアップローダー作成
+endnote
+
+CuApproverApplication -> CuApproverApplicationBehavior
+CuApproverApplicationBehavior --> BlogPost
+BlogPost --> CuCfApproverBehavior : afterValidate
+
+activate CuCfApproverBehavior
+
+note over CuCfApproverBehavior
+カスタムフィールドのデータ取得モードを平データに変更
+※ CuApproverApplication::getPublish()で利用
+endnote
+
+CuCfApproverBehavior --> BlogPost
+
+deactivate CuCfApproverBehavior
+
+BlogPost --> CuApproverApplicationBehavior : afterValidate
+
+CuApproverApplicationBehavior -> CuApproverApplication : getDraftFile
+
+note over CuApproverApplication
+カスタムフィールドの草稿のファイルを保存
+endnote
+
+CuApproverApplication -> CuApproverApplicationBehavior
+
+note over CuApproverApplicationBehavior
+草稿データをシリアライズして
+CuApproverApplicationにセット
+endnote
+
+CuApproverApplicationBehavior -> CuApproverApplication : getPublish
+
+note over CuApproverApplicationBehavior
+・カスタムフィールドの本稿データを平データで取得
+・本稿データを既存データに書き戻す
+※ 平データでないと書き戻せない
+endnote
+
+CuApproverApplication -> CuApproverApplicationBehavior
+CuApproverApplicationBehavior --> BlogPost
+
+BlogPost --> CuCfFileModelEventListener : blogBlogPostBeforeSave
+
+activate CuCfFileModelEventListener
+
+note over CuCfFileModelEventListener
+削除されたループブロックの草稿のファイルを削除
+※ 元々存在していて送信されなかったループブロックは削除されたものとする
+endnote
+
+CuCfFileModelEventListener --> BlogPost
+
+deactivate CuCfFileModelEventListener
+
+note over BlogPost
+ブログ記事の本稿データを保存
+endnote
+
+BlogPost --> CuCustomFieldValue : beforeSave
+CuCustomFieldValue --> CuCfFileBehavior : beforeSave
+
+note over CuCfFileBehavior
+ループフィールドの本稿データを配列に変換
+endnote
+
+CuCfFileBehavior --> CuCustomFieldValue
+
+note over CuCustomFieldValue
+ループフィールドの本稿データを
+シリアライズして保存
+endnote
+
+CuCustomFieldValue --> CuCfFileBehavior : afterSave
+
+note over CuCfFileBehavior
+カスタムフィールドの本稿のファイルを保存
+（草稿モードの場合実際には保存しない）
+endnote
+
+CuCfFileBehavior --> CuCustomFieldValue
+
+deactivate CuCfFileBehavior
+
+CuCustomFieldValue --> BlogPost
+
+deactivate CuCustomFieldValue
+
+BlogPost --> BcUploadBehavior : afterSave
+
+activate BcUploadBehavior
+
+note over BcUploadBehavior
+本稿のファイルを保存
+（草稿モードの場合実際には保存しない）
+endnote
+
+BcUploadBehavior --> BlogPost
+
+deactivate BcUploadBehavior
+
+BlogPost --> CuApproverApplicationBehavior : afterSave
+
+note over CuApproverApplicationBehavior
+草稿のファイルをIDベースにリネーム
+endnote
+
+CuApproverApplicationBehavior -> CuApproverApplication : save
+
+note over CuApproverApplication
+草稿データをシリアライズして保存
+※ ループフィールドは平データのまま
+endnote
+
+CuApproverApplication -> CuApproverApplicationBehavior
+
+deactivate CuApproverApplication
+
+CuApproverApplicationBehavior --> BlogPost
+
+deactivate CuApproverApplicationBehavior
+
+BlogPost -> BlogController
+
+deactivate BlogPost
+
+note over BlogController
+redirect
+リダイレクト
+endnote
+
+BlogController --> CuApproverControllerEventListener : beforeRender
+
+activate CuApproverControllerEventListener
+
+note over CuApproverControllerEventListener
+loadDraft
+草稿データをアンシリアライズして取得
+endnote
+
+CuApproverControllerEventListener --> BlogController
+
+deactivate CuApproverControllerEventListener
+
+BlogController --> CuCfFileControllerEventListener : blogBlogPostsBeforeRender
+
+activate CuCfFileControllerEventListener
+
+note over CuCfFileControllerEventListener
+ループフィールドの草稿データを配列に変換
+endnote
+
+CuCfFileControllerEventListener --> BlogController
+
+deactivate CuCfFileControllerEventListener
+
+note over BlogController
+render
+編集画面を表示
+endnote
+
+deactivate BlogController
+
+@enduml

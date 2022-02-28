@@ -12,6 +12,10 @@ App::uses('CuCustomField.CuCustomFieldAppModel', 'Model');
 
 /**
  * Class CuCustomFieldValue
+ *
+ * KeyValueBehavior を利用しているため、beforeSave / afterSave は呼び出されない
+ * そのためこのクラスでは実装しないこと
+ * 他の Behavior で上記イベントを実装できるが、CuCustomFieldModelEventListener より dispatch している
  */
 class CuCustomFieldValue extends CuCustomFieldAppModel
 {
@@ -26,6 +30,24 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 			'foreignKeyField' => 'relate_id'
 		]
 	];
+
+	/**
+	 * 保存中のロック
+	 * @var bool
+	 */
+	public $savingLock = false;
+
+	/**
+	 * バリデーション中のロック
+	 * @var bool
+	 */
+	public $validatingLock = false;
+
+	/**
+	 * definitions
+	 * @var array
+	 */
+	public $definitions;
 
 	/**
 	 * バリデーション
@@ -72,29 +94,6 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	public $publicFieldConfigData = [];
 
 	/**
-	 * beforeSave
-	 * マルチチェックボックスへの対応：配列で送られた値はシリアライズ化する
-	 *
-	 * @param array $options
-	 * @return boolean
-	 */
-	public function beforeSave($options = [])
-	{
-		parent::beforeSave($options);
-
-		$this->data[$this->alias] = $this->autoConvert($this->data[$this->alias]);
-
-		// 配列で送られた値はシリアライズ化する
-		// TODO json_encode() に切替える
-		if (is_array($this->data[$this->alias]['value'])) {
-			$serializeData = serialize($this->data[$this->alias]['value']);
-			$this->data[$this->alias]['value'] = $serializeData;
-		}
-
-		return true;
-	}
-
-	/**
 	 * afterFind
 	 * シリアライズされているデータを復元して返す
 	 *
@@ -110,6 +109,25 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	}
 
 	/**
+	 * Before Save
+	 * @param array $options
+	 * @return bool
+	 */
+	public function beforeSave($options = [])
+	{
+		$this->data['CuCustomFieldValue'] = $this->autoConvert($this->data['CuCustomFieldValue']);
+		// 新規登録時、このタイミングで $this->>data['BlogPost']['no'] に新しいデータが入っていないため実体より取得
+		$blogPostModel = ClassRegistry::init('Blog.BlogPost');
+		if(!empty($blogPostModel->data['BlogPost']['id'])) {
+			$this->data['CuCustomFieldValue']['id'] = $blogPostModel->data['BlogPost']['id'];
+		}
+		if(!empty($blogPostModel->data['BlogPost']['no'])) {
+			$this->data['CuCustomFieldValue']['no'] = $blogPostModel->data['BlogPost']['no'];
+		}
+		return parent::beforeSave($options);
+	}
+
+	/**
 	 * フィールド設定情報をもとに保存文字列の自動変換処理を行う
 	 * - 変換指定が有効の際に変換する
 	 *
@@ -118,18 +136,22 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 */
 	public function autoConvert($data = [])
 	{
-		// データをキー名をモデル名とキーに分割し、[Model][key]の形式に変換する
-		// $data[key] = CuCustomFieldValue.selectpref
-		$detailArray = [];
-		$keyArray = preg_split('/\./', $data['key'], 2);
-		$detailArray[$keyArray[0]][$keyArray[1]] = $data['value'];
-
-		foreach($this->fieldConfig as $config) {
-			$config = $config['CuCustomFieldDefinition'];
-			if ($keyArray[1] == $config['field_name']) {
-				if ($config['auto_convert'] == 'CONVERT_HANKAKU') {
-					// 全角英数字を半角に変換する処理を行う
-					$data['value'] = mb_convert_kana($data['value'], 'a');
+		if(!$data) {
+			return $data;
+		}
+		foreach($data as $key => $value) {
+			foreach($this->fieldConfig as $config) {
+				$config = $config['CuCustomFieldDefinition'];
+				if ($key == $config['field_name']) {
+					if ($config['auto_convert'] == 'CONVERT_HANKAKU') {
+						// 全角英数字を半角に変換する処理を行う
+						$data[$key] = mb_convert_kana($value, 'a');
+					}
+					// 配列で送られた値はシリアライズ化する
+					// TODO json_encode() に切替える
+					if (is_array($value)) {
+						$data[$key] = serialize($value);
+					}
 				}
 			}
 		}
@@ -153,7 +175,6 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 		} else {
 			return false;
 		}
-		return true;
 	}
 
 	/**
@@ -221,7 +242,7 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 	 */
 	public function validateValues($data) {
 		$validateSuccess = true;
-
+		$beforeData = $data;
 		// ループブロック以外に対するバリデーション
 		$this->set($data);
 		if (!$this->validates()) {
@@ -234,26 +255,27 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 		$loopFieldNames = [];
 		foreach ($this->fieldConfig as $fieldConfig) {
 			if ($fieldConfig['CuCustomFieldDefinition']['field_type'] === 'loop') {
-				$loopFieldNames[] = $fieldConfig['CuCustomFieldDefinition']['name'];
+				$loopFieldNames[] = $fieldConfig['CuCustomFieldDefinition']['field_name'];
 			}
 		}
 		$loopGroups = [];
-		foreach ($data as $fieldKey => $fieldValue) {
+		foreach ($data['CuCustomFieldValue'] as $fieldKey => $fieldValue) {
 			if (in_array($fieldKey, $loopFieldNames)) {
 				$loopGroups[$fieldKey] = $fieldValue;
 			}
 		}
 
 		// - ブロックごとにバリデーションを実行
+		$dataTmp = $this->data;
+		$modelValidate = $this->validate;
 		foreach ($loopGroups as $loopGroupName => $loopGroup) {
 			foreach ($loopGroup as $loopBlockKey => $loopBlock) {
-				$modelValidate = $this->validate;
+
 				$this->validate = $this->getLoopBlockValidate($loopBlock);
 				$this->set($loopBlock);
 				if (!$this->validates()) {
 					$validateSuccess = false;
 				}
-				$this->validate = $modelValidate;
 				if ($this->validationErrors) {
 					foreach ($this->validationErrors as $fieldKey => $fieldError) {
 						$this->inValidate("{$loopGroupName}_{$loopBlockKey}_{$fieldKey}", $fieldError[0]);
@@ -261,7 +283,11 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 				}
 			}
 		}
-
+		$this->data = $dataTmp;
+		$this->validate = $modelValidate;
+		if(!$validateSuccess) {
+			$this->data = $beforeData;
+		}
 		return $validateSuccess;
 	}
 
@@ -277,6 +303,179 @@ class CuCustomFieldValue extends CuCustomFieldAppModel
 			}
 		}
 		return $loopBlockValidate;
+	}
+
+	/**
+	 * getUniqueFileName
+	 *
+	 * BcFileUploader で利用
+	 *
+	 * @param array $setting
+	 * @param array $file
+	 * @return mixed
+	 */
+	public function getUniqueFileName($setting, $file, $entity)
+	{
+        $ext = $file['ext'];
+        $pathInfo = pathinfo($file['name']);
+        $basename = $pathInfo['filename'];
+        // 先頭が同じ名前のリストを取得し、後方プレフィックス付きのフィールド名を取得する
+        $records = $this->find('all', [
+        	'fields' => 'value',
+        	'conditions' => [
+        		'relate_id <>' => $entity['id'],
+        		'key' => 'CuCustomFieldValue.file',
+        		'value LIKE' => $basename . '%' . $ext
+        	],
+        	'recursive' => -1
+        ]);
+        $numbers = [];
+        if ($records) {
+            foreach($records as $data) {
+                if (!empty($data['CuCustomFieldValue']['value'])) {
+                    $_basename = preg_replace("/\." . $ext . "$/is", '', $data['CuCustomFieldValue']['value']);
+                    $lastPrefix = preg_replace('/^' . preg_quote($basename, '/') . '/', '', $_basename);
+                    if (!$lastPrefix) {
+                        $numbers[1] = 1;
+                    } elseif (preg_match("/^__([0-9]+)$/s", $lastPrefix, $matches)) {
+                        $numbers[$matches[1]] = true;
+                    }
+                }
+            }
+            if ($numbers) {
+                $prefixNo = 1;
+                while(true) {
+                    if (!isset($numbers[$prefixNo])) break;
+                    $prefixNo++;
+                }
+                if ($prefixNo == 1) {
+                    return $basename . '.' . $ext;
+                } else {
+                    return $basename . '__' . ($prefixNo) . '.' . $ext;
+                }
+            } else {
+                return $basename . '.' . $ext;
+            }
+        } else {
+            return $basename . '.' . $ext;
+        }
+	}
+
+	/**
+	 * getOldEntity
+	 *
+	 * BcFileUploader で利用
+	 *
+	 * @param int $id
+	 * @return mixed
+	 */
+	public function getOldEntity($id)
+	{
+		$entity = $this->getSection($id);
+		if(!$entity) return false;
+		return $this->convertToFlatteningData($entity['CuCustomFieldValue'], true);
+	}
+
+	/**
+	 * convertFlatteningData
+	 * @param array $data
+	 * @param false $unserialize
+	 * @return mixed
+	 */
+	public function convertToFlatteningData($data, $unserialize = false)
+	{
+		foreach($data as $fieldName => $value) {
+			$definition = $this->getDefinition($fieldName);
+			if(!$definition) continue;
+			if($fieldName === $definition['field_name'] && $definition['field_type'] === 'loop') {
+				if($unserialize && is_string($value)) {
+					$value = unserialize($value);
+				}
+				if($value && is_array($value)) {
+					foreach($value as $loopKey => $loop) {
+						if($loopKey === '__loop-src__') {
+							continue;
+						}
+						foreach($loop as $loopFieldName => $loopValue) {
+							$name = $fieldName . '_' . $loopKey . '_' . $loopFieldName;
+							$data[$name] = $loopValue;
+						}
+					}
+					unset($data[$fieldName]);
+				}
+			}
+		}
+		return $data;
+	}
+
+	/**
+	 * convertToArrayData
+	 * @param array $data
+	 * @return mixed
+	 */
+	public function convertToArrayData($data, $serialize = false)
+	{
+		if(empty($this->definitions)) {
+			return $data;
+		}
+
+		// ループデータで平データでなく、ループフィールドと一致するのキーのデータは、ゴミデータとして消去
+		// 公開承認で本稿データを取得後に、草稿データで上書きする処理で、上記の条件のキーが残ってしまう
+		// CuApproverControllerEventListener::loadDraft()
+		// （例）
+		// loop_1_file ▶ 変換対象
+		// loop_1_select ▶ 変換対象
+		// loop_1_text ▶ 変換対象
+		// loop ▶ 消去対象
+		foreach($data as $fieldName => $value) {
+			foreach($this->definitions as $definition) {
+				if($definition['field_type'] === 'loop' && $definition['field_name'] === $fieldName) {
+					$data[$fieldName] = [];
+				}
+			}
+		}
+
+		foreach($data as $fieldName => $value) {
+			foreach($this->definitions as $definition) {
+				if($definition['field_type'] === 'loop') {
+					$regex = '/' . $definition['field_name'] . '_([0-9]+)_(.+)$/is';
+					if(preg_match($regex, $fieldName, $matches)) {
+						$loopKey = $matches[1];
+						$loopFieldName = $matches[2];
+						$data[$definition['field_name']][$loopKey][$loopFieldName] = $value;
+						unset($data[$fieldName]);
+					}
+				}
+			}
+		}
+		if($serialize) {
+			foreach($data as $fieldName => $value) {
+				$definition = $this->getDefinition($fieldName);
+				if(!$definition) continue;
+				if($definition['field_type'] === 'loop') {
+					$data[$fieldName] = serialize($value);
+				}
+			}
+		}
+		return $data;
+	}
+
+	/**
+	 * getDefinition
+	 * @param string $fieldName
+	 * @return false|mixed
+	 */
+	public function getDefinition($fieldName)
+	{
+		if(empty($this->definitions)) {
+			return false;
+		}
+		foreach($this->definitions as $definition) {
+			if($fieldName === $definition['field_name']) {
+				return $definition;
+			}
+		}
+		return false;
 	}
 
 }

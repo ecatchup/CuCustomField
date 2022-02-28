@@ -71,7 +71,7 @@ $config['cuCustomField'] = [
 		1 => '必須とする',
 	],
 	// ファイルタイプ制限
-	'allow_file_exts' => ['jpg', 'png', 'gif'],
+	'allow_file_exts' => ['jpg', 'png', 'gif', 'pdf'],
 ];
 /**
  * カスタムフィールド管理画面表示用設定
@@ -83,3 +83,21 @@ $config['cuCustomFieldConfig'] = [
 	'submenu' => false,
 	'customSearch' => true
 ];
+
+
+/**
+ * 公開承認フロープラグイン基本設定
+ * fields は、CuCustomFieldControllerEventListener::setupApprover() で設定
+ */
+	$config['CuApprover'] = [
+		'targets' => [
+			'BlogPost' => [
+				'draftFields' => [
+					'CuCustomFieldValue' => [
+						'className' => 'CuCustomField.CuCustomFieldValue',
+					]
+				]
+			]
+		]
+	];
+

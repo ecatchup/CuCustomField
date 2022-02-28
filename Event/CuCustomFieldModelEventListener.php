@@ -24,7 +24,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 		'Blog.BlogPost.beforeFind',
 		'Blog.BlogPost.afterFind',
 		'Blog.BlogPost.afterSave',
-		'Blog.BlogPost.afterDelete',
+		'Blog.BlogPost.beforeDelete',
 		'Blog.BlogPost.afterCopy',
 		'Blog.BlogPost.beforeValidate',
 		'Blog.BlogContent.beforeFind',
@@ -34,7 +34,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 	/**
 	 * カスタムフィールドモデル
 	 *
-	 * @var Object
+	 * @var CuCustomFieldValue
 	 */
 	private $CuCustomFieldValueModel = null;
 
@@ -51,6 +51,13 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 	 * @var boolean
 	 */
 	private $throwBlogPost = false;
+
+	/**
+	 * ループを平データで取得するモード
+	 *
+	 * @var bool
+	 */
+	public $findFlatteningMode = false;
 
 	/**
 	 * モデル初期化：CuCustomFieldValueModel, CuCustomFieldConfig
@@ -257,6 +264,15 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 				default:
 					break;
 			}
+			if($this->findFlatteningMode) {
+				// findFlatteningMode が true に設定されていれば、一回のみ平データで取得
+				// 公開承認の草稿モードの保存で本稿を元データに書き戻すために利用
+				// CuApproverApplicationBehavior::getPublish() 内の find() にて利用
+				if(!empty($event->data[0][0]['CuCustomFieldValue'])) {
+					$event->data[0][0]['CuCustomFieldValue'] = $this->CuCustomFieldValueModel->convertToFlatteningData($event->data[0][0]['CuCustomFieldValue']);
+				}
+				$this->findFlatteningMode = false;
+			}
 			return;
 		}
 
@@ -348,6 +364,9 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 		foreach($Model->data['CuCustomFieldValue'] as $key => $value) {
 			if (isset($value['__loop-src__'])) {
 				unset($Model->data['CuCustomFieldValue'][$key]['__loop-src__']);
+				if(count($value) === 1) {
+					$Model->data['CuCustomFieldValue'][$key] = [];
+				}
 			}
 		}
 
@@ -383,10 +402,14 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 		if (!$fieldConfigField) {
 			return true;
 		}
+		$this->CuCustomFieldValueModel->validatingLock = false;
 		$this->_setValidate($fieldConfigField);
-		if (!$this->CuCustomFieldValueModel->validateValues($Model->data['CuCustomFieldValue'])) {
+		if (!$this->CuCustomFieldValueModel->validateValues($Model->data)) {
+			$Model->validationErrors += $this->CuCustomFieldValueModel->validationErrors;
 			return false;
 		}
+		$Model->data = $this->CuCustomFieldValueModel->data;
+		$this->CuCustomFieldValueModel->validatingLock = false;
 		return true;
 	}
 
@@ -532,9 +555,23 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 
 		if (!$this->throwBlogPost) {
 			$this->setUpModel();
+			$beforeSaveEvent = new CakeEvent('Model.beforeSave', $this->CuCustomFieldValueModel, []);
+			list($beforeSaveEvent->break, $beforeSaveEvent->breakOn) = [true, [false, null]];
+			$this->CuCustomFieldValueModel->getEventManager()->dispatch($beforeSaveEvent);
+			if (!$beforeSaveEvent->result) {
+				return false;
+			}
+			$Model->data['CuCustomFieldValue'] = $this->CuCustomFieldValueModel->data['CuCustomFieldValue'];
+			unset($Model->data['CuCustomFieldValue']['relate_id']);
+			$this->CuCustomFieldValueModel->savingLock = false;
 			if (!$this->CuCustomFieldValueModel->saveSection($Model->id, $Model->data, 'CuCustomFieldValue', null, false)) {
 				$this->log(sprintf('ブログ記事ID：%s のカスタムフィールドの保存に失敗', $Model->id));
+			} else {
+				$this->CuCustomFieldValueModel->set($Model->data);
+				$afterSaveEvent = new CakeEvent('Model.afterSave', $this->CuCustomFieldValueModel, [$event->data[0], []]);
+				$this->CuCustomFieldValueModel->getEventManager()->dispatch($afterSaveEvent);
 			}
+			$this->CuCustomFieldValueModel->savingLock = false;
 		}
 		// ブログ記事コピー保存時、アイキャッチが入っていると処理が2重に行われるため、1周目で処理通過を判定し、
 		// 2周目では保存処理に渡らないようにしている
@@ -546,14 +583,15 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 	 *
 	 * @param CakeEvent $event
 	 */
-	public function blogBlogPostAfterDelete(CakeEvent $event)
+	public function blogBlogPostBeforeDelete(CakeEvent $event)
 	{
 		$Model = $event->subject();
 		// ブログ記事削除時、そのブログ記事が持つカスタムフィールドを削除する
 		$this->setUpModel();
 		$data = $this->CuCustomFieldValueModel->getSection($Model->id, $this->CuCustomFieldValueModel->name);
 		if ($data) {
-			//resetSection(Model $Model, $foreignKey = null, $section = null, $key = null)
+			$this->CuCustomFieldValueModel->id = $Model->id;
+			$this->CuCustomFieldValueModel->getEventManager()->dispatch(new CakeEvent('Model.beforeDelete', $this->CuCustomFieldValueModel, [false]));
 			if (!$this->CuCustomFieldValueModel->resetSection($Model->id, $this->CuCustomFieldValueModel->name)) {
 				$this->log(sprintf('ブログ記事ID：%s のカスタムフィールドの削除に失敗', $Model->id));
 			}

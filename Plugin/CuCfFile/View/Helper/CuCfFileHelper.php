@@ -21,13 +21,74 @@ class CuCfFileHelper extends AppHelper {
 	 * ファイルの保存URL
 	 * @var string
 	 */
-	public $saveUrl = '/files/cu_custom_field/';
+	public $saveUrl = '/files/';
 
 	/**
 	 * helper
 	 * @var string[]
 	 */
 	public $helpers = ['BcHtml'];
+
+	/**
+	 * Constructor
+	 * @param View $View
+	 * @param array $settings
+	 */
+	public function __construct(View $View, $settings = [])
+	{
+		parent::__construct($View, $settings);
+		/* @var CuCustomFieldValue $valueModel */
+		$valueModel = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
+		if(!isset($valueModel->Behaviors->CuCfFile->BcFileUploader)) {
+			return;
+		}
+		if(empty($valueModel->Behaviors->CuCfFile->BcFileUploader->settings['saveDir'])) {
+			if(BcUtil::isAdminSystem()) {
+				$blogContent = $View->get('blogContent');
+				$blogContentId = $blogContent['BlogContent']['id'];
+			} else {
+				$post = $View->get('post');
+				$blogContentId = $post['BlogPost']['blog_content_id'];
+			}
+			if(!$blogContentId) {
+				return;
+			}
+			$valueModel->setupFileUploader($blogContentId);
+		}
+		$this->saveUrl .= $this->getUploadSaveDir($valueModel);
+	}
+
+	/**
+	 * 保存先のURLを取得する
+	 * @param $valueModel
+	 * @return string
+	 */
+	public function getUploadSaveDir($valueModel) {
+		if(!empty($valueModel->Behaviors->CuCfFile->BcFileUploader->settings['saveDir'])) {
+			$saveDir = $valueModel->Behaviors->CuCfFile->BcFileUploader->settings['saveDir'] . '/';
+			$load = $this->_View->get('approverContentsMode');
+			if(isset($this->_View->request->query['cu_approver_load'])) {
+				$load = $this->_View->request->query['cu_approver_load'];
+			}
+			if(!empty($this->_View->request->query['preview']) &&
+				!empty($this->_View->request->data['CuCustomFieldValue']) &&
+				!empty($this->_View->request->data['CuApproverApplication']) &&
+				$this->_View->request->data['CuApproverApplication']['contentsMode'] === 'draft') {
+				$load = 'draft';
+			}
+			if ($load === 'draft') {
+				if (preg_match('/^' . 'cu_approver_applications' . '/', $saveDir)) {
+					return $saveDir;
+				} else {
+					// limited をつけると 存在するファイルとしてフレームワークに処理が渡らない
+					return 'cu_approver_applications' . DS . $saveDir;
+				}
+			} else {
+				return $saveDir;
+			}
+		}
+		return '';
+	}
 
 	/**
 	 * Input
@@ -45,6 +106,13 @@ class CuCfFileHelper extends AppHelper {
 		// 保存値
 		$value = $this->CuCustomField->value($fieldName);
 
+		if (is_array($value)) {
+			$oldValue = $this->value($fieldName . '_');
+			if (empty($value['name'] && $oldValue)) {
+				$value = $oldValue;
+			}
+		}
+
 		if ($value && is_string($value) && strpos($value, '.') !== false) {
 			// 削除
 			$delCheckTag = $this->BcHtml->tag('span',
@@ -59,15 +127,15 @@ class CuCfFileHelper extends AppHelper {
 					$this->BcHtml->image($this->saveUrl . $thumb, ['width' => 300]),
 					$this->saveUrl . $value,
 					['rel' => 'colorbox', 'escape' => false]
-				) . '</figure>';
+				) . '<br>' . $this->BcHtml->tag('figcaption', mb_basename($value), ['class' => 'bca-file__figcaption file-name']) . '</figure>';
 			} else {
 				$fileLinkTag = '<p>' . $this->BcHtml->link(
 					'ダウンロード',
 					$this->saveUrl . $value,
 					['target' => '_blank', 'class' => 'bca-btn']
-				) . '</p>';
+				) . '</p>' . $this->BcHtml->tag('figcaption', mb_basename($value), ['class' => 'bca-file__figcaption file-name']) . '</figure>';
 			}
-			$hidden = $this->CuCustomField->BcForm->input($fieldName . '_saved', ['type' => 'hidden', 'value' => $value]);
+			$hidden = $this->CuCustomField->BcForm->input($fieldName . '_', ['type' => 'hidden', 'value' => $value]);
 			$output .= $hidden . $delCheckTag . '<br>' . $fileLinkTag;
 		}
 		return $output;
@@ -92,8 +160,8 @@ class CuCfFileHelper extends AppHelper {
 		if($fieldValue) {
 			if($options['output'] === 'tag') {
 				$checkValue = $fieldValue;
-				if(!empty($fieldValue['session_key'])) {
-					$checkValue = $fieldValue['session_key'];
+				if(isset($options['tmp'])) {
+					$checkValue = $options['tmp'];
 				}
 				if(is_string($checkValue) && in_array(pathinfo($checkValue, PATHINFO_EXTENSION), ['png', 'gif', 'jpeg', 'jpg'])) {
 					$data = $this->uploadImage($fieldValue, $options);
@@ -134,8 +202,8 @@ class CuCfFileHelper extends AppHelper {
 			if($thumb) {
 				$fieldValue = preg_replace('/^(.+\/)([^\/]+)(\.[a-z]+)$/', "$1$2_thumb$3", $fieldValue);
 			}
-			if(!empty($fieldValue['session_key'])) {
-				$fileUrl = '/uploads/tmp/' . str_replace(['.', '/'], ['_', '_'], $fieldValue['session_key']);
+			if(!empty($options['tmp'])) {
+				$fileUrl = '/uploads/tmp/' . str_replace(['.', '/'], ['_', '_'], $options['tmp']);
 			} else {
 				$fileUrl = $this->saveUrl . $fieldValue;
 			}

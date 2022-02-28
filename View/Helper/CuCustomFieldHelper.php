@@ -181,6 +181,12 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 			return '';
 		}
 
+		if(isset($post[$options['model']][$field . '_tmp'])) {
+			$options['tmp'] = $post[$options['model']][$field . '_tmp'];
+		} elseif(isset($post[$field . '_tmp'])) {
+			$options['tmp'] = $post[$field . '_tmp'];
+		}
+
 		if(isset($post['BlogPost']['blog_content_id'])) {
 			$contentId = $post['BlogPost']['blog_content_id'];
 		} elseif(isset($this->publicFieldConfigData)) {

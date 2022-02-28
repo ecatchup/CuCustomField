@@ -117,6 +117,7 @@ class KeyValueBehavior extends ModelBehavior {
 		}
 
 		extract($this->settings[$Model->alias]);
+		$this->KeyValue->clear();
 		foreach ($data as $model => $details) {
 			if ($section && $section !== $model) {
 				continue;
@@ -146,7 +147,7 @@ class KeyValueBehavior extends ModelBehavior {
 				$newDetail[$this->KeyValue->alias][$keyField] = $key;
 				$newDetail[$this->KeyValue->alias][$valueField] = $value;
 				$newDetail[$this->KeyValue->alias]['model'] = $Model->alias;
-				$this->KeyValue->save($newDetail, false);
+				$this->KeyValue->save($newDetail, ['validate' => false, 'callbacks' => false]);
 			}
 		}
 		return true;

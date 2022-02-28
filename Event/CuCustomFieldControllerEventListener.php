@@ -13,6 +13,7 @@
  * Class CuCustomFieldControllerEventListener
  *
  * @property CuCustomFieldDefinition $CuCustomFieldDefinitionModel
+ * @uses CuCustomFieldControllerEventListener
  */
 class CuCustomFieldControllerEventListener extends BcControllerEventListener
 {
@@ -26,6 +27,7 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 		'initialize',
 		'Blog.Blog.beforeRender',
 		'Blog.BlogPosts.beforeRender',
+		'startup' => ['priority' => 1],	// CuApproverControllerEventListener::start() より早く
 	];
 
 	/**
@@ -74,6 +76,84 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 		// CuCustomFieldヘルパーの追加
 		$Controller->helpers[] = 'CuCustomField.CuCustomField';
 		$this->settingsCuCustomField = Configure::read('cuCustomField');
+	}
+
+	/**
+	 * startup
+	 *
+	 * @param CakeEvent $event
+	 */
+	public function startup(CakeEvent $event)
+	{
+		if(!BcUtil::isAdminSystem()) return;
+		if(!$this->isAction(['BlogPosts.AdminAdd', 'BlogPosts.AdminEdit'])) return;
+		if(!CakePlugin::loaded('CuApprover')) return;
+		$controller = $event->subject();
+		if($controller->name === 'CakeError') return;
+		$postId = null;
+		if(!empty($controller->request->params['pass'][1])) $postId = $controller->request->params['pass'][1];
+		$this->setupApprover($controller, $postId);
+	}
+
+	/**
+	 * 公開承認プラグインの設定を行う
+	 *
+	 * @param int $blogContentId
+	 * @param array $post
+	 */
+	public function setupApprover($controller, $postId)
+	{
+		$blogContentId = $controller->blogContent['BlogContent']['id'];
+		$configModel = ClassRegistry::init('CuCustomField.CuCustomFieldConfig');
+		$definitionModel = ClassRegistry::init('CuCustomField.CuCustomFieldDefinition');
+		$valueModel = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
+		$applicationModel = ClassRegistry::init('CuApprover.CuApproverApplication');
+
+		$valueModel->definitions = $valueModel->getFieldDefinition($blogContentId);
+		if(!empty($controller->request->data['CuCustomFieldValue'])) {
+			$post = $controller->request->data['CuCustomFieldValue'];
+		} else {
+			$post = [];
+			if($postId) {
+				$application = $applicationModel->find('first', ['conditions' => ['CuApproverApplication.entity_id' => $postId, 'type' => 'BlogPost']]);
+				if($application) {
+					// 承認者が直接本稿を作成した場合草稿が存在しない
+					if($application['CuApproverApplication']['draft']) {
+						$draft = BcUtil::unserialize($application['CuApproverApplication']['draft']);
+						if(!empty($draft['CuCustomFieldValue'])) {
+							$post = $valueModel->convertToArrayData($draft['CuCustomFieldValue']);
+						}
+					}
+				}
+			}
+		}
+
+		$config = $configModel->find('first', ['conditions' => ['content_id' => $blogContentId]]);
+		$definitions = $definitionModel->find('all', [
+			'conditions' => [
+				'CuCustomFieldDefinition.config_id' => $config['CuCustomFieldConfig']['id'],
+				'CuCustomFieldDefinition.parent_id' => null,
+				'status' => true
+			],
+			'order' => 'CuCustomFieldDefinition.lft ASC',
+			'recursive' => -1,
+		]);
+		$flattening = $valueModel->convertToFlatteningData($post);
+		$fields = [];
+		foreach($definitions as $definition) {
+			$definition = $definition['CuCustomFieldDefinition'];
+			if($definition['field_type'] !== 'loop') {
+				$fields[] = $definition['field_name'];
+			} elseif(!empty($post[$definition['field_name']])) {
+				if(!$flattening) continue;
+				foreach($flattening as $fieldName => $value) {
+					if(preg_match('/' . $definition['field_name'] . '_[0-9]+_/', $fieldName)) {
+						$fields[] = $fieldName;
+					}
+				}
+			}
+		}
+		Configure::write('CuApprover.targets.BlogPost.draftFields.CuCustomFieldValue.fields', $fields);
 	}
 
 	/**
@@ -209,6 +289,15 @@ class CuCustomFieldControllerEventListener extends BcControllerEventListener
 				}
 			}
 		}
+
+		if(!empty($Controller->request->data['CuCustomFieldValue'])) {
+			foreach($Controller->request->data['CuCustomFieldValue'] as $key => $value) {
+				if (isset($value['__loop-src__'])) {
+					unset($Controller->request->data['CuCustomFieldValue'][$key]['__loop-src__']);
+				}
+			}
+		}
+
 	}
 
 	/**

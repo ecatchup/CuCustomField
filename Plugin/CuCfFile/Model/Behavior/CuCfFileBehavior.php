@@ -23,45 +23,19 @@
  * ## ヘルパでの表示
  * 5. ファイル名のキーに session_key があれば、一時画像とみなしフラグを立てる
  * 6. 一時画像のフラグがたっていれば、画像のURLを UploadsControllerに切り替える
+ * @property CuCustomFieldValue $CuCustomFieldValue
+ * @property BlogPost $BlogPost
+ * @property BcFileUploader $BcFileUploader
+ * @uses CuCfFileBehavior
  */
 class CuCfFileBehavior extends ModelBehavior
 {
 
 	/**
-	 * Save Directory
-	 * @var string|null
-	 */
-	public $saveDir = null;
-
-	/**
-	 * Before Value
+	 * oldEntity
 	 * @var array
 	 */
-	public $beforeValue = [];
-
-	/**
-	 * Delete Action
-	 * @var array
-	 */
-	public $deleteAction = [];
-
-	/**
-	 * Config
-	 * @var array
-	 */
-	public $config = [];
-
-	/**
-	 * Session
-	 * @var SessionComponent|null
-	 */
-	public $Session = null;
-
-	/**
-	 * BlogPostModel
-	 * @var BlogPost|null
-	 */
-	public $BlogPost = null;
+	public $oldEntity = [];
 
 	/**
 	 * CuCfFileBehavior constructor.
@@ -80,345 +54,280 @@ class CuCfFileBehavior extends ModelBehavior
 	public function setup(Model $model, $config = [])
 	{
 		$this->config = $config;
-		App::uses('SessionComponent', 'Controller/Component');
-		$this->Session = new SessionComponent(new ComponentCollection());
+		$this->BcFileUploader = new BcFileUploader();
 		$this->BlogPost = ClassRegistry::init('Blog.BlogPost');
+		$this->CuCustomFieldValue = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
+		$this->setupFileUploader($model, $config['contentId']);
+	}
+
+	/**
+	 * @param $modelName
+	 * @return BcFileUploader|false
+	 */
+	public function getFileUploader(Model $model)
+	{
+		return $this->BcFileUploader;
 	}
 
 	/**
 	 * Before Validate
+	 *
+	 * - id の設定
+	 * - ループフィールドのセッティング
+	 *
 	 * @param Model $model
 	 * @param array $options
 	 * @return bool|mixed|void
 	 */
 	public function beforeValidate(Model $model, $options = [])
 	{
-		$contentId = $this->BlogPost->field('blog_content_id', ['BlogPost.id' => $model->data['CuCustomFieldValue']['relate_id']]);
-		foreach ($model->data['CuCustomFieldValue'] as $key => $value) {
-			if($key === 'relate_id') {
-				continue;
+		$model->data['CuCustomFieldValue']['id'] = (!empty($model->data['BlogPost']['id']))? $model->data['BlogPost']['id'] : null;
+		$isDraft = false;
+		if(!empty($model->data['CuApproverApplication']['contentsMode']) && $model->data['CuApproverApplication']['contentsMode'] === 'draft') {
+			$isDraft = true;
+		}
+		$this->setupLoopFieldSettings($model->data['CuCustomFieldValue'], $isDraft);
+	}
+
+	/**
+	 * Before Validate
+	 *
+	 * - ループを平データに変換
+	 * - ポストデータをアップローダーにセットアップする
+	 * - 旧データを取得する
+	 *
+	 * @param Model $Model
+	 * @param array $options
+	 * @return boolean
+	 */
+	public function afterValidate(Model $model, $options = [])
+	{
+		if($this->CuCustomFieldValue->validatingLock) return true;
+		$data = $this->CuCustomFieldValue->convertToFlatteningData($model->data['CuCustomFieldValue']);
+		$model->data['CuCustomFieldValue'] = $this->BcFileUploader->setupRequestData($data);
+		$this->oldEntity = $this->CuCustomFieldValue->getOldEntity($model->data['CuCustomFieldValue']['id']);
+		$this->CuCustomFieldValue->validatingLock = true;
+		return true;
+	}
+
+	/**
+	 * setupLoopFieldSettings
+	 * @param array $data
+	 * @param bool $isDraft
+	 */
+	public function setupLoopFieldSettings($data, $isDraft = false)
+	{
+		// 草稿の場合は草稿からデータを取得
+		if($isDraft) {
+			$applicationModel = ClassRegistry::init('CuApprover.CuApproverApplication');
+			$application = $applicationModel->find('first', ['conditions' => ['CuApproverApplication.entity_id' => $data['id'], 'type' => 'BlogPost']]);
+			if($application) {
+				$draft = BcUtil::unserialize($application['CuApproverApplication']['draft']);
 			}
-			$definition = $model->getFieldDefinition($contentId, 'CuCustomFieldValue.' . $key);
-			if(!$definition || $definition['field_type'] !== 'loop') {
-				if (preg_match('/(.+)_saved$/', $key, $matches)) {
-					$targetKey = $matches[1];
-					if (empty($model->data['CuCustomFieldValue'][$targetKey]['name'])) {
-						$model->data['CuCustomFieldValue'][$targetKey] = $value;
-						unset($model->data['CuCustomFieldValue'][$key]);
-					}
-				}
-			} else {
-				if($value) {
-					foreach($value as $i => $set) {
-						foreach($set as $setKey => $setValue) {
-							if (preg_match('/(.+)_saved$/', $setKey, $matches)) {
-								$targetKey = $matches[1];
-								if (empty($model->data['CuCustomFieldValue'][$key][$i][$targetKey]['name'])) {
-									$model->data['CuCustomFieldValue'][$key][$i][$targetKey] = $setValue;
-									unset($model->data['CuCustomFieldValue'][$key][$i][$setKey]);
-								}
-							}
+			if(!empty($draft['CuCustomFieldValue'])) {
+				$old = ['CuCustomFieldValue' => $this->CuCustomFieldValue->convertToArrayData($draft['CuCustomFieldValue'])];
+			}
+		} else {
+			$old = $this->CuCustomFieldValue->getSection($data['id']);
+		}
+
+		if(!empty($old)) {
+			foreach($old['CuCustomFieldValue'] as $fieldName => $field) {
+				if ($field === 'a:0:{}') {
+					$old['CuCustomFieldValue'][$fieldName] = [];
+				} elseif(is_array($field)) {
+					foreach($field as $key => $value) {
+						if(!isset($data[$fieldName][$key])) {
+							$data[$fieldName][$key] = $value;
 						}
 					}
 				}
 			}
 		}
-		return true;
+		$fieldSettings = [];
+		foreach($data as $fieldName => $value) {
+			$definition = $this->CuCustomFieldValue->getDefinition($fieldName);
+			if(!$definition) continue;
+			if($fieldName === $definition['field_name'] && $definition['field_type'] === 'loop') {
+				foreach($value as $loopKey => $loop) {
+					if($loopKey === '__loop-src__') {
+						continue;
+					}
+					foreach($loop as $loopFieldName => $loopValue) {
+						$name = $fieldName . '_' . $loopKey . '_' . $loopFieldName;
+						$loopDefinition = $this->CuCustomFieldValue->getDefinition($loopFieldName);
+						if(!$loopDefinition) continue;
+						if($loopDefinition['field_type'] === 'file') {
+							$fieldSettings[$name] = [
+								'getUniqueFileName' => true,
+								'name' => $name,
+								'type' => 'all',
+								'namefield' => 'no',
+								'nameformat' => '%08d',
+								'imageresize'  => ['width' => 1000, 'height' => 1000, 'thumb' => false],
+								'imagecopy' => [
+									'thumb' => ['suffix' => '_thumb', 'width' => 300, 'height' => 300]
+								]
+							];
+						}
+					}
+				}
+			}
+		}
+		$settings = $this->BcFileUploader->settings;
+		$settings['fields'] = $fieldSettings + $settings['fields'];
+		$this->BcFileUploader->settings = $settings;
 	}
 
 	/**
 	 * Before Save
-	 * @param Model $model
+	 *
+	 * ループを配列データに変換する
 	 * @param array $options
-	 * @return bool|mixed
-	 * @throws Exception
+	 * @return bool
 	 */
 	public function beforeSave(Model $model, $options = [])
 	{
-		parent::beforeSave($model, $options);
-		return $this->checkField($model, $model->data);
-	}
-
-	/**
-	 * Check Field
-	 * @param $model
-	 * @return bool
-	 */
-	public function checkField($model, $data, $tmp = false)
-	{
-		if(isset($data['CuCustomFieldValue'])) {
-			$data = $data['CuCustomFieldValue'];
-		}
-		if($data['key'] === 'CuCustomFieldValue.relate_id') {
-			return false;
-		}
-		$key = $data['key'];
-		$relateId = $data['relate_id'];
-		$contentId = $this->BlogPost->field('blog_content_id', ['BlogPost.id' => $relateId]);
-		$definition = $model->getFieldDefinition($contentId, $key);
-		if(!$definition || $definition['field_type'] !== 'loop') {
-			$srcKey = $this->isDeleteAction($key);
-			if($srcKey) {
-				if($tmp) {
-					return false;
-				}
-				$this->checkAndDeleteFile($model, $relateId, $srcKey, $data['value'], null, $tmp);
-				return false;
-			} else {
-				$model->data['CuCustomFieldValue']['value'] = $this->checkAndSaveFile($model, $relateId, $key, $data['value'], null, $tmp);
-			}
-		} else {
-			$value = [];
-			if($data['value']) {
-				foreach($data['value'] as $i => $set) {
-					if($i === '__loop-src__') {
-						continue;
-					}
-					if (!$set) {
-						$value[$i] = $set;
-						break;
-					}
-					$deleteTarget = [];
-					foreach($set as $setKey => $setValue) {
-						if (!empty($deleteTarget[$setKey])) {
-							$value[$i][$setKey] = '';
-							continue;
-						}
-						$srcKey = $this->isDeleteAction($setKey);
-						if($srcKey) {
-							if($setValue) {
-								$deleteTarget[$srcKey] = true;
-							}
-							$this->checkAndDeleteFile($model, $relateId, 'CuCustomFieldValue.' . $srcKey, $setValue, $i, $tmp);
-						} else {
-							$result = $this->checkAndSaveFile($model, $relateId, 'CuCustomFieldValue.' . $setKey, $setValue, $i, $tmp);
-							if($result !== false) {
-								$value[$i][$setKey] = $result;
-							}
-						}
-					}
-				}
-			}
-			$model->data['CuCustomFieldValue']['value'] = $value;
-		}
+		$model->data['CuCustomFieldValue'] = $this->CuCustomFieldValue->convertToArrayData($model->data['CuCustomFieldValue']);
 		return true;
 	}
 
 	/**
-	 * 削除モードかチェックする
-	 * @param $key
-	 * @return false|mixed
-	 */
-	public function isDeleteAction($key) {
-		if (preg_match('/(.+)_delete$/', $key, $matches)) {
-			return $matches[1];
-		}
-		return false;
-	}
-
-	/**
-	 * Check And Delete File
-	 * @param $model
-	 * @param $relateId
-	 * @param $key
-	 * @param $value
-	 * @param null $loopRow
-	 */
-	public function checkAndDeleteFile($model, $relateId, $key, $value, $loopRow = null, $tmp = false) {
-		if(empty($value)) {
-			return;
-		}
-		$contentId = $this->BlogPost->field('blog_content_id', ['BlogPost.id' => $relateId]);
-		$definition = $model->getFieldDefinition($contentId, $key);
-		if(!$definition || $definition['field_type'] !== 'file') {
-			return;
-		}
-		$beforeValue = $this->getBeforeValue($model, $relateId, $this->getBareFieldName($key), $definition['parent_id'], $loopRow);
-		if(is_null($loopRow)) {
-			$targetRecord = $model->find('first', ['conditions' => ['relate_id' => $relateId, 'key' => $key], 'recursive' => -1]);
-			$targetRecord['CuCustomFieldValue']['value'] = '';
-			$model->save($targetRecord, ['callbacks' => false, 'validate' => false]);
-		}
-		$this->deleteFile($beforeValue, $tmp);
-	}
-
-	/**
-	 * Check And Save File
-	 * @param $model
-	 * @param $key
-	 * @param $value
-	 * @param $relateId
-	 * @param null $parentId
-	 * @param null $loopRow
-	 * @return false|string
-	 */
-	public function checkAndSaveFile($model, $relateId, $key, $value, $loopRow = null, $tmp = false) {
-		$contentId = $this->BlogPost->field('blog_content_id', ['BlogPost.id' => $relateId]);
-		$definition = $model->getFieldDefinition($contentId, $key);
-		if(!$definition || $definition['field_type'] !== 'file') {
-			return $value;
-		}
-		$beforeValue = $this->getBeforeValue($model, $relateId, $this->getBareFieldName($key), $definition['parent_id'], $loopRow);
-		return $this->saveFile($value, $beforeValue, $tmp);
-	}
-
-	/**
-	 * Get Bare Field Name
-	 * @param $fieldName
-	 * @return mixed|string
-	 */
-	public function getBareFieldName($fieldName) {
-		if(strpos($fieldName, '.') !== false) {
-			list(, $fieldName) = explode('.', $fieldName);
-		}
-		return $fieldName;
-	}
-
-	/**
-	 * Get Before Value
-	 * @param $model
-	 * @param $relateId
-	 * @param $fieldName
-	 * @param null $parentId
-	 * @param null $loopRow
-	 * @return mixed|string
-	 */
-	public function getBeforeValue($model, $relateId, $fieldName, $parentId = null, $loopRow = null) {
-		if(!empty($parentId)) {
-			// 親のフィールド名を取得
-			$definitionModel = ClassRegistry::init('CuCustomField.CuCustomFieldDefinition');
-			$parentName = $definitionModel->field('field_name', ['id' => $parentId]);
-			$parentValue = $model->getSection($relateId, 'CuCustomFieldValue', $parentName);
-			if(!empty($parentValue[$loopRow][$fieldName])) {
-				$beforeValue = $parentValue[$loopRow][$fieldName];
-			} else {
-				$beforeValue = '';
-			}
-		} else {
-			$beforeValue = $model->getSection($relateId, 'CuCustomFieldValue', $fieldName);
-		}
-		return $beforeValue;
-	}
-
-	/**
-	 * アップロードしたファイルを保存する
-	 * @param $value
-	 * @param $beforeValue
-	 * @param false $tmp
-	 * @return string|array
-	 */
-	public function saveFile($value, $beforeValue, $tmp = false)
-	{
-		if (empty($value)) {
-			return '';
-		}
-		if (!is_array($value) || $value['error'] !== 0) {
-			return $beforeValue;
-		}
-		if($value['size'] === 0) {
-			return $beforeValue;
-		}
-		$ext = decodeContent($value['type'], $value['name']);
-		$year = date('Y');
-		$month = date('m');
-		$baseFileName = $this->config['type'] . '/' . $this->config['contentId'] . '/' . $year . '/' . $month . '/' . CakeText::uuid();
-		$fileName = $baseFileName . '.' . $ext;
-
-		if($tmp) {
-			$_fileName = str_replace(array('.', '/'), array('_', '_'), $fileName);
-			$this->Session->write('Upload.' . $_fileName . '.type', $value['type']);
-			$data = file_get_contents($value['tmp_name']);
-			// コアのバージョンチェックしてVersion4.4.9以降はbase64_encodeを行う
-			$version = getVersion();
-			if ($version >= '4.4.9') {
-				$data = base64_encode($data);
-			}
-			$this->Session->write('Upload.' . $_fileName . '.data', $data);
-			$value['session_key'] = $fileName;
-			return $value;
-		} else {
-			$Folder = new Folder();
-			$Folder->create($this->saveDir . $this->config['type'] . DS . $this->config['contentId'] . DS . $year . DS . $month . DS, 0777);
-			if (in_array($ext, ['png', 'gif', 'jpeg', 'jpg'])) {
-				$thumbName = $baseFileName . '_thumb.' . $ext;
-				$imageresizer = new Imageresizer();
-				$imageresizer->resize($value['tmp_name'], $this->saveDir . $fileName, 1000, 1000, false);
-				$imageresizer->resize($this->saveDir . $fileName, $this->saveDir . $thumbName, 300, 300, false);
-			} else {
-				move_uploaded_file($value['tmp_name'], $this->saveDir . $fileName);
-				chmod($this->saveDir . $fileName, 0666);
-			}
-			if ($beforeValue) {
-				$this->deleteFile($beforeValue);
-			}
-		}
-		return $fileName;
-	}
-
-	/**
-	 * ファイルを削除する
+	 * After save
 	 *
-	 * @param string $value
-	 * @return |null
+	 * @param Model $Model
+	 * @param bool $created
+	 * @param array $options
 	 */
-	public function deleteFile($value, $tmp = false)
+	public function afterSave(Model $Model, $created, $options = [])
 	{
-		if (!$value || strpos($value, '.') === false) {
-			return false;
-		}
+		if($this->CuCustomFieldValue->savingLock) return;
+		$entity = $Model->data['CuCustomFieldValue'];
+		$entity['id'] = (!empty($Model->data['BlogPost']['id']))? $Model->data['BlogPost']['id'] : null;
+		$entity = $this->CuCustomFieldValue->convertToFlatteningData($entity, true);
 
-		if(!$tmp) {
-			$filePath = $this->saveDir . $value;
-			list($baseFileName, $ext) = explode('.', $value);
-			$thumbPath = $this->saveDir . $baseFileName . '_thumb.' . $ext;
-			if (file_exists($filePath)) {
-				unlink($filePath);
-			}
-			if (file_exists($thumbPath)) {
-				unlink($thumbPath);
-			}
-		}
-		return null;
+		// アップロード時既存データを削除
+        if ($this->oldEntity) {
+            $this->BcFileUploader->deleteExistingFiles($this->oldEntity);
+        }
+
+        // ファイル保存
+        $entity = $this->BcFileUploader->saveFiles($entity);
+
+        // 削除チェックボックス処理
+        if ($this->CuCustomFieldValue->getOldEntity($entity['id'])) {
+            $entity = $this->BcFileUploader->deleteFiles($this->oldEntity, $entity);
+            // 公開承認を利用している場合、本稿の場合のみ、ループフィールドのファイルを削除
+            if(empty($Model->data['CuApproverApplication']['contentsMode']) || $Model->data['CuApproverApplication']['contentsMode'] !== 'draft') {
+            	$this->clearLoopFiles($entity);
+            }
+        }
+
+        if ($this->BcFileUploader->isUploaded()) {
+        	// リネーム処理
+            $entity = $this->BcFileUploader->renameToBasenameFields($entity);
+            $this->BcFileUploader->resetUploaded();
+        }
+		$entity = $this->CuCustomFieldValue->convertToArrayData($entity, true);
+		$Model->saveSection($Model->data['BlogPost']['id'], ['CuCustomFieldValue' => $entity], 'CuCustomFieldValue', false);
+
+        $this->CuCustomFieldValue->savingLock = true;
 	}
 
 	/**
-	 * セッションに一時ファイルを保存
-	 * @param Model $Model
-	 * @param $data
-	 * @return mixed
+	 * ループブロック削除時のファイル削除
+	 * ポストデータが送られてこなかった場合、ループブロックが削除されたと判断し
+	 * アップロード済のファイルを削除する
+	 * @param $post
 	 */
-	public function saveTmpFile(Model $Model, $data)
+	public function clearLoopFiles($post)
 	{
-		// アイキャッチなどのBcUploadBehaviorのデータなどが
-		// 既にセットされている場合がある為、該当セッションのみ削除
-		$sessions = $this->Session->read('Upload');
-		foreach ($sessions as $key => $session) {
-			if (preg_match('/^' .  $this->config['type'] . '_(.+)$/', $key, $matches)) {
-				$this->Session->delete('Upload.' . $key);
+		if(empty($this->oldEntity)) {
+			return;
+		}
+		foreach($this->oldEntity as $key => $value) {
+			if(!isset($post[$key]) && isset($this->BcFileUploader->settings['fields'][$key])) {
+				$setting = $this->BcFileUploader->settings['fields'][$key];
+				$this->BcFileUploader->deleteFile($setting, $value);
 			}
 		}
-		if(isset($data['CuCustomFieldValue']) && $data['CuCustomFieldValue']) {
-			foreach ($data['CuCustomFieldValue'] as $field => $value) {
-				$newDetail = [];
-				$section = 'CuCustomFieldValue';
-				$key = $section . '.' . $field;
-				$newDetail['relate_id'] = $data['BlogPost']['id'];
-				$newDetail['key'] = $key;
-				$newDetail['value'] = $value;
-				$newDetail['model'] = 'CuCustomFieldValue';
-				if ($this->checkField($Model, $newDetail, true) &&
-					isset($Model->data['CuCustomFieldValue']['value'])) {
-					$data['CuCustomFieldValue'][$field] = $Model->data['CuCustomFieldValue']['value'];
-				}
-			}
-			// 削除するチェックボックスにチェックが入っている場合の処理
-			foreach ($data['CuCustomFieldValue'] as $field => $value) {
-				$srcKey = $this->isDeleteAction($field);
-				if ($srcKey && $data['CuCustomFieldValue'][$field]) {
-					unset($data['CuCustomFieldValue'][$srcKey]);
+	}
+
+	/**
+	 * setupFileUploader
+	 * @param Model $model
+	 * @param int $blogPostId
+	 */
+	public function setupFileUploader(Model $model, $contentId)
+	{
+		$this->CuCustomFieldValue->definitions = $model->getFieldDefinition($contentId);
+		$fields = [];
+		if(!empty($this->CuCustomFieldValue->definitions)) {
+			foreach($this->CuCustomFieldValue->definitions as $definition) {
+				if ($definition['field_type'] === 'file' && !$definition['parent_id']) {
+					$fields[$definition['field_name']] = [
+						'type' => 'all',
+						'namefield' => 'no',
+						'nameformat' => '%08d',
+						'imageresize' => ['width' => 1000, 'height' => 1000],
+						'imagecopy' => [
+							'thumb' => ['suffix' => '_thumb', 'width' => 300, 'height' => 300]
+						]
+					];
 				}
 			}
 		}
+		$config = [
+			'saveDir' => 'cu_custom_field' . DS . 'blog' . DS . $contentId . DS . 'blog_posts',
+			'subdirDateFormat' => 'Y/m/',
+			'fields' => $fields,
+			'getUniqueFileName' => 'getUniqueFileName'
+		];
+        $this->BcFileUploader->initialize($config, $model);
+	}
+
+	/**
+	 * 一時ファイルとして保存する
+	 *
+	 * @param Model $Model
+	 * @param array $data
+	 * @param string $tmpId
+	 * @return mixed false|array
+	 */
+	public function saveTmpFiles(Model $Model, $data, $tmpId)
+	{
+		if(isset($data[$Model->alias])) {
+			$entity = $data[$Model->alias];
+		} else {
+			$entity = $data;
+			$data = [];
+		}
+		$this->setupFileUploader($Model, $data['BlogPost']['blog_content_id']);
+		$this->setupLoopFieldSettings($entity);
+		$entity = $this->CuCustomFieldValue->convertToFlatteningData($entity);
+		$entity = $this->BcFileUploader->saveTmpFiles($entity, $tmpId);
+		$entity = $this->CuCustomFieldValue->convertToArrayData($entity);
+		$data[$Model->alias] = $entity;
 		return $data;
 	}
+
+	/**
+	 * after delete
+	 * 画像ファイルの削除を行う
+	 *
+	 * @param Model $Model
+	 * @param bool $cascade
+	 * @return bool
+	 */
+	public function beforeDelete(Model $Model, $cascade = true)
+	{
+		$blogPostModel = ClassRegistry::init('Blog.BlogPost');
+		$blogPost = $blogPostModel->find('first', ['conditions' => ['BlogPost.id' => $Model->id], 'recursive' => -1]);
+		$this->setupFileUploader($Model,$blogPost['BlogPost']['blog_content_id']);
+		$this->setupLoopFieldSettings(['id' => $Model->id]);
+		$oldEntity = $this->CuCustomFieldValue->getOldEntity($Model->id);
+		$this->BcFileUploader->deleteFiles($oldEntity, [], true);
+		return true;
+	}
+
 }
