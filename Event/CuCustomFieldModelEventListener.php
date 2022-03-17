@@ -529,13 +529,15 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 					'message' => ($definition['validate_regex_message']) ? $definition['validate_regex_message'] : '入力エラーが発生しました。',
 				],
 			],
-			'fileExt' => [
+		];
+		if (isset($definition['allow_file_exts'])) {
+			$validation['fileExt'] = [
 				'fileExt' => [
 					'rule' => ['fileExt', $definition['allow_file_exts']],
 					'message' => '許可されていないファイルです。',
 				],
-			],
-		];
+			];
+		}
 		return $validation[$rule];
 	}
 
