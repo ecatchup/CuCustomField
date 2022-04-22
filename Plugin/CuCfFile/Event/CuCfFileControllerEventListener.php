@@ -96,9 +96,6 @@ class CuCfFileControllerEventListener extends BcControllerEventListener {
 		if(!$this->isAction('Blog.Archives')) {
 			return;
 		}
-		if(!isset($controller->request->params['pass'][0]) || !is_numeric($controller->request->params['pass'][0])) {
-			return;
-		}
 		if(empty($controller->BcContents->preview)) {
 			return;
 		}
