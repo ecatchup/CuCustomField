@@ -16,8 +16,12 @@ $(function(){
     switchRelated();
 
     function switchRelated() {
+        let rowParentId = $("#RowCuCfParentId");
         if(fieldType.val() === 'datetime') {
-            // Nothing
+            rowParentId.hide();
+            $("#CuCustomFieldDefinitionParentId").val('');
+        } else {
+            rowParentId.show();
         }
     }
 });
