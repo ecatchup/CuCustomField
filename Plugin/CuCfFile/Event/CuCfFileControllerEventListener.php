@@ -125,7 +125,9 @@ class CuCfFileControllerEventListener extends BcControllerEventListener {
 		if(!empty($controller->request->query['cu_approver_load'])) {
 			$mode = $controller->request->query['cu_approver_load'];
 		}
-		if($mode !== 'draft') {
+		// 下書き画面にて、下書きデータが存在しなければ、本稿を表示する仕様としている為
+		// 下書きデータが存在する場合のみ下書きデータのコンバート処理を行う
+		if($mode !== 'draft' || empty($controller->request->data['CuApproverApplication']['draft'])) {
 			return;
 		}
 		/* @var CuCustomFieldValue $CuCustomFieldValue */
