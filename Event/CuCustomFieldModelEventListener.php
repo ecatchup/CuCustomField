@@ -464,8 +464,14 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			if (empty($validation[$fieldName])) {
 				$validation[$fieldName] = [];
 			}
-			$validation[$fieldName] = Hash::merge($validation[$fieldName],
-				$this->_getValidationRule('fileExt', $fieldConfig['CuCustomFieldDefinition']));
+			$validation[$fieldName] = Hash::merge(
+				$validation[$fieldName],
+				$this->_getValidationRule('fileExt', $fieldConfig['CuCustomFieldDefinition'])
+			);
+			$validation[$fieldName] = Hash::merge(
+				$validation[$fieldName],
+				$this->_getValidationRule('fileCheck', $fieldConfig['CuCustomFieldDefinition'])
+			);
 		}
 
 		$this->CuCustomFieldValueModel->validate = $validation;
@@ -535,6 +541,12 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 					'message' => '許可されていないファイルです。',
 				],
 			],
+			'fileCheck' => [
+				'fileCheck' => [
+					'rule' => ['fileCheck', $this->CuCustomFieldValueModel->convertSize(ini_get('upload_max_filesize'))],
+					'message' => __d('baser', 'ファイルのアップロードに失敗しました。')
+				]
+			]
 		];
 		return $validation[$rule];
 	}

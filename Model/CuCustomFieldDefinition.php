@@ -275,6 +275,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 	{
 		foreach($data as $key => $record) {
 			foreach($record[$this->alias] as $field => $value) {
+				if(!is_string($value) || !preg_match('/}$/', $value)) continue;
 				// TODO BcUtil::unserialize を利用するとエラーが発生するため通常のシリアライズを利用する
 				if ($judge = @unserialize($value)) {
 					$data[$key][$this->alias][$field] = $judge;
