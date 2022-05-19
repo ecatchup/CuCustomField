@@ -78,7 +78,7 @@ class CuCfFileHelper extends AppHelper {
 			}
 			// 下書き画面にて、下書きデータが存在しなければ、本稿を表示する仕様としている為
 			// 下書きデータが存在する場合のみ参照するURLを変更する
-			if ($load === 'draft' && !empty($View->request->data['CuApproverApplication']['draft'])) {
+			if ($load === 'draft' && !empty($this->_View->request->data['CuApproverApplication']['draft'])) {
 				if (preg_match('/^' . 'cu_approver_applications' . '/', $saveDir)) {
 					return $saveDir;
 				} else {
