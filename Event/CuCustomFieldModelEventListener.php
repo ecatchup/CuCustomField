@@ -464,8 +464,14 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			if (empty($validation[$fieldName])) {
 				$validation[$fieldName] = [];
 			}
-			$validation[$fieldName] = Hash::merge($validation[$fieldName],
-				$this->_getValidationRule('fileExt', $fieldConfig['CuCustomFieldDefinition']));
+			$validation[$fieldName] = Hash::merge(
+				$validation[$fieldName],
+				$this->_getValidationRule('fileExt', $fieldConfig['CuCustomFieldDefinition'])
+			);
+			$validation[$fieldName] = Hash::merge(
+				$validation[$fieldName],
+				$this->_getValidationRule('fileCheck', $fieldConfig['CuCustomFieldDefinition'])
+			);
 		}
 
 		$this->CuCustomFieldValueModel->validate = $validation;
@@ -529,6 +535,12 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 					'message' => ($definition['validate_regex_message']) ? $definition['validate_regex_message'] : '入力エラーが発生しました。',
 				],
 			],
+			'fileCheck' => [
+				'fileCheck' => [
+					'rule' => ['fileCheck', $this->CuCustomFieldValueModel->convertSize(ini_get('upload_max_filesize'))],
+					'message' => __d('baser', 'ファイルのアップロードに失敗しました。')
+				]
+			]
 		];
 		if (isset($definition['allow_file_exts'])) {
 			$validation['fileExt'] = [
@@ -607,9 +619,40 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 	 */
 	public function blogBlogPostAfterCopy(CakeEvent $event)
 	{
-		$petitCustomFieldData = $this->CuCustomFieldValueModel->getSection($event->data['oldId'], $this->CuCustomFieldValueModel->name);
-		if ($petitCustomFieldData) {
-			$saveData[$this->CuCustomFieldValueModel->name] = $petitCustomFieldData;
+		$data = $this->CuCustomFieldValueModel->getSection($event->data['oldId'], $this->CuCustomFieldValueModel->name);
+		if ($data) {
+
+			$config = $this->CuCustomFieldConfigModel->find('first', [
+				'conditions' => [
+					'CuCustomFieldConfig.content_id' => $event->data['data']['BlogContent']['id'],
+					'CuCustomFieldConfig.status' => true,
+				],
+				'recursive' => -1
+			]);
+
+			$fieldConfig = $this->CuCustomFieldConfigModel->CuCustomFieldDefinition->find('all', [
+				'conditions' => [
+					'CuCustomFieldDefinition.config_id' => $config['CuCustomFieldConfig']['id'],
+				],
+				'order' => 'CuCustomFieldDefinition.lft ASC',
+				'recursive' => -1,
+			]);
+			if (!$fieldConfig) {
+				return true;
+			}
+			$this->CuCustomFieldValueModel->fieldConfig = $fieldConfig;
+
+			$this->CuCustomFieldValueModel->clear();
+			$this->CuCustomFieldValueModel->set($data);
+			$beforeSaveEvent = new CakeEvent('Model.beforeSave', $this->CuCustomFieldValueModel, []);
+			list($beforeSaveEvent->break, $beforeSaveEvent->breakOn) = [true, [false, null]];
+			$this->CuCustomFieldValueModel->getEventManager()->dispatch($beforeSaveEvent);
+			if (!$beforeSaveEvent->result) {
+				return false;
+			}
+			$saveData[$this->CuCustomFieldValueModel->name] = $this->CuCustomFieldValueModel->data['CuCustomFieldValue'];
+			unset($saveData[$this->CuCustomFieldValueModel->name]['relate_id']);
+
 			$this->CuCustomFieldValueModel->saveSection($event->data['id'], $saveData, 'CuCustomFieldValue', null, false);
 		}
 	}

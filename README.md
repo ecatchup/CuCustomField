@@ -49,7 +49,7 @@ $config['cuCustomField']['allow_file_exts']
 ## Add Original Field Type
 
 オリジナルのフィールドタイプを baserCMSのプラグインとして作成することができます。
-[オリジナルのフィールドタイプを追加する](https://github.com/ecatchup/CuCustomField/blob/master/docs/CREATE_FIELD_TYPE.md) を参考にしてください。
+[オリジナルのフィールドタイプを追加する](docs/CREATE_FIELD_TYPE.md) を参考にしてください。
 
 　
 ## 公開承認ワークフローとの連携
@@ -57,7 +57,7 @@ $config['cuCustomField']['allow_file_exts']
 CuCustomField は、公開承認ワークフロープラグイン（CuApprover）の下書きに対応しています。  
 イベントを駆使した複雑な仕組みとなっていますので、カスタマイズの際はこちらのドキュメントを参考にしてください。
 
-- [CuApproverとの連携](https://github.com/ecatchup/CuCustomField/blob/master/docs/COOPERATE_WITH_CU_APPROVER.md)
+- [CuApproverとの連携](docs/COOPERATE_WITH_CU_APPROVER.md)
 
 　　
 ## Thanks
