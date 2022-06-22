@@ -13,6 +13,28 @@
  * @var BcAppView $this
  * @var string $currentModelName
  */
+// <<<< カスタムフィールドの 初期値 wysiwygやtextareaの場合は、入力欄をtextareaに変更
+$type = $this->data['CuCustomFieldDefinition']['field_type'];
+$areaTypeArray = [
+	'wysiwyg',
+	'textarea'
+];
+if (in_array($type, $areaTypeArray)) {
+	$options = [
+		'type' => 'textArea',
+		'lows' => 3,
+		'class' => 'bca-textarea__textarea',
+		'counter' => false,
+	];
+} else {
+	$options = [
+		'type' => 'text',
+		'size' => 60,
+		'maxlength' => 255,
+		'counter' => true,
+	];
+}
+$options['placeholder'] = 'カスタムフィールドの入力欄の初期値を指定します';
 ?>
 
 
@@ -21,10 +43,7 @@
 		<?php echo $this->BcForm->label('CuCustomFieldDefinition.default_value', '初期値') ?>
 	</th>
 	<td class="bca-form-table__input">
-		<?php echo $this->BcForm->input('CuCustomFieldDefinition.default_value', [
-			'type' => 'text', 'size' => 60, 'maxlength' => 255, 'counter' => true,
-			'placeholder' => 'カスタムフィールドの入力欄の初期値を指定します'
-		]) ?>
+		<?php echo $this->BcForm->input('CuCustomFieldDefinition.default_value', $options) ?>
 		<i class="bca-icon--question-circle btn help bca-help"></i>
 		<div class="helptext">
 			<h5 class="weight-bold">ラジオボタン、セレクトボックスの場合</h5>
