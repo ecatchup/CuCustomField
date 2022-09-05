@@ -14,7 +14,11 @@
  * @var string $currentModelName
  */
 // <<<< カスタムフィールドの 初期値 wysiwygやtextareaの場合は、入力欄をtextareaに変更
-$type = $this->data['CuCustomFieldDefinition']['field_type'];
+if(isset($this->request->data['CuCustomFieldDefinition']['field_type'])) {
+	$type = $this->request->data['CuCustomFieldDefinition']['field_type'];
+} else {
+	$type = '';
+}
 $areaTypeArray = [
 	'wysiwyg',
 	'textarea'
