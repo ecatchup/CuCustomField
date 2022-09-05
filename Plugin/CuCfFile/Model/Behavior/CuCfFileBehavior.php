@@ -300,7 +300,8 @@ class CuCfFileBehavior extends ModelBehavior
 			$entity = $data[$Model->alias];
 		} else {
 			$entity = $data;
-			$data = [];
+			$entity['id'] = !isset($entity['id']) ? $entity['BlogContent']['id'] : $entity['id'];
+			$data[$Model->alias] = [];
 		}
 		$this->setupFileUploader($Model, $data['BlogPost']['blog_content_id']);
 		$this->setupLoopFieldSettings($entity);
