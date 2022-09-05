@@ -128,7 +128,9 @@ class CuCfFileBehavior extends ModelBehavior
 				$old = ['CuCustomFieldValue' => $this->CuCustomFieldValue->convertToArrayData($draft['CuCustomFieldValue'])];
 			}
 		} else {
-			$old = $this->CuCustomFieldValue->getSection($data['id']);
+			if(!empty($data['id'])) {
+				$old = $this->CuCustomFieldValue->getSection($data['id']);
+			}
 		}
 
 		if(!empty($old)) {
@@ -299,9 +301,7 @@ class CuCfFileBehavior extends ModelBehavior
 		if(isset($data[$Model->alias])) {
 			$entity = $data[$Model->alias];
 		} else {
-			$entity = $data;
-			$entity['id'] = !isset($entity['id']) ? $entity['BlogContent']['id'] : $entity['id'];
-			$data[$Model->alias] = [];
+			$entity = [];
 		}
 		$this->setupFileUploader($Model, $data['BlogPost']['blog_content_id']);
 		$this->setupLoopFieldSettings($entity);
