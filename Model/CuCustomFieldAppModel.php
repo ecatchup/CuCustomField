@@ -24,9 +24,10 @@ class CuCustomFieldAppModel extends AppModel
 	public function unserializeData($data = [])
 	{
 		foreach($data as $key => $value) {
-			// TODO BcUtil::unserialize を利用するとエラーが発生するため通常のシリアライズを利用する
-			if ($judge = @unserialize($value[$this->alias]['value'])) {
-				$data[$key][$this->alias]['value'] = $judge;
+			if(isset($value[$this->alias]['value']) && preg_match('/^[a-zA-Z]:/', $value[$this->alias]['value'], $matches)) {
+				if ($judge = unserialize($value[$this->alias]['value'])) {
+					$data[$key][$this->alias]['value'] = $judge;
+				}
 			}
 		}
 		return $data;
