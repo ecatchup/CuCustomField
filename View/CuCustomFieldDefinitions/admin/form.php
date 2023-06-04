@@ -110,7 +110,7 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 					['type' => 'text', 'size' => 60, 'maxlength' => 255, 'counter' => true, 'placeholder' => 'カスタムフィールドの入力欄に表示されるタイトルを入力してください']) ?>
 				<?php echo $this->BcForm->error('CuCustomFieldDefinition.name') ?>
 				<div id="CheckValueResultName" class="display-none">
-					<div class="error-message duplicate-error-message">同じカスタムフィールド名が存在します。変更してください。</div>
+					<div class="error-message duplicate-error-message">同じフィールド定義名が存在します。変更してください。</div>
 				</div>
 			</td>
 		</tr>
