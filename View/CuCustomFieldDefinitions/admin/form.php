@@ -41,7 +41,7 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 		['class' => 'bca-btn']
 	) ?>
 	&nbsp;&nbsp;
-	<small><?php echo $this->BcForm->input('show_field_name_list', ['type' => 'checkbox', 'label' => '現在利用しているフィールド名の一覧を表示']) ?></small>
+	<small><?php echo $this->BcForm->input('show_field_name_list', ['type' => 'checkbox', 'label' => '現在利用しているフィールド定義名の一覧を表示']) ?></small>
 </p>
 
 
@@ -82,7 +82,7 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 <?php endif ?>
 		<tr id="Row<?php echo $currentModelName . Inflector::camelize('field_name'); ?>">
 			<th class="col-head bca-form-table__label">
-				<?php echo $this->BcForm->label('CuCustomFieldDefinition.field_name', 'フィールド名') ?>&nbsp;<span
+				<?php echo $this->BcForm->label('CuCustomFieldDefinition.field_name', 'フィールド定義名') ?>&nbsp;<span
 					class="required bca-label" data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span>
 			</th>
 			<td class="col-input bca-form-table__input" colspan="3">
@@ -91,18 +91,18 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 				<?php echo $this->BcForm->error('CuCustomFieldDefinition.field_name') ?>
 				<?php if ($this->request->action == 'admin_edit'): ?>
 				<p>
-					<span id="BeforeFieldNameComment">変更前のフィールド名：</span>
+					<span id="BeforeFieldNameComment">変更前のフィールド定義名：</span>
 					<span id="BeforeFieldName"><?php echo $this->BcForm->value('CuCustomFieldDefinition.field_name') ?></span>
 				</p>
 				<?php endif ?>
 				<div id="CheckValueResultFieldName" class="display-none">
-					<div class="error-message duplicate-error-message">同じフィールド名が存在します。変更してください。</div>
+					<div class="error-message duplicate-error-message">同じフィールド定義名が存在します。変更してください。</div>
 				</div>
 			</td>
 		</tr>
 		<tr id="Row<?php echo $currentModelName . Inflector::camelize('name'); ?>">
 			<th class="col-head bca-form-table__label">
-				<?php echo $this->BcForm->label('CuCustomFieldDefinition.name', 'フィールド定義名') ?>&nbsp;<span
+				<?php echo $this->BcForm->label('CuCustomFieldDefinition.name', '入力欄ラベル') ?>&nbsp;<span
 					class="required bca-label" data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span>
 			</th>
 			<td class="col-input bca-form-table__input" colspan="3">
