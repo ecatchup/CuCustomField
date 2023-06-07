@@ -86,7 +86,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 			'name' => [
 				'notBlank' => [
 					'rule' => ['notBlank'],
-					'message' => 'カスタムフィールド名を入力してください。',
+					'message' => '入力欄ラベルを入力してください。',
 					'required' => true,
 				],
 				'maxLength' => [
@@ -107,7 +107,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 			'field_name' => [
 				'notBlank' => [
 					'rule' => ['notBlank'],
-					'message' => 'フィールド名を入力してください。',
+					'message' => 'フィールド定義名を入力してください。',
 					'required' => true,
 				],
 				'maxLength' => [
@@ -129,7 +129,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 				],
 				[
 					'rule' => ['notInList', ['day']],
-					'message' => 'フィールド名に利用できない文字列です。変更してください。',
+					'message' => 'フィールド定義名に利用できない文字列です。変更してください。',
 				],
 			],
 			'field_type' => [

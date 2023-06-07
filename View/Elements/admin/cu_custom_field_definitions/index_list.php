@@ -18,7 +18,7 @@ $this->BcBaser->css(array(
 	'//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css',
 	'CuCustomField.admin/cu_custom_field',
 ));
-$this->BcListTable->setColumnNumber(9);
+$this->BcListTable->setColumnNumber(6);
 $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 ?>
 
@@ -40,23 +40,13 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 <thead class="bca-table-listup__thead">
 	<tr>
 		<th class="bca-table-listup__thead-th"><?php // No ?>
-		<?php
-		echo $this->Paginator->sort('no',
-			[
-				'asc' => '<i class="bca-icon--asc"></i>' . __d('baser', 'No'),
-				'desc' => '<i class="bca-icon--desc"></i>' . __d('baser', 'No')
-			],
-			[
-				'escape' => false,
-				'class' => 'btn-direction bca-table-listup__a'
-			]);
-			?>
+			No
 		</th>
-		<th class="bca-table-listup__thead-th"><?php // カスタムフィールド名 ?>
+		<th class="bca-table-listup__thead-th"><?php // フィールド定義名 ?>
 			フィールド定義名
 		</th>
-		<th class="bca-table-listup__thead-th"><?php // フィールド名 ?>
-			フィールド名
+		<th class="bca-table-listup__thead-th"><?php // 入力欄ラベル ?>
+			入力欄ラベル
 		</th>
 		<th class="bca-table-listup__thead-th"><?php // フィールドタイプ ?>
 			フィールドタイプ
