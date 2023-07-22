@@ -115,6 +115,6 @@ $this->BcListTable->setColumnNumber(9);
     <!-- pagination -->
     <?php $this->BcBaser->element('pagination') ?>
     <!-- list-num -->
-    <?php //$this->BcBaser->element('list_num') ?>
+    <?php $this->BcBaser->element('list_num') ?>
   </div>
 </div>

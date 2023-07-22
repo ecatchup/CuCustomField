@@ -68,6 +68,11 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 
 		$this->set('datas', $this->paginate('CuCustomFieldConfig'));
 		$this->set('blogContentDatas', ['0' => '指定しない'] + $this->blogContentDatas);
+
+		if ($this->RequestHandler->isAjax() || !empty($this->params['url']['ajax'])) {
+			$this->render('ajax_index');
+			return;
+		}
 	}
 
 	/**
@@ -169,38 +174,19 @@ class CuCustomFieldConfigsController extends CuCustomFieldAppController
 	protected function _createAdminIndexConditions($data)
 	{
 		$conditions = [];
-		$blogContentId = '';
 
 		if (isset($data['CuCustomFieldConfig']['content_id'])) {
-			$blogContentId = $data['CuCustomFieldConfig']['content_id'];
+			$conditions['CuCustomFieldConfig.content_id'] = $data['CuCustomFieldConfig']['content_id'];
 		}
 
-		unset($data['_Token']);
-		unset($data['CuCustomFieldConfig']['content_id']);
-
-		// 条件指定のないフィールドを解除
-		if (!empty($data['CuCustomFieldConfig'])) {
-			foreach($data['CuCustomFieldConfig'] as $key => $value) {
-				if ($value === '') {
-					unset($data['CuCustomFieldConfig'][$key]);
-				}
-			}
-			if ($data['CuCustomFieldConfig']) {
-				$conditions = $this->postConditions($data);
-			}
+		if (isset($data['CuCustomFieldConfig']['status']) && $data['CuCustomFieldConfig']['status'] === '') {
+			unset($data['CuCustomFieldConfig']['status']);
+		}
+		if (isset($data['CuCustomFieldConfig']['status'])) {
+			$conditions['CuCustomFieldConfig.status'] = $data['CuCustomFieldConfig']['status'];
 		}
 
-		if ($blogContentId) {
-			$conditions = [
-				'CuCustomFieldConfig.content_id' => $blogContentId
-			];
-		}
-
-		if ($conditions) {
-			return $conditions;
-		} else {
-			return [];
-		}
+		return $conditions;
 	}
 
 }

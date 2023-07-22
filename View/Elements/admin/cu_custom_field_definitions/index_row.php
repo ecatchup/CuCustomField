@@ -29,9 +29,9 @@ $class = ' class="' . implode(' ', $classies) . '"';
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--no"><?php // No ?>
 		<?php echo $data['CuCustomFieldDefinition']['id']; ?>
 	</td>
-	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--title"><?php // タイトル ?>
+	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--title"><?php // フィールド定義名 ?>
 		<?php
-		$this->BcBaser->link($data['CuCustomFieldDefinition']['name'],
+		$this->BcBaser->link($data['CuCustomFieldDefinition']['field_name'],
 			[
 				'controller' => 'cu_custom_field_definitions',
 				'action' => 'edit',
@@ -43,8 +43,8 @@ $class = ' class="' . implode(' ', $classies) . '"';
 			]);
 		?>
 	</td>
-	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--hasCustomField"><?php // フィールド名 ?>
-		<?php echo $data['CuCustomFieldDefinition']['field_name'] ?>
+	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--hasCustomField"><?php // 入力欄ラベル ?>
+		<?php echo h($data['CuCustomFieldDefinition']['name']); ?>
 	</td>
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--hasCustomField"><?php // フィールドタイプ ?>
 		<?php
