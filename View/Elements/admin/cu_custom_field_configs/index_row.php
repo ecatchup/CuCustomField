@@ -19,10 +19,14 @@ if (!$this->CuCustomField->allowPublish($data, 'CuCustomFieldConfig')) {
 	$classies = array('publish');
 }
 $class=' class="'.implode(' ', $classies).'"';
+$site = $this->CuCustomField->getSiteByBlogContentId($data['CuCustomFieldConfig']['content_id']);
 ?>
 <tr<?php echo $class ?>>
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--no"><?php // No ?>
 		<?php echo $data['CuCustomFieldConfig']['id']; ?>
+	</td>
+	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--no"><?php // サイト名 ?>
+		<?php echo h($site['name']) ?>
 	</td>
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--title"><?php // タイトル ?>
 		<?php

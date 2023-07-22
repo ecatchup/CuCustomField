@@ -33,6 +33,9 @@ $this->BcListTable->setColumnNumber(9);
 					]);
 				?>
 			</th>
+			<th class="bca-table-listup__thead-th">
+				サイト名
+			</th>
 			<th class="bca-table-listup__thead-th"><?php // content_id ?>
 				<?php
 				echo $this->Paginator->sort('content_id',

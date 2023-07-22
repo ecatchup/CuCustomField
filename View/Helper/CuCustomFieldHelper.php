@@ -463,4 +463,12 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		}
 	}
 
+	public function getSiteByBlogContentId($id)
+	{
+		$contentModel = ClassRegistry::init('Content');
+		$content = $contentModel->findByType('Blog.BlogContent', $id);
+		if(!$content) return '';
+		return $content['Site'];
+	}
+
 }
