@@ -164,9 +164,9 @@ class CuCfFileBehavior extends ModelBehavior
 								'type' => 'all',
 								'namefield' => 'no',
 								'nameformat' => '%08d',
-								'imageresize'  => ['width' => 1000, 'height' => 1000, 'thumb' => false],
 								'imagecopy' => [
-									'thumb' => ['suffix' => '_thumb', 'width' => 300, 'height' => 300]
+									'large' => ['suffix' => '_large', 'width' => 1000, 'height' => 1000],
+									'thumb' => ['suffix' => '_thumb', 'width' => 300, 'height' => 300],
 								]
 							];
 						}
@@ -269,9 +269,9 @@ class CuCfFileBehavior extends ModelBehavior
 						'type' => 'all',
 						'namefield' => 'no',
 						'nameformat' => '%08d',
-						'imageresize' => ['width' => 1000, 'height' => 1000],
 						'imagecopy' => [
-							'thumb' => ['suffix' => '_thumb', 'width' => 300, 'height' => 300]
+							'large' => ['suffix' => '_large', 'width' => 1000, 'height' => 1000],
+							'thumb' => ['suffix' => '_thumb', 'width' => 300, 'height' => 300],
 						]
 					];
 				}
