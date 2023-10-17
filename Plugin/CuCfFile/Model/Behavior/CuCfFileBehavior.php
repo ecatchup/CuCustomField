@@ -331,4 +331,14 @@ class CuCfFileBehavior extends ModelBehavior
 		return true;
 	}
 
+	/**
+	 * renameToBasenameFields
+	 * @param Model $Model
+	 */
+	public function renameToBasenameFields(Model $model, $copy = false)
+	{
+		$model->data[$model->alias] = $this->BcFileUploader->renameToBasenameFields($model->data[$model->alias], $copy);
+		return $model->data;
+	}
+
 }

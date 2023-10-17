@@ -642,6 +642,10 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			}
 			$this->CuCustomFieldValueModel->fieldConfig = $fieldConfig;
 
+			$data = array_merge($data, [
+				'id' => $event->data['id'],
+				'no' => $event->data['data']['BlogPost']['no']
+			]);
 			$this->CuCustomFieldValueModel->clear();
 			$this->CuCustomFieldValueModel->set($data);
 			$beforeSaveEvent = new CakeEvent('Model.beforeSave', $this->CuCustomFieldValueModel, []);
@@ -650,9 +654,9 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 			if (!$beforeSaveEvent->result) {
 				return false;
 			}
+			$this->CuCustomFieldValueModel->renameToBasenameFields(true);
 			$saveData[$this->CuCustomFieldValueModel->name] = $this->CuCustomFieldValueModel->data['CuCustomFieldValue'];
 			unset($saveData[$this->CuCustomFieldValueModel->name]['relate_id']);
-
 			$this->CuCustomFieldValueModel->saveSection($event->data['id'], $saveData, 'CuCustomFieldValue', null, false);
 		}
 	}

@@ -31,7 +31,7 @@ class CuCfFileControllerEventListener extends BcControllerEventListener {
 	 * @param CakeEvent $event
 	 */
 	public function startup(CakeEvent $event) {
-		if(!$this->isAction(['BlogPosts.AdminAdd', 'BlogPosts.AdminEdit', 'BlogPosts.AdminDelete', 'Blog.Archives', 'Blog.Index'])) {
+		if(!$this->isAction(['BlogPosts.AdminAdd', 'BlogPosts.AdminEdit', 'BlogPosts.AdminDelete', 'Blog.Archives', 'Blog.Index', 'BlogPosts.AdminAjaxCopy'])) {
 			return;
 		}
 		$controller = $event->subject();
