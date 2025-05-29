@@ -411,9 +411,9 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 
 	public function beforeDelete($cascade = true)
 	{
-		// 削除するフィールドの情報を保存
-		$this->deleteData = $this->read();
-		return true;
+	// 削除するフィールドの情報を保存
+	$this->deleteData = $this->read();
+	return true;
 	}
 
 	public function afterDelete($cascade = true)
