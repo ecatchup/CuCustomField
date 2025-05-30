@@ -427,21 +427,17 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 		// 消したいデータのdefinitionsを取得する
 		$deleteData = $this->deleteData;
 
-		// 消したいデータのconfig_idを作成
-		$deleteDataConfigId = $deleteData["CuCustomFieldDefinition"]["config_id"];
-		//config_idをもとに、消したいデータに属するconfigsを特定する
-		$deleteDataConfig = $CuCustomFieldConfig->findById($deleteDataConfigId);
+		//config_idをもとに、消したいデータに属するconfigを特定
+		$deleteDataConfig = $CuCustomFieldConfig->findById($deleteData["CuCustomFieldDefinition"]["config_id"]);
 		// deleteDataConfigがない場合、エラー吐くのでreturn処理
 		if (empty($deleteDataConfig)) {
 			return false;
 		}
 
-		// 消したいデータに属するconfigsのコンテンツidを取得
-		$deleteDataId = $deleteDataConfig["CuCustomFieldConfig"]["content_id"];
-		// そのコンテンツidに属するblogpostテーブルのidのみ全取得
+		// blogPostのblog_content_idが、configのcontent_idと一致するデータのidを全て取得
 		$deleteBlogPosts = $BlogPost->find('list',[
 			'fields' => ['BlogPost.id'],
-			'conditions' => ['blog_content_id' => $deleteDataId],
+			'conditions' => ['blog_content_id' => $deleteDataConfig["CuCustomFieldConfig"]["content_id"]],
 			'recursive' => -1,
 		]);
 
