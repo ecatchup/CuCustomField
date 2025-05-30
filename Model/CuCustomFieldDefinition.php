@@ -418,7 +418,7 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 
 	public function afterDelete($cascade = true)
 	{
-				// CuCustomFieldValueモデルのロード
+		// CuCustomFieldValueモデルのロード
 		$CuCustomFieldValue = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
 		// CuCustomFieldConfisモデルのロード
 		$CuCustomFieldConfig = ClassRegistry::init('CuCustomField.CuCustomFieldConfig');
