@@ -408,4 +408,60 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 			return true;
 		}
 	}
+
+	/**
+	 * カスタムフィールドの設定を保存する
+	 *
+	 */
+	public function beforeDelete($cascade = true)
+	{
+		// 削除するフィールドの情報を保存
+		$this->deleteData = $this->read();
+		return true;
+	}
+
+	/**
+	 * カスタムフィールドの設定を削除する
+	 *
+	 */
+	public function afterDelete($cascade = true)
+	{
+		// CuCustomFieldValueモデルのロード
+		$CuCustomFieldValue = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
+		// CuCustomFieldConfisモデルのロード
+		$CuCustomFieldConfig = ClassRegistry::init('CuCustomField.CuCustomFieldConfig');
+		// blogpostsモデルのロード　
+		$BlogPost = ClassRegistry::init('Blog.BlogPost');
+		// 消したいデータのdefinitionsを取得する
+		$deleteData = $this->deleteData;
+
+		//config_idをもとに、消したいデータに属するconfigを特定
+		$deleteDataConfig = $CuCustomFieldConfig->findById($deleteData["CuCustomFieldDefinition"]["config_id"]);
+		// deleteDataConfigがない場合、エラー吐くのでreturn処理
+		if (empty($deleteDataConfig)) {
+			return false;
+		}
+
+		// blogPostのblog_content_idが、configのcontent_idと一致するデータのidを全て取得
+		$deleteBlogPosts = $BlogPost->find('list',[
+			'fields' => ['BlogPost.id'],
+			'conditions' => ['blog_content_id' => $deleteDataConfig["CuCustomFieldConfig"]["content_id"]],
+			'recursive' => -1,
+		]);
+
+		// 削除条件を作成
+		$conditions = [
+			'CuCustomFieldValue.relate_id' => array_values($deleteBlogPosts),
+			'OR' => [
+				['CuCustomFieldValue.key' => 'CuCustomFieldValue.id'],
+				['CuCustomFieldValue.key' => 'CuCustomFieldValue.no'],
+				['CuCustomFieldValue.key' =>  'CuCustomFieldValue.'. $deleteData["CuCustomFieldDefinition"]["name"]],
+			]
+		];
+
+		if ($CuCustomFieldValue->deleteAll($conditions, false)) {
+			clearViewCache();
+		}
+	}
+
 }

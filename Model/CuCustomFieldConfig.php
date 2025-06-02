@@ -53,4 +53,45 @@ class CuCustomFieldConfig extends CuCustomFieldAppModel
 		return $data;
 	}
 
+	/**
+	 * カスタムフィールドの設定を保存する
+	 *
+	 */
+	public function beforeDelete($cascade = true)
+	{
+		// 削除するフィールドの情報を保存
+		$this->deleteData = $this->read();
+		return true;
+	}
+
+	/**
+	 * カスタムフィールドの設定を削除する
+	 *
+	 */
+	public function afterDelete($cascade = true)
+	{
+		// CuCustomFieldValueモデルのロード
+		$CuCustomFieldValue = ClassRegistry::init('CuCustomField.CuCustomFieldValue');
+		// blogpostsモデルのロード　
+		$BlogPost = ClassRegistry::init('Blog.BlogPost');
+		// 消したいデータのdefinitionsを取得する
+		$deleteData = $this->deleteData;
+
+		// そのコンテンツidに属するblogpostテーブルのidのみ全取得
+		$deleteBlogPosts = $BlogPost->find('list',[
+			'fields' => ['BlogPost.id'],
+			'conditions' => ['blog_content_id' => $deleteData["CuCustomFieldConfig"]["content_id"]],
+			'recursive' => -1,
+		]);
+
+		// 削除条件を作成
+		$conditions = [
+			'CuCustomFieldValue.relate_id' => array_values($deleteBlogPosts),
+		];
+
+		if ($CuCustomFieldValue->deleteAll($conditions, false)) {
+			clearViewCache();
+		}
+		return true;
+	}
 }
