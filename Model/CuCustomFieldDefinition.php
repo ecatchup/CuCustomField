@@ -409,6 +409,10 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 		}
 	}
 
+	/**
+	 * カスタムフィールドの設定を保存する
+	 *
+	 */
 	public function beforeDelete($cascade = true)
 	{
 		// 削除するフィールドの情報を保存
@@ -416,6 +420,10 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 		return true;
 	}
 
+	/**
+	 * カスタムフィールドの設定を削除する
+	 *
+	 */
 	public function afterDelete($cascade = true)
 	{
 		// CuCustomFieldValueモデルのロード
@@ -443,8 +451,12 @@ class CuCustomFieldDefinition extends CuCustomFieldAppModel
 
 		// 削除条件を作成
 		$conditions = [
-			'CuCustomFieldValue.key' => "CuCustomFieldValue.". $deleteData["CuCustomFieldDefinition"]["name"],
 			'CuCustomFieldValue.relate_id' => array_values($deleteBlogPosts),
+			'OR' => [
+				['CuCustomFieldValue.key' => 'CuCustomFieldValue.id'],
+				['CuCustomFieldValue.key' => 'CuCustomFieldValue.no'],
+				['CuCustomFieldValue.key' =>  'CuCustomFieldValue.'. $deleteData["CuCustomFieldDefinition"]["name"]],
+			]
 		];
 
 		if ($CuCustomFieldValue->deleteAll($conditions, false)) {
