@@ -61,8 +61,8 @@ class CuCustomFieldConfig extends CuCustomFieldAppModel
 	{
 		// 削除するフィールドの情報を保存
 		$this->deleteData = $this->read();
-        return true;
-    }
+		return true;
+	}
 
 	/**
 	 * カスタムフィールドの設定を削除する
