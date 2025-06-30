@@ -10,12 +10,18 @@
 
 $(function(){
     $('.btn-add-loop').click(function(){
+        $(this).prop('disabled',true);//ボタンを無効化する
         var srcFieldName = $(this).attr('data-src');
         var count = $(this).attr('data-count');
         var clone = $("#CufcLoopSrc" + srcFieldName).clone();
         clone.find('input,select,textarea').each(function(){
+            console.log(count);
+            //console.log($(this).attr('name'));
             $(this).attr('name', $(this).attr('name').replace('__loop-src__', count));
+            //console.log($(this).attr('name'));
+            console.log($(this).attr('id'));
             $(this).attr('id', $(this).attr('id').replace('Loop-src', count));
+            console.log($(this).attr('id'));
         });
         // label for属性もループ番号に変更
         clone.find('label').each(function(){
@@ -29,6 +35,7 @@ $(function(){
         $("#loop-" + srcFieldName).append(clone);
         clone.slideDown(150);
         $(this).attr('data-count', Number(count) + 1);
+        $(this).prop('disabled',false);//ボタンを有効化する
         return false;
     });
     $(".btn-delete-loop").click(deleteLoopBlock);
