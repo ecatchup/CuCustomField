@@ -204,6 +204,14 @@ class CuCfFileHelper extends AppHelper {
 			if($thumb) {
 				$fieldValue = preg_replace('/^(.+\/)([^\/]+)(\.[a-z]+)$/', "$1$2_thumb$3", $fieldValue);
 			}
+			// CuCustomfieldでアップロードした画像が保存ボタンを押すまでプレビューに反映されない問題を解決
+			$query = $this->request->query;
+			// プレビュー且つ ファイルアップロードが完了する前の状態の場合
+			if (!empty($query['preview']) && !file_exists(WWW_ROOT. $this->saveUrl . $fieldValue) && empty($options['tmp'])) {
+				// tmpを有効化し、表示ファイルのパスを一時領域側に変更する。
+				$options['tmp'] = $fieldValue;
+			}
+
 			if(!empty($options['tmp'])) {
 				$fileUrl = '/uploads/tmp/' . str_replace(['.', '/'], ['_', '_'], $options['tmp']);
 			} else {
