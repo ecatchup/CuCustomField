@@ -35,10 +35,10 @@ if (empty($customFieldConfig)) {
 
 
 <?php /*if ($this->getRequest()->action == 'add'): ?>
-	<?php echo $this->BcForm->create('CuCustomFieldConfig', ['url' => ['action' => 'add']]) ?>
+	<?php echo $this->BcForm->create(null, ['url' => ['action' => 'add']]) ?>
 	<?php echo $this->BcForm->input('CuCustomFieldConfig.model', ['type' => 'hidden']) ?>
 <?php else: ?>
-	<?php echo $this->BcForm->create('CuCustomFieldConfig', ['url' => ['action' => 'edit']]) ?>
+	<?php echo $this->BcForm->create(null, ['url' => ['action' => 'edit']]) ?>
 	<?php echo $this->BcForm->input('CuCustomFieldConfig.id', ['type' => 'hidden']) ?>
 	<?php echo $this->BcForm->input('CuCustomFieldConfig.model', ['type' => 'hidden']) */?>
 <?php endif ?>
@@ -48,14 +48,14 @@ if (empty($customFieldConfig)) {
 	<?php
 	$contentsId = $data->content_id;
 	$this->BcBaser->link($blogContentDatas[$contentsId] . ' 設定に移動',
-		['admin' => true, 'plugin' => 'BcBlog', 'controller' => 'blog_contents', 'action' => 'edit', $contentsId],
+		['admin' => true, 'plugin' => 'BcBlog', 'controller' => 'BlogContents', 'action' => 'edit', $contentsId],
 		['class' => 'bca-btn']
 	);
 	?>
 	&nbsp;&nbsp;
 	<?php
 	$this->BcBaser->link($blogContentDatas[$contentsId] . ' 記事一覧に移動',
-		['admin' => true, 'plugin' => 'BcBlog', 'controller' => 'blog_posts', 'action' => 'index', $contentsId],
+		['admin' => true, 'plugin' => 'BcBlog', 'controller' => 'BlogPosts', 'action' => 'index', $contentsId],
 		['class' => 'bca-btn']
 	);
 	?>

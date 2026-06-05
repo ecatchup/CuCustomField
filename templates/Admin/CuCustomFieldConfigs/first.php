@@ -15,7 +15,7 @@
 ?>
 
 
-<?php echo $this->BcForm->create('CuCustomFieldConfig', array('action' => 'first')) ?>
+<?php echo $this->BcForm->create(null, array('action' => 'first')) ?>
 <?php echo $this->BcForm->input('CuCustomFieldConfig.active', array('type' => 'hidden', 'value' => '1')) ?>
 <table cellpadding="0" cellspacing="0" class="form-table section" id="ListTable">
 	<tr>

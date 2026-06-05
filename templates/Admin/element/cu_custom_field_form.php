@@ -30,7 +30,13 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', false);
   	<?php foreach($definitions as $definition): ?>
   		<?php if ($this->CuCustomField->judgeStatus($definition)): ?>
   			<?php
-        $fieldDefinitions = $definition->CuCustomFieldDefinitions;
+				$fieldDefinitions = [];
+				if (is_array($definition) && isset($definition['CuCustomFieldDefinitions']) && is_array($definition['CuCustomFieldDefinitions'])) {
+					$fieldDefinitions = $definition['CuCustomFieldDefinitions'];
+				} elseif (is_object($definition) && isset($definition->CuCustomFieldDefinitions) && is_array($definition->CuCustomFieldDefinitions)) {
+					$fieldDefinitions = $definition->CuCustomFieldDefinitions;
+				}
+				if (!$fieldDefinitions) continue;
         // debug($fieldDefinitions);
         // debug($post['CuCustomFieldValue'][$fieldDefinitions['field_name']]);
         // continue;
@@ -66,28 +72,39 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', false);
   								<div id="CucfLoop<?php echo $fieldDefinitions['field_name'] . '-' . $key ?>" class="cucf-loop-block">
   									<table class="bca-form-table">
                       <?php /* フィールド設定のループ */ ?>
-  										<?php foreach($fieldDefinitions['children'] as $child): // ループフィールド内 ?>
+		  								<?php foreach($fieldDefinitions['children'] as $child): // ループフィールド内 ?>
 
-                        <?php $child = $child->CuCustomFieldDefinitions; ?>
-    										<?php if ($this->CuCustomField->judgeStatus($child)): ?>
+		                        <?php
+		                        $childDefinition = [];
+		                        if (is_array($child) && isset($child['CuCustomFieldDefinitions']) && is_array($child['CuCustomFieldDefinitions'])) {
+		                          $childDefinition = $child['CuCustomFieldDefinitions'];
+		                        } elseif (is_object($child) && isset($child->CuCustomFieldDefinitions) && is_array($child->CuCustomFieldDefinitions)) {
+		                          $childDefinition = $child->CuCustomFieldDefinitions;
+		                        } elseif (is_array($child)) {
+		                          $childDefinition = $child;
+		                        }
+		                        if (!$childDefinition) continue;
+		                        $childContext = ['CuCustomFieldDefinition' => $childDefinition];
+		                        ?>
+		    										<?php if ($this->CuCustomField->judgeStatus($childContext)): ?>
     										<tr>
     											<th class="bca-form-table__label">
     												<?php
-                            echo $this->BcAdminForm->label("CuCustomFieldValue.{$fieldDefinitions['field_name']}.{$key}.{$child['field_name']}", $child['name']);
+		                            echo $this->BcAdminForm->label("CuCustomFieldValue.{$fieldDefinitions['field_name']}.{$key}.{$childDefinition['field_name']}", $childDefinition['name']);
                             ?>
-    												<?php if ($this->CuCustomField->judgeShowFieldConfig($child, ['field' => 'required'])): ?>&nbsp;
+														<?php if ($this->CuCustomField->judgeShowFieldConfig($childContext, ['field' => 'required'])): ?>&nbsp;
     													<span class="required bca-label" data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span>
     												<?php endif ?>
     											</th>
     											<td class="bca-form-table__input">
     												<?php
                             echo $this->CuCustomField->input(
-    													"CuCustomFieldValue.{$fieldDefinitions['field_name']}.{$key}.{$child['field_name']}",
-    													$child
+			    													"CuCustomFieldValue.{$fieldDefinitions['field_name']}.{$key}.{$childDefinition['field_name']}",
+			    													$childDefinition
     												);
                             ?>
     												<?php
-                            echo $this->BcForm->error("CuCustomFieldValue.{$fieldDefinitions['field_name']}_{$key}_{$child['field_name']}");
+		                            echo $this->BcForm->error("CuCustomFieldValue.{$fieldDefinitions['field_name']}_{$key}_{$childDefinition['field_name']}");
                             ?>
     											</td>
     										</tr>
@@ -111,23 +128,34 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', false);
   							<!-- 追加用のソース -->
   							<div id="CufcLoopSrc<?php echo $fieldDefinitions['field_name'] ?>" class="cucf-loop-block" hidden>
   								<table class="bca-form-table">
-                    <?php foreach($fieldDefinitions['children'] as $child): ?>
-                      <?php $child = $child->CuCustomFieldDefinitions; ?>
-                      <?php if ($this->CuCustomField->judgeStatus($child)): ?>
+									<?php foreach($fieldDefinitions['children'] as $child): ?>
+											<?php
+											$childDefinition = [];
+											if (is_array($child) && isset($child['CuCustomFieldDefinitions']) && is_array($child['CuCustomFieldDefinitions'])) {
+												$childDefinition = $child['CuCustomFieldDefinitions'];
+											} elseif (is_object($child) && isset($child->CuCustomFieldDefinitions) && is_array($child->CuCustomFieldDefinitions)) {
+												$childDefinition = $child->CuCustomFieldDefinitions;
+											} elseif (is_array($child)) {
+												$childDefinition = $child;
+											}
+											if (!$childDefinition) continue;
+											$childContext = ['CuCustomFieldDefinition' => $childDefinition];
+											?>
+											<?php if ($this->CuCustomField->judgeStatus($childContext)): ?>
                        <tr>
                         <th class="bca-form-table__label">
                          <?php
-                         echo $this->BcAdminForm->label("CuCustomFieldValue.{$fieldDefinitions['field_name']}.__loop-src__.{$child['field_name']}", $child['name']);
+												 echo $this->BcAdminForm->label("CuCustomFieldValue.{$fieldDefinitions['field_name']}.__loop-src__.{$childDefinition['field_name']}", $childDefinition['name']);
                          ?>
-                         <?php if ($this->CuCustomField->judgeShowFieldConfig($child, ['field' => 'required'])): ?>
+											 <?php if ($this->CuCustomField->judgeShowFieldConfig($childContext, ['field' => 'required'])): ?>
                            <span class="required bca-label" data-bca-label-type="required"><?php echo __d('baser', '必須') ?></span>
                          <?php endif ?>
                        </th>
                        <td class="bca-form-table__input">
                          <?php
                          echo $this->CuCustomField->input(
-                          "CuCustomFieldValue.{$fieldDefinitions['field_name']}.__loop-src__.{$child['field_name']}",
-                          $child
+													"CuCustomFieldValue.{$fieldDefinitions['field_name']}.__loop-src__.{$childDefinition['field_name']}",
+													$childDefinition
                         );
                         ?>
                       </td>

@@ -31,7 +31,14 @@ $class = ' class="' . implode(' ', $classies) . '"';
 	</td>
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--title"><?php // タイトル ?>
 		<?php
-		$this->BcBaser->link($data['CuCustomFieldDefinition']['name'],
+		$depth = (int)($data['CuCustomFieldDefinition']['_depth'] ?? 0);
+		$hasParent = !empty($data['CuCustomFieldDefinition']['parent_id']);
+		$linkTitle = (string)$data['CuCustomFieldDefinition']['name'];
+		if ($hasParent || $depth > 0) {
+			$indentLevel = max(1, $depth);
+			$linkTitle = str_repeat('　', $indentLevel) . '└ ' . $linkTitle;
+		}
+		$this->BcBaser->link($linkTitle,
 			[
 				'controller' => 'cu_custom_field_definitions',
 				'action' => 'edit',
@@ -119,15 +126,17 @@ $class = ' class="' . implode(' ', $classies) . '"';
 		if ($this->getRequest()->getAttribute('params')['pass']) {
 			$faArrowUp = '<i class="fa fa-arrow-up fa-2x" style="vertical-align: bottom;margin-left: 2px;"></i>';
 			$faArrowDown = '<i class="fa fa-arrow-down fa-2x" style="vertical-align: bottom;margin-left: 2px;"></i>';
-			if ($this->CuCustomField->isAvailableDefinitionMoveUp($datas, $count -1)) {
+
+			if ($this->CuCustomField->isAvailableDefinitionMoveUp($datas, $count - 1)) {
 				$this->BcBaser->link($faArrowUp, [
 					'controller' => 'cu_custom_field_definitions',
 					'action' => 'move_up',
 					$data['CuCustomFieldConfig']['id'],
 					$data['CuCustomFieldDefinition']['id']
 				], [
-					'class' => 'btn-up',
-					'title' => '上へ移動'
+					'class' => 'btn-up bca-btn-icon',
+					'title' => '上へ移動',
+					'escapeTitle' => false
 				]);
 			} else {
 				$this->BcBaser->link($faArrowUp, [
@@ -136,63 +145,37 @@ $class = ' class="' . implode(' ', $classies) . '"';
 					$data['CuCustomFieldConfig']['id'],
 					$data['CuCustomFieldDefinition']['id']
 				], [
-					'class' => 'btn-up',
+					'class' => 'btn-up bca-btn-icon',
 					'title' => '上へ移動',
-					'style' => 'display:none'
+					'style' => 'display:none',
+					'escapeTitle' => false
 				]);
-//				if (count($datas) > 2) {
-//					//最下段へ移動
-//					$this->BcBaser->link('<i class="fa fa-arrow-circle-down fa-2x" style="vertical-align: bottom;margin-left: 2px;"></i>',
-//							[
-//								'controller' => 'cu_custom_field_definitions',
-//								'action' => 'move_down',
-//								$data['CuCustomFieldConfig']['id'],
-//								$data['CuCustomFieldDefinition']['id'],
-//								'tobottom'
-//							],
-//							[
-//								'class' => 'btn-down',
-//								'title' => '最下段へ移動'
-//							]);
-//				}
 			}
-		}
-		if ($this->CuCustomField->isAvailableDefinitionMoveDown($datas, $count -1)) {
-			$this->BcBaser->link($faArrowDown, [
-				'controller' => 'cu_custom_field_definitions',
-				'action' => 'move_down',
-				$data['CuCustomFieldConfig']['id'],
-				$data['CuCustomFieldDefinition']['id']
-			], [
-				'class' => 'btn-down',
-				'title' => '下へ移動'
-			]);
-		} else {
-			$this->BcBaser->link($faArrowDown, [
-				'controller' => 'cu_custom_field_definitions',
-				'action' => 'move_down',
-				$data['CuCustomFieldConfig']['id'],
-				$data['CuCustomFieldDefinition']['id']
-			], [
-				'class' => 'btn-down',
-				'title' => '下へ移動',
-				'style' => 'display:none'
-			]);
-//			if (count($datas) > 2) {
-//				//最上段へ移動
-//				$this->BcBaser->link('<i class="fa fa-arrow-circle-up fa-2x" style="vertical-align: bottom;margin-left: 2px;"></i>',
-//					[
-//						'controller' => 'cu_custom_field_definitions',
-//						'action' => 'move_up',
-//						$data['CuCustomFieldConfig']['id'],
-//						$data['CuCustomFieldDefinition']['id'],
-//						'totop'
-//					],
-//					[
-//						'class' => 'btn-up',
-//						'title' => '最上段へ移動'
-//					]);
-//			}
+
+			if ($this->CuCustomField->isAvailableDefinitionMoveDown($datas, $count - 1)) {
+				$this->BcBaser->link($faArrowDown, [
+					'controller' => 'cu_custom_field_definitions',
+					'action' => 'move_down',
+					$data['CuCustomFieldConfig']['id'],
+					$data['CuCustomFieldDefinition']['id']
+				], [
+					'class' => 'btn-down bca-btn-icon',
+					'title' => '下へ移動',
+					'escapeTitle' => false
+				]);
+			} else {
+				$this->BcBaser->link($faArrowDown, [
+					'controller' => 'cu_custom_field_definitions',
+					'action' => 'move_down',
+					$data['CuCustomFieldConfig']['id'],
+					$data['CuCustomFieldDefinition']['id']
+				], [
+					'class' => 'btn-down bca-btn-icon',
+					'title' => '下へ移動',
+					'style' => 'display:none',
+					'escapeTitle' => false
+				]);
+			}
 		}
 		?>
 	</td>

@@ -21,7 +21,7 @@
 		<?php echo $this->BcForm->label('CuCustomFieldDefinition.choices', '選択肢') ?>
 	</th>
 	<td class="bca-form-table__input">
-		<?php echo $this->BcForm->input('CuCustomFieldDefinition.choices', ['type' => 'textarea', 'rows' => '4', 'placeholder' => "選択肢を\n改行毎に\n入力します"]) ?>
+		<?php echo $this->BcForm->input('CuCustomFieldDefinition.choices', ['type' => 'textarea', 'class' => 'bca-textarea__textarea', 'rows' => '4', 'placeholder' => "選択肢を\n改行毎に\n入力します"]) ?>
 		<?php echo $this->BcForm->error('CuCustomFieldDefinition.choices') ?>
 		<i class="bca-icon--question-circle btn help bca-help"></i>
 		<div class="helptext">

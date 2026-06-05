@@ -13,14 +13,44 @@
  */
 $(function () {
 
-    var fieldType = $("#CuCustomFieldDefinitionFieldType");
-    var parentId = $("#CuCustomFieldDefinitionParentId");
+    var fieldType = $("#CuCustomFieldDefinitionFieldType, [name='data[CuCustomFieldDefinition][field_type]'], [name='CuCustomFieldDefinition[field_type]']").first();
+    var parentId = $("#CuCustomFieldDefinitionParentId, [name='data[CuCustomFieldDefinition][parent_id]'], [name='CuCustomFieldDefinition[parent_id]']").first();
     var name = $("#CuCustomFieldDefinitionName");
     var fieldName = $("#CuCustomFieldDefinitionFieldName");
-    var validateRegex = $('#CuCustomFieldDefinitionValidateRegex');
+    var validateRegex = $("#CuCustomFieldDefinitionValidateRegex, [name='data[CuCustomFieldDefinition][validate_regex]'], [name='CuCustomFieldDefinition[validate_regex]']").first();
     var showFieldNameList = $('#show_field_name_list');
-    var validateRegexCheck = $('#CuCustomFieldDefinitionValidateREGEXCHECK');
+    var validateRegexCheck = $("#CuCustomFieldDefinitionValidateREGEXCHECK, input[name='data[CuCustomFieldDefinition][validate][]'][value='REGEX_CHECK'], input[name='CuCustomFieldDefinition[validate][]'][value='REGEX_CHECK']").first();
     var btnSave = $("#BtnSave");
+
+    function isFieldType(type) {
+        var value = (fieldType.val() || '').toString();
+        return value === type;
+    }
+
+    function isFieldTypeIn(types) {
+        var value = (fieldType.val() || '').toString();
+        return $.inArray(value, types) !== -1;
+    }
+
+    function toggleValidateOptions(showHalf, showNumeric, showRegex, showNoncheck) {
+        $("#CuCustomFieldDefinitionValidateHANKAKUCHECK, input[name='data[CuCustomFieldDefinition][validate][]'][value='HANKAKU_CHECK'], input[name='CuCustomFieldDefinition[validate][]'][value='HANKAKU_CHECK']").parent().toggle(!!showHalf);
+        $("#CuCustomFieldDefinitionValidateNUMERICCHECK, input[name='data[CuCustomFieldDefinition][validate][]'][value='NUMERIC_CHECK'], input[name='CuCustomFieldDefinition[validate][]'][value='NUMERIC_CHECK']").parent().toggle(!!showNumeric);
+        $("#CuCustomFieldDefinitionValidateREGEXCHECK, input[name='data[CuCustomFieldDefinition][validate][]'][value='REGEX_CHECK'], input[name='CuCustomFieldDefinition[validate][]'][value='REGEX_CHECK']").parent().toggle(!!showRegex);
+        $("#CuCustomFieldDefinitionValidateNONCHECKCHECK, input[name='data[CuCustomFieldDefinition][validate][]'][value='NONCHECK_CHECK'], input[name='CuCustomFieldDefinition[validate][]'][value='NONCHECK_CHECK']").parent().toggle(!!showNoncheck);
+        if (!showRegex) {
+            setRegexGroupVisible(false);
+        }
+    }
+
+    function setRegexGroupVisible(visible) {
+        var group = $('#CuCfValidateRegexGroup');
+        if (!group.length) return;
+        if (visible) {
+            group.removeClass('display-none').css('display', 'block');
+        } else {
+            group.addClass('display-none').css('display', 'none');
+        }
+    }
 
     fieldName.focus();
     fieldTypeChangeHandler();
@@ -42,9 +72,19 @@ $(function () {
         });
     }
 
-    fieldType.change(fieldTypeChangeHandler);
+    fieldType.change(function (e) {
+        // 他のJSの切替処理が先に走っても最終状態を上書きする
+        setTimeout(function () {
+            fieldTypeChangeHandler(e);
+        }, 0);
+    });
 
-    parentId.change(parentIdChangeHandler);
+    parentId.change(function () {
+        setTimeout(function () {
+            parentIdChangeHandler();
+            fieldTypeChangeHandler();
+        }, 0);
+    });
     // カスタムフィールド名、ラベル名、フィールド名の入力時、リアルタイムで重複チェックを行う
     name.keyup(checkDuplicateValueChangeHandler);
 
@@ -81,13 +121,8 @@ $(function () {
     });
 
     // 正規表現チェックのチェック時に、専用の入力欄を表示する
-    validateRegexCheck.change(function () {
-        $value = $(this).prop('checked');
-        if ($value) {
-            $('#CuCfValidateRegexGroup').show('slow');
-        } else {
-            $('#CuCfValidateRegexGroup').hide('high');
-        }
+    $(document).on('change', "#CuCustomFieldDefinitionValidateREGEXCHECK, input[name='data[CuCustomFieldDefinition][validate][]'][value='REGEX_CHECK'], input[name='CuCustomFieldDefinition[validate][]'][value='REGEX_CHECK']", function () {
+        setRegexGroupVisible($(this).prop('checked'));
     });
 
     /**
@@ -176,7 +211,7 @@ $(function () {
             .find('tr')
             .not('#RowCuCfPrepend, #RowCuCfAppend, #RowCuCfDescription, #RowCuCfDefaultValue, #RowCuCfRequired')
             .hide();
-        if(fieldType.val() === 'loop') {
+        if(isFieldType('loop')) {
             $("#RowCuCfParentId").hide();
             $("#RowCuCfDefaultValue").hide();
             $("#RowCuCfRequired").hide();
@@ -187,13 +222,91 @@ $(function () {
             $("#RowCuCfRequired").show();
             $("#RowCuCfParentId").show();
         }
+
+        var hasParent = !!parentId.val();
+
+        if (isFieldTypeIn(['text', 'textarea'])) {
+            $("#RowCuCfPlaceholder").show();
+            $("#RowCuCfSize").show();
+            $("#CuCfSize").show();
+            $("#CuCfMaxLength").show();
+            $("#CuCfCounter").show();
+        }
+
+        if (isFieldType('textarea')) {
+            $("#RowCuCfRows").show();
+            $("#CuCfRows").show().attr('placeholder', '3');
+            $("#CuCfCols").show().attr('placeholder', '40');
+            $("#CuCfEditorToolType").hide();
+            $("#CuCfSize").hide();
+            $("#CuCfMaxLength").hide();
+        }
+
+        if (isFieldType('wysiwyg')) {
+            $("#RowCuCfRows").show();
+            $("#RowCuCfParentId").hide();
+            $("#CuCfRows").show().attr('placeholder', '200px');
+            $("#CuCfCols").show().attr('placeholder', '100%');
+            $("#CuCfEditorToolType").show();
+        }
+
+        if (isFieldTypeIn(['select', 'radio', 'multiple', 'multiCheckbox', 'pref'])) {
+            $("#RowCuCfChoices").show();
+        }
+
+        if (isFieldType('radio')) {
+            $("#RowCuCfSeparator").show();
+        }
+
+        if (isFieldType('checkbox')) {
+            $("#RowCuCfLabelName").show();
+        }
+
+        if (isFieldType('related')) {
+            $("#RowCuCfRelated").show();
+        }
+
+        if (isFieldType('googlemaps')) {
+            $("#RowCuCfParentId").hide();
+            $("#RowCuCfGoogleMaps").show();
+        }
+
+        if (isFieldType('file')) {
+            $("#RowCuCfDefaultValue").hide();
+        }
+
+        if (!hasParent && isFieldTypeIn(['text', 'textarea', 'multiple', 'multiCheckbox'])) {
+            $("#RowCuCfValidate").show();
+            if (isFieldTypeIn(['multiple', 'multiCheckbox'])) {
+                toggleValidateOptions(false, false, false, true);
+            } else {
+                toggleValidateOptions(true, true, true, false);
+                if (validateRegexCheck.prop('checked')) {
+                    setRegexGroupVisible(true);
+                }
+            }
+        } else {
+            $("#RowCuCfValidate").hide();
+            setRegexGroupVisible(false);
+        }
+
+        if (!hasParent && isFieldTypeIn(['text', 'textarea'])) {
+            $("#RowCuCfAutoConvert").show();
+        }
+
+        if (isFieldType('pref')) {
+            $("#PreviewPrefList").show();
+        } else {
+            $("#PreviewPrefList").hide();
+        }
+
         parentIdChangeHandler();
         if(e !== undefined) {
             // バリデーション系は値が残っていると意図しない処理になってしまうので切り替えの度に初期化
-            $("#CuCustomFieldDefinitionValidateHANKAKUCHECK").attr('checked', false);
-            $("#CuCustomFieldDefinitionValidateNUMERICCHECK").attr('checked', false);
-            $("#CuCustomFieldDefinitionValidateREGEXCHECK").attr('checked', false);
-            $("#CuCustomFieldDefinitionValidateNONCHECKCHECK").attr('checked', false);
+            $("#CuCustomFieldDefinitionValidateHANKAKUCHECK, input[name='data[CuCustomFieldDefinition][validate][]'][value='HANKAKU_CHECK'], input[name='CuCustomFieldDefinition[validate][]'][value='HANKAKU_CHECK']").prop('checked', false);
+            $("#CuCustomFieldDefinitionValidateNUMERICCHECK, input[name='data[CuCustomFieldDefinition][validate][]'][value='NUMERIC_CHECK'], input[name='CuCustomFieldDefinition[validate][]'][value='NUMERIC_CHECK']").prop('checked', false);
+            $("#CuCustomFieldDefinitionValidateREGEXCHECK, input[name='data[CuCustomFieldDefinition][validate][]'][value='REGEX_CHECK'], input[name='CuCustomFieldDefinition[validate][]'][value='REGEX_CHECK']").prop('checked', false);
+            $("#CuCustomFieldDefinitionValidateNONCHECKCHECK, input[name='data[CuCustomFieldDefinition][validate][]'][value='NONCHECK_CHECK'], input[name='CuCustomFieldDefinition[validate][]'][value='NONCHECK_CHECK']").prop('checked', false);
             $("#CuCustomFieldDefinitionMaxLength").val('');
         }
     }

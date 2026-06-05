@@ -1,5 +1,10 @@
 <?php
 namespace CuCustomField\Model\Table;
+
+use ArrayObject;
+use Cake\Datasource\EntityInterface;
+use Cake\Event\EventInterface;
+
 /**
  * CuCustomField : baserCMS Custom Field
  * Copyright (c) Catchup, Inc. <https://catchup.co.jp>
@@ -18,6 +23,20 @@ class CuCustomFieldDefinitionsTable extends CuCustomFieldAppModelsTable
 {
 
 	/**
+	 * 4系互換: エイリアス
+	 *
+	 * @var string
+	 */
+	public $alias = 'CuCustomFieldDefinition';
+
+	/**
+	 * 4系互換: 一時データ
+	 *
+	 * @var array
+	 */
+	public $data = [];
+
+	/**
 	 * actsAs
 	 *
 	 * @var array
@@ -32,7 +51,7 @@ class CuCustomFieldDefinitionsTable extends CuCustomFieldAppModelsTable
 	 */
 	public $belongsTo = ['CuCustomFieldConfig' => [
         'className' => 'CuCustomField.CuCustomFieldConfig',
-        'sort' => ['CuCustomFieldDefinitions.lft' => 'ASC'],
+		'sort' => ['lft' => 'ASC'],
 		'foreignKey' => 'config_id'
     ]];
 
@@ -59,6 +78,7 @@ class CuCustomFieldDefinitionsTable extends CuCustomFieldAppModelsTable
     {
         parent::initialize($config);
 
+		$this->setAlias('CuCustomFieldDefinition');
         $this->setTable('cu_custom_field_definitions');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
@@ -183,10 +203,10 @@ class CuCustomFieldDefinitionsTable extends CuCustomFieldAppModelsTable
 			$this->alias . '.' . key($check) => $check[key($check)],
 			$this->alias . '.config_id' => $this->data[$this->alias]['config_id'],
 		];
-		if ($this->exists()) {
+		if (!empty($this->id) && $this->exists([$this->getAlias() . '.' . $this->getPrimaryKey() => $this->id])) {
 			$conditions['NOT'] = [$this->alias . '.' . $this->primaryKey => $this->id];
 		}
-		$ret = $this->find('first', ['conditions' => $conditions]);
+		$ret = $this->find()->where($conditions)->enableHydration(false)->first();
 		if ($ret) {
 			return false;
 		} else {
@@ -262,18 +282,26 @@ class CuCustomFieldDefinitionsTable extends CuCustomFieldAppModelsTable
 	 * beforeSave
 	 * マルチチェックボックスへの対応：配列で送られた値はシリアライズ化する
 	 *
-	 * @param array $options
-	 * @return boolean
+	 * @param EventInterface $event
+	 * @param EntityInterface $entity
+	 * @param ArrayObject $options
+	 * @return void
 	 */
-	public function beforeSave($options = [])
+	public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options): void
 	{
-		parent::beforeSave($options);
-		foreach($this->data[$this->alias] as $key => $value) {
+		foreach ((array) $entity->toArray() as $key => $value) {
 			if (is_array($value)) {
-				$this->data[$this->alias][$key] = serialize($value);
+				$entity->set($key, serialize($value));
 			}
 		}
-		return true;
+
+		if (!empty($this->data[$this->alias]) && is_array($this->data[$this->alias])) {
+			foreach ($this->data[$this->alias] as $key => $value) {
+				if (is_array($value)) {
+					$this->data[$this->alias][$key] = serialize($value);
+				}
+			}
+		}
 	}
 
 	/**
@@ -327,11 +355,12 @@ class CuCustomFieldDefinitionsTable extends CuCustomFieldAppModelsTable
 				$conditions = [
 					$this->alias . '.config_id' => $this->configId,
 				];
-				$controlSources['field_name'] = $this->find('list', [
+					$controlSources['field_name'] = $this->find('list', [
+						'keyField' => 'field_name',
+						'valueField' => 'field_name',
 					'conditions' => $conditions,
-					'fields' => ['field_name'],
 					'order' => ['lft' => 'ASC'],
-				]);
+					])->toArray();
 				break;
 		}
 		if (isset($controlSources[$field])) {
@@ -339,6 +368,41 @@ class CuCustomFieldDefinitionsTable extends CuCustomFieldAppModelsTable
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * ツリーリストを取得する（4系互換）
+	 *
+	 * @param array $conditions
+	 * @return array
+	 */
+	public function generateTreeList($conditions = [])
+	{
+		$rows = $this->find()
+			->select(['id', 'name', 'parent_id', 'lft'])
+			->where((array) $conditions)
+			->orderBy(['lft' => 'ASC'])
+			->enableHydration(false)
+			->all()
+			->toList();
+
+		$byId = [];
+		foreach ($rows as $row) {
+			$byId[$row['id']] = $row;
+		}
+
+		$list = [];
+		foreach ($rows as $row) {
+			$depth = 0;
+			$parentId = $row['parent_id'] ?? null;
+			while ($parentId !== null && isset($byId[$parentId]) && $depth < 50) {
+				$depth++;
+				$parentId = $byId[$parentId]['parent_id'] ?? null;
+			}
+			$list[$row['id']] = str_repeat('_', $depth) . (string) ($row['name'] ?? '');
+		}
+
+		return $list;
 	}
 
 	/**
@@ -362,25 +426,37 @@ class CuCustomFieldDefinitionsTable extends CuCustomFieldAppModelsTable
 	 */
 	public function up($id, $configId)
 	{
-		$parentId = $this->field('parent_id', ['CuCustomFieldDefinition.id' => $id]);
-		$definitions = $this->find('all', [
-			'conditions' => ['CuCustomFieldDefinition.parent_id' => $parentId],
-			'order' => 'CuCustomFieldDefinition.lft',
-			'recursive' => -1
-		]);
+		$node = $this->get($id);
+		$target = $this->find()
+			->select(['id', 'parent_id'])
+			->where(['id' => $id])
+			->enableHydration(false)
+			->first();
+		if (!$target) {
+			return false;
+		}
+		$definitions = $this->find()
+			->select(['id', 'config_id', 'lft'])
+			->where(['parent_id IS' => $target['parent_id']])
+			->orderAsc('lft')
+			->enableHydration(false)
+			->toArray();
 		$currentKey = null;
 		foreach($definitions as $key => $value) {
-			if ($value['CuCustomFieldDefinition']['id'] === $id) {
+			if ((int) $value['id'] === (int) $id) {
 				$currentKey = $key;
 				break;
 			}
+		}
+		if ($currentKey === null) {
+			return false;
 		}
 
 		$offset = 0;
 		for($i = $currentKey - 1; $i >= 0; $i--) {
 			$offset++;
 			if (isset($definitions[$i])) {
-				if ($definitions[$i]['CuCustomFieldDefinition']['config_id'] === $configId) {
+				if ((int) $definitions[$i]['config_id'] === (int) $configId) {
 					break;
 				}
 			} else {
@@ -388,7 +464,7 @@ class CuCustomFieldDefinitionsTable extends CuCustomFieldAppModelsTable
 			}
 		}
 		if ($offset > 0) {
-			return $this->moveUp($id, $offset);
+			return $this->moveUp($node, $offset);
 		} else {
 			return true;
 		}
@@ -403,24 +479,36 @@ class CuCustomFieldDefinitionsTable extends CuCustomFieldAppModelsTable
 	 */
 	public function down($id, $configId)
 	{
-		$parentId = $this->field('parent_id', ['CuCustomFieldDefinition.id' => $id]);
-		$definitions = $this->find('all', [
-			'conditions' => ['CuCustomFieldDefinition.parent_id' => $parentId],
-			'order' => 'CuCustomFieldDefinition.lft',
-			'recursive' => -1
-		]);
+		$node = $this->get($id);
+		$target = $this->find()
+			->select(['id', 'parent_id'])
+			->where(['id' => $id])
+			->enableHydration(false)
+			->first();
+		if (!$target) {
+			return false;
+		}
+		$definitions = $this->find()
+			->select(['id', 'config_id', 'lft'])
+			->where(['parent_id IS' => $target['parent_id']])
+			->orderAsc('lft')
+			->enableHydration(false)
+			->toArray();
 		$currentKey = null;
 		foreach($definitions as $key => $value) {
-			if ($value['CuCustomFieldDefinition']['id'] === $id) {
+			if ((int) $value['id'] === (int) $id) {
 				$currentKey = $key;
 				break;
 			}
+		}
+		if ($currentKey === null) {
+			return false;
 		}
 		$offset = 0;
 		for($i = $currentKey + 1; $i <= count($definitions) - 1; $i++) {
 			$offset++;
 			if (isset($definitions[$i])) {
-				if ($definitions[$i]['CuCustomFieldDefinition']['config_id'] === $configId) {
+				if ((int) $definitions[$i]['config_id'] === (int) $configId) {
 					break;
 				}
 			} else {
@@ -428,7 +516,7 @@ class CuCustomFieldDefinitionsTable extends CuCustomFieldAppModelsTable
 			}
 		}
 		if ($offset > 0) {
-			return $this->moveDown($id, $offset);
+			return $this->moveDown($node, $offset);
 		} else {
 			return true;
 		}

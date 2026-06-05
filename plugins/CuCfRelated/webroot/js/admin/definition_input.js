@@ -10,7 +10,7 @@
 
 
 $(function(){
-    var fieldType = $("#CuCustomFieldDefinitionFieldType");
+    var fieldType = $("#CuCustomFieldDefinitionFieldType, [name='data[CuCustomFieldDefinition][field_type]'], [name='CuCustomFieldDefinition[field_type]']").first();
 
     fieldType.change(switchRelated);
     switchRelated();

@@ -23,7 +23,7 @@
 	<td class="bca-form-table__input">
 		<span id="CuCfRows">
 			<?php echo $this->BcForm->label('CuCustomFieldDefinition.rows', '行数') ?>
-			<?php echo $this->BcForm->input('CuCustomFieldDefinition.rows', ['type' => 'text', 'size' => 5, 'placeholder' => '3']) ?>
+			<?php echo $this->BcForm->input('CuCustomFieldDefinition.rows', ['type' => 'text', 'class' => 'bca-textbox__input', 'size' => 5, 'placeholder' => '3']) ?>
 			<i class="bca-icon--question-circle btn help bca-help"></i>
 			<div id="helptextCuCustomFieldDefinitionRows" class="helptext">
 				<ul>
@@ -35,7 +35,7 @@
 		</span>
 		<span id="CuCfCols">
 			<?php echo $this->BcForm->label('CuCustomFieldDefinition.cols', '横幅サイズ') ?>
-			<?php echo $this->BcForm->input('CuCustomFieldDefinition.cols', ['type' => 'text', 'size' => 5, 'placeholder' => '40']) ?>
+			<?php echo $this->BcForm->input('CuCustomFieldDefinition.cols', ['type' => 'text', 'class' => 'bca-textbox__input', 'size' => 5, 'placeholder' => '40']) ?>
 			<i class="bca-icon--question-circle btn help bca-help"></i>
 			<div id="helptextCuCustomFieldDefinitionCols" class="helptext">
 				<ul>
@@ -47,7 +47,7 @@
 		</span>
 		<span id="CuCfEditorToolType">
 			<?php echo $this->BcForm->label('CuCustomFieldDefinition.editor_tool_type', 'Ckeditorのタイプ') ?>
-			<?php echo $this->BcForm->input('CuCustomFieldDefinition.editor_tool_type', ['type' => 'select', 'options' => $customFieldConfig['editor_tool_type']]) ?>
+			<?php echo $this->BcForm->input('CuCustomFieldDefinition.editor_tool_type', ['type' => 'select', 'class' => 'bca-select__select', 'options' => $customFieldConfig['editor_tool_type']]) ?>
 			<?php echo $this->BcForm->error('CuCustomFieldDefinition.editor_tool_type') ?>
 		</span>
 	</td>

@@ -21,7 +21,7 @@
 		<?php echo $this->BcForm->label('CuCustomFieldDefinition.append', '入力欄後に表示') ?>
 	</th>
 	<td class="bca-form-table__input">
-		<?php echo $this->BcForm->input('CuCustomFieldDefinition.append', ['type' => 'text', 'size' => 60]) ?>
+		<?php echo $this->BcForm->input('CuCustomFieldDefinition.append', ['type' => 'text', 'class' => 'bca-textbox__input', 'size' => 60]) ?>
 		<i class="bca-icon--question-circle btn help bca-help"></i>
 		<div class="helptext">
 			入力欄の後に表示される文字を指定できます。

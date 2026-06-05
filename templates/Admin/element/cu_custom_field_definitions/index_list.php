@@ -25,12 +25,12 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 
 <p>
 	<?php $this->BcBaser->link($contentName .' 設定に移動',
-		['admin' => true, 'plugin' => 'blog', 'controller' => 'blog_contents', 'action' => 'edit', $contentId],
+		['admin' => true, 'plugin' => 'BcBlog', 'controller' => 'BlogContents', 'action' => 'edit', $contentId],
 		['class' => 'bca-btn']
 	) ?>
 	&nbsp;&nbsp;
 	<?php $this->BcBaser->link($contentName . ' 記事一覧に移動',
-		['admin' => true, 'plugin' => 'blog', 'controller' => 'blog_posts',	'action' => 'index', $contentId],
+		['admin' => true, 'plugin' => 'BcBlog', 'controller' => 'BlogPosts',	'action' => 'index', $contentId],
 		['class' => 'bca-btn']
 	) ?>
 </p>
@@ -41,16 +41,21 @@ $contentName = $this->BcText->arrayValue($contentId, $blogContentDatas);
 	<tr>
 		<th class="bca-table-listup__thead-th"><?php // No ?>
 		<?php
-		echo $this->Paginator->sort('no',
-			[
-				'asc' => '<i class="bca-icon--asc"></i>' . __d('baser', 'No'),
-				'desc' => '<i class="bca-icon--desc"></i>' . __d('baser', 'No')
-			],
-			[
-				'escape' => false,
-				'class' => 'btn-direction bca-table-listup__a'
-			]);
-			?>
+		$paging = (array) $this->getRequest()->getAttribute('paging');
+		if (!empty($paging)) {
+			echo $this->Paginator->sort('no',
+				[
+					'asc' => '<i class="bca-icon--asc"></i>' . __d('baser', 'No'),
+					'desc' => '<i class="bca-icon--desc"></i>' . __d('baser', 'No')
+				],
+				[
+					'escape' => false,
+					'class' => 'btn-direction bca-table-listup__a'
+				]);
+		} else {
+			echo __d('baser', 'No');
+		}
+		?>
 		</th>
 		<th class="bca-table-listup__thead-th"><?php // カスタムフィールド名 ?>
 			フィールド定義名

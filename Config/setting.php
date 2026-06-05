@@ -1,7 +1,7 @@
 <?php
 $config['cuCustomFieldConfig'] = [
     'submenu' => false,
-    'customSearch' => false
+    'customSearch' => true
 ];
 /**
  * カスタムフィールド用設定

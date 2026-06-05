@@ -40,7 +40,7 @@ class CuCustomFieldConfigsTable extends CuCustomFieldAppModelsTable
 		'CuCustomFieldDefinition' => [
 			'className' => 'CuCustomField.CuCustomFieldDefinition',
 			'foreignKey' => 'config_id',
-			'order' => ['CuCustomFieldDefinition.lft' => 'ASC'],
+			'order' => ['lft' => 'ASC'],
 			'dependent' => true,
 		],
 	];
@@ -60,7 +60,7 @@ class CuCustomFieldConfigsTable extends CuCustomFieldAppModelsTable
         $this->hasMany('CuCustomFieldDefinitions', [
             'className' => 'CuCustomField.CuCustomFieldDefinitions',
             'foreignKey' => 'config_id',
-            'order' => ['CuCustomFieldDefinitions.lft' => 'ASC'],
+			'order' => ['lft' => 'ASC'],
             'dependent' => true,
             'cascadeCallbacks' => true,
         ]);

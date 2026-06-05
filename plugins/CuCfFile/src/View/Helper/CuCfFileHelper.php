@@ -107,8 +107,9 @@ class CuCfFileHelper extends Helper
         $fields = [];
         if(!empty($definitions)) {
             foreach($definitions as $definition) {
-                if ($definition['field_type'] === 'file' && !$definition['parent_id']) {
-                    $fields[$definition['field_name']] = [
+                $definitionData = (array) ($definition['CuCustomFieldDefinitions'] ?? $definition);
+                if (($definitionData['field_type'] ?? null) === 'file' && empty($definitionData['parent_id'])) {
+                    $fields[$definitionData['field_name']] = [
                         'type' => 'all',
                         'namefield' => 'no',
                         'nameformat' => '%08d',

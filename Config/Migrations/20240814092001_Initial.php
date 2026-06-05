@@ -24,7 +24,7 @@ class Initial extends BcMigration
             ])
             ->addColumn('status', 'boolean', [
                 'comment' => '利用状態',
-                'default' => false,
+                'default' => true,
                 'limit' => null,
                 'null' => true,
             ])
@@ -89,7 +89,7 @@ class Initial extends BcMigration
                 'default' => null,
                 'null' => true,
             ])
-            ->addColumn('type', 'string', [
+            ->addColumn('field_type', 'string', [
                 'default' => null,
                 'null' => true,
             ])
@@ -97,7 +97,7 @@ class Initial extends BcMigration
                 'default' => null,
                 'null' => true,
             ])
-            ->addColumn('status', 'integer', [
+            ->addColumn('status', 'boolean', [
                 'comment' => '状態',
                 'default' => 1,
                 'limit' => null,
@@ -129,6 +129,10 @@ class Initial extends BcMigration
                 'null' => true,
             ])
             ->addColumn('max_length', 'text', [
+                'default' => null,
+                'null' => true,
+            ])
+            ->addColumn('counter', 'text', [
                 'default' => null,
                 'null' => true,
             ])

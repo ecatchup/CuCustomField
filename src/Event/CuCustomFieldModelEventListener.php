@@ -31,6 +31,13 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 {
 
     /**
+     * カスタムフィールド検索サービス
+     *
+     * @var mixed
+     */
+    private $searchService;
+
+    /**
      * 登録イベント
      *
      * @var array
@@ -77,7 +84,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
          $this->CuCustomFieldConfigs = TableRegistry::getTableLocator()->get('CuCustomField.CuCustomFieldConfigs');
          $this->CuCustomFieldConfigs->hasMany('CuCustomFieldDefinitions', [
             'className' => 'CuCustomField.CuCustomFieldDefinitions',
-            'sort' => ['CuCustomFieldDefinitions.lft' => 'DESC']
+                'sort' => ['lft' => 'DESC']
         ])
             ->setForeignKey('config_id');
     }
@@ -88,11 +95,12 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
     public function __construct()
     {
         parent::__construct();
+        $this->searchService = new \CuCustomField\Service\CuCustomFieldSearchService();
 
         $cuCustomFieldConfigs = TableRegistry::getTableLocator()->get('CuCustomField.CuCustomFieldConfigs');
         $cuCustomFieldConfigs->hasMany('CuCustomFieldDefinitions', [
             'className' => 'CuCustomField.CuCustomFieldDefinitions',
-            'sort' => ['CuCustomFieldDefinitions.lft' => 'DESC']
+            'sort' => ['lft' => 'DESC']
         ])
             ->setForeignKey('config_id');
 
@@ -128,22 +136,20 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
      public function bcBlogBlogPostsBeforeFind(Event $event)
      {
         $request = Router::getRequest();
-        if ($event->getData(0) == null) return;
-         $Model = $event->getSubject();
+        $query = $event->getData(0);
+        if (!$query instanceof \Cake\ORM\Query\SelectQuery) return;
+
          $this->setUpModel();
-         $data = $event->getData();
 
          if ($request->getParam('controller') === 'BlogPosts' &&
              in_array($request->getParam('action'), ['add', 'batch'])) {
              return;
          }
          // ブログ記事の際にカスタムフィールドも併せて取得する
-         if($event->getData(0) instanceof \Cake\ORM\Query\SelectQuery) {
-             $event->getData(0)->contain(['CuCustomFieldValues']);
-         }
+         $query->contain(['CuCustomFieldValues']);
 
         if (BcUtil::isAdminSystem()) {
-            return $event->getData(0);
+            return $query;
         }
 
          // 最近の投稿、ブログ記事前後移動を find する際に実行
@@ -158,43 +164,26 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 //              $event->data[0]['recursive'] = 2;
 //          }
 //      }
-        $customSearch = \Cake\Core\Configure::read('cuCustomFieldConfig.customSearch');
-        if(isset($event->data[0]['customSearch']) && $event->data[0]['customSearch'] === false) {
+        $customSearch = (bool) \Cake\Core\Configure::read('cuCustomFieldConfig.customSearch');
+        $options = (array) $query->getOptions();
+        if(isset($options['customSearch']) && $options['customSearch'] === false) {
             $customSearch = false;
         }
-        if ($request->getQuery() && $customSearch) {
-            // keyのリストを取得
-            $keyArray = $this->getKeyList();
-            $searchQuery = [];
-
-            // クエリの判定
-            foreach ($request->query as $key => $query) {
-                if($key === 'preview') { // プレビューかどうかの判定
-                    continue;
-                }
-                // like検索の場合はkey:likeがついている
-                $checkKey = preg_replace('/\:like$/', '', $key);
-                // クエリがCuCustomFieldで使用されているkeyに含まれていれば$searchQueryの配列に追加
-                if(in_array($checkKey, $keyArray)) {
-                    $searchQuery[$key] = $query;
-                }
-            }
-
-            // $searchQueryにクエリが追加されていれば、処理を実行
-            if (!empty($searchQuery)) {
-                $Model->bindModel(['hasMany' => [
-                    'CuCustomFieldValue' => [
-                        'className' => 'CuCustomField.CuCustomFieldValue',
-                        'order' => 'id',
-                        'foreignKey' => 'relate_id',
-                    ]
-                ]], false);
-                // if (!empty($searchQuery)) {
-                //     $event->data[0] = $this->customSearchQuery($event->data[0], $searchQuery);
-                // }
-            }
+        if (!$customSearch) {
+            return $query;
         }
-        return $event;
+
+        $queryParams = (array) $request->getQueryParams();
+        if (!$queryParams) {
+            return $query;
+        }
+
+        $availableFieldNames = $this->searchService->getAvailableFieldNames();
+        $filters = $this->searchService->parseSearchFilters($queryParams, $availableFieldNames);
+        if ($filters) {
+            $this->searchService->applyToBlogPostsQuery($query, $filters);
+        }
+        return $query;
      }
 
     public function customSearchQuery($query, $get)
@@ -254,8 +243,15 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
                 'CuCustomFieldDefinition.status' => 1,
             ],
         ])
-        ->toList();
-        return $list;
+        ->toArray();
+        $keys = [];
+        foreach ($list as $row) {
+            $fieldName = $row->field_name ?? null;
+            if ($fieldName) {
+                $keys[] = $fieldName;
+            }
+        }
+        return $keys;
     }
 
     /**
@@ -315,14 +311,18 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
                     }
                    $fieldDefinition = ($this->CuCustomFieldValues->getFieldDefinition($blogContentId));
                    $data = $this->CuCustomFieldValues->getSection($pass[1], $this->CuCustomFieldValues);
-                   if ($fieldDefinition) $event->data[0][0]['definitions'] = $fieldDefinition;;
+                                     if ($fieldDefinition && isset($data[0])) {
+                                             $data[0]['definitions'] = $fieldDefinition;
+                                     }
                  break;
 
              case 'preview':
                    $data = ($this->CuCustomFieldValues->getFieldDefinition($blogContentId));
                  //$data = $this->CuCustomFieldValues->getSection($blogPostId, $this->CuCustomFieldValues->name);
                  if ($data) {
-                     $event->data[0][0]['definitions'] = $data;
+                     if (isset($data[0])) {
+                         $data[0]['definitions'] = $data;
+                     }
                  }
                  break;
 
@@ -336,8 +336,8 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
              // findFlatteningMode が true に設定されていれば、一回のみ平データで取得
              // 公開承認の草稿モードの保存で本稿を元データに書き戻すために利用
              // CuApproverApplicationBehavior::getPublish() 内の find() にて利用
-             if(!empty($event->data[0][0]['CuCustomFieldValue'])) {
-                 $event->data[0][0]['CuCustomFieldValue'] = $this->CuCustomFieldValues->convertToFlatteningData($event->data[0][0]['CuCustomFieldValue']);
+             if(!empty($data[0]['CuCustomFieldValue'])) {
+                 $data[0]['CuCustomFieldValue'] = $this->CuCustomFieldValues->convertToFlatteningData($data[0]['CuCustomFieldValue']);
              }
              $this->findFlatteningMode = false;
          }
@@ -378,7 +378,11 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
      */
     public function bcBlogBlogPostsBeforeValidate(\Cake\Event\Event $event)
     {
-        $params = Router::getParams();
+        $request = Router::getRequest();
+        if (!$request) {
+            return true;
+        }
+        $params = $request->getAttribute('params') ?? [];
         /**
          * 4系の記事複製動作仕様変更に対応
          * - これまで複製時のデータに、カスタムフィールドのデータは入って来なかったのが入るようになっているため
@@ -426,7 +430,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
             'conditions' => [
                 'CuCustomFieldDefinitions.config_id' => $data['CuCustomFieldConfig']['id'],
             ],
-            'order' => 'CuCustomFieldDefinitions.lft ASC',
+            'order' => 'lft ASC',
         ])
         ->toArray();
         if (!$fieldConfigField) {
@@ -611,7 +615,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
         if (!$this->throwBlogPost) {
             $this->setUpModel();
             if (!$this->CuCustomFieldValues->saveSection($this->CuCustomFieldValues, $entity->id, $entity, 'CuCustomFieldValue')) {
-                \Cake\Log\Log::write(sprintf('ブログ記事ID：%s のカスタムフィールドの保存に失敗', $entity->id));
+                \Cake\Log\Log::write('error', sprintf('ブログ記事ID：%s のカスタムフィールドの保存に失敗', $entity->id));
             }
         }
         // ブログ記事コピー保存時、アイキャッチが入っていると処理が2重に行われるため、1周目で処理通過を判定し、
@@ -693,7 +697,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
         ]);
         if ($data) {
             if (!$this->CuCustomFieldConfigs->delete($data['CuCustomFieldConfig']['id'])) {
-                \Cake\Log\Log::write('ID:' . $data['CuCustomFieldConfig']['id'] . 'のカスタムフィールド設定の削除に失敗しました。');
+                \Cake\Log\Log::write('error', 'ID:' . $data['CuCustomFieldConfig']['id'] . 'のカスタムフィールド設定の削除に失敗しました。');
             }
         }
     }
@@ -707,12 +711,9 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
      */
     private function generateSaveData($Model, $contentId)
     {
-        $params = Router::getParams();
-        if (ClassRegistry::isKeySet('CuCustomField.CuCustomFieldValue')) {
-            $this->CuCustomFieldValues = ClassRegistry::getObject('CuCustomField.CuCustomFieldValue');
-        } else {
-            $this->CuCustomFieldValues = \Cake\ORM\TableRegistry::getTableLocator()->get('CuCustomField.CuCustomFieldValue');
-        }
+        $request = Router::getRequest();
+        $params = $request ? ($request->getAttribute('params') ?? []) : [];
+        $this->CuCustomFieldValues = \Cake\ORM\TableRegistry::getTableLocator()->get('CuCustomField.CuCustomFieldValue');
 
         $data = [];
         $modelId = $oldModelId = null;
@@ -751,17 +752,17 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
                 if (empty($Model->validationErrors)) {
                     $_data = [];
                     if ($oldModelId) {
-                        $_data = $this->CuCustomFieldValues->find('first', [
+                        $_data = $this->CuCustomFieldValues->find('all', [
                             'conditions' => [
                                 'CuCustomFieldValue.blog_post_id' => $oldModelId
                             ],
                             'recursive' => -1
-                        ]);
+                        ])->first();
                     }
                     // XXX もしカスタムフィールド設定の初期データ作成を行ってない事を考慮して判定している
                     if ($_data) {
                         // コピー元データがある時
-                        $data['CuCustomFieldValue'] = $_data['CuCustomFieldValue'];
+                        $data['CuCustomFieldValue'] = $_data->toArray();
                         $data['CuCustomFieldValue']['blog_post_id'] = $contentId;
                         unset($data['CuCustomFieldValue']['id']);
                     } else {
@@ -786,14 +787,14 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
      * @return mixed Flat array or direct value
      */
     public function getSection(Table $Model, $foreignKey, $section = null, $key = null) {
-        // extract($this->settings[$Model->getAlias()]);
-        $results = $this->KeyValue->find('all', array(
+        $foreignKeyField = 'relate_id';
+        $results = $Model->find('all', array(
             'recursive' => -1,
             'conditions' => array($foreignKeyField => $foreignKey),
             'fields' => array('key', 'value')
         ))->all();
 
-        $defaultValues = $this->defaultValues($Model);
+        $defaultValues = [];
 
         $detailArray = array();
         foreach ($results as $value) {
@@ -823,6 +824,11 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
             return null;
         }
         return $detailArray[$section][$key];
+    }
+
+    private function defaultValues(Table $Model): array
+    {
+        return [];
     }
 
 }

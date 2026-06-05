@@ -20,18 +20,33 @@ if (!$this->CuCustomField->allowPublish($data, 'CuCustomFieldConfig')) {
 	$classies = array('publish');
 }
 $class=' class="'.implode(' ', $classies).'"';
+
+$record = $data;
+if (is_object($data) && method_exists($data, 'toArray')) {
+	$record = $data->toArray();
+} elseif (is_object($data)) {
+	$record = get_mangled_object_vars($data);
+}
+
+$contentId = $record['content_id'] ?? ($record['blog_content_id'] ?? null);
+$definitions = $record['cu_custom_field_definitions']
+	?? $record['CuCustomFieldDefinitions']
+	?? $record['CuCustomFieldDefinition']
+	?? [];
+$fieldCount = is_countable($definitions) ? count($definitions) : 0;
+$contentTitle = $blogContentDatas[$contentId] ?? '';
 ?>
 <tr<?php echo $class ?>>
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--no"><?php // No ?>
-		<?php echo $data['id']; ?>
+		<?php echo $record['id'] ?? ''; ?>
 	</td>
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--title"><?php // タイトル ?>
 		<?php
-		$this->BcBaser->link($this->BcBaser->arrayValue($data['content_id'], $blogContentDatas, ''),
+		$this->BcBaser->link($contentTitle,
 				[
 					'controller' => 'cu_custom_field_definitions',
 					'action' => 'index',
-					$data['id']
+					$record['id'] ?? null
 				],
 				[
 					'title' => 'フィールド管理'
@@ -40,12 +55,12 @@ $class=' class="'.implode(' ', $classies).'"';
 	</td>
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--hasCustomField"><?php // フィールド数 ?>
 		<?php
-		if (!$this->CuCustomField->hasCustomField($data)) {
+		if (!$fieldCount) {
 			$this->BcBaser->link(__d('baser', 'フィールド作成'),
 				[
 					'controller' => 'cu_custom_field_definitions',
 					'action' => 'add',
-					$data['id']
+					$record['id'] ?? null
 				],
 				[
 					'class' => 'bca-btn',
@@ -53,19 +68,19 @@ $class=' class="'.implode(' ', $classies).'"';
 					'data-bca-btn-size' => 'sm'
 				]);
 		} else {
-			echo count($data['CuCustomFieldDefinition']);
+			echo $fieldCount;
 		}
 		?>
 	</td>
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--form_place"><?php // form_place ?>
 		<?php
-		echo $this->BcText->arrayValue($data['form_place'], $customFieldConfig['form_place'], '<small>指定なし</small>');
+		echo $this->BcText->arrayValue($record['form_place'] ?? null, $customFieldConfig['form_place'], '<small>指定なし</small>');
 		?>
 	</td>
 	<td class="bca-table-listup__tbody-td bca-table-listup__tbody-td--date"><?php // 投稿日 ?>
-		<?php echo $this->BcTime->format($data['created'], 'Y-m-d') ?>
+		<?php echo $this->BcTime->format($record['created'] ?? null, 'Y-m-d') ?>
 		<br />
-		<?php echo $this->BcTime->format($data['modified'], 'Y-m-d') ?>
+		<?php echo $this->BcTime->format($record['modified'] ?? null, 'Y-m-d') ?>
 	</td>
 	<?php echo $this->BcListTable->dispatchShowRow($data) ?>
 	<td class="row-tools bca-table-listup__tbody-td bca-table-listup__tbody-td--actions"><?php // アクション ?>
@@ -74,7 +89,7 @@ $class=' class="'.implode(' ', $classies).'"';
 		$this->BcBaser->link('',
 			[
 				'action' => 'ajax_unpublish',
-				$data['id']
+				$record['id'] ?? null
 			],
 			[
 				'title' => __d('baser', '非公開'),
@@ -86,7 +101,7 @@ $class=' class="'.implode(' ', $classies).'"';
 		$this->BcBaser->link('',
 			[
 				'action' => 'ajax_publish',
-				$data['id']
+				$record['id'] ?? null
 			],
 			[
 				'title' => __d('baser', '公開'),
@@ -99,7 +114,7 @@ $class=' class="'.implode(' ', $classies).'"';
 			[
 				'controller' => 'cu_custom_field_definitions',
 				'action' => 'index',
-				$data['id']
+				$record['id'] ?? null
 			],
 			[
 				'title' => __d('baser', 'フィールド管理'),
@@ -111,7 +126,7 @@ $class=' class="'.implode(' ', $classies).'"';
 		$this->BcBaser->link('',
 			[
 				'action' => 'edit',
-				$data['id']
+				$record['id'] ?? null
 			],
 			[
 				'title' => __d('baser', '編集'),
@@ -123,7 +138,7 @@ $class=' class="'.implode(' ', $classies).'"';
 		$this->BcBaser->link('',
 			[
 				'action' => 'ajax_delete',
-				$data['id']
+				$record['id'] ?? null
 			],
 			[
 				'title' => __d('baser', '削除'),

@@ -232,12 +232,14 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 		}
 
 		$fieldDefinition = $fieldConfig[$field];
-		$fieldType = $fieldDefinition['field_type'];
+		$fieldType = (string) ($fieldDefinition['field_type'] ?? '');
+		if ($fieldType === '') {
+			return '';
+		}
 
 		if($fieldType === 'loop') {
 			return unserialize($fieldValue);
 		} else {
-			$pluginName = 'CuCf' . \Cake\Utility\Inflector::camelize($fieldType);
             return $this->customFieldGet($fieldValue, $fieldDefinition, $options);
 		}
 		return '';
@@ -337,7 +339,10 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 			$definition = $definition['CuCustomFieldDefinition'];
 		}
 
-		$fieldType = $definition['field_type'];
+		$fieldType = (string) ($definition['field_type'] ?? '');
+		if ($fieldType === '') {
+			return '';
+		}
 		$pluginName = 'CuCf' . \Cake\Utility\Inflector::camelize($fieldType);
         $view = $this->getView();
         // プラグインフォルダからヘルパーを読み込む
@@ -545,18 +550,46 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 	 * プラグインのフィールド定義の入力欄を読み込む
 	 */
 	public function loadPluginDefinitionInputs() {
-		$plugins = \Cake\Core\Configure::read('cuCustomField.plugins');
-		if($plugins) {
-			foreach($plugins as $plugin => $value) {
-				$pluginPath = $value['path'];
-				if(file_exists($pluginPath . 'webroot' . DS . 'js' . DS . 'admin' . DS . 'definition_input.js')) {
-					$this->BcBaser->js($plugin . '.admin/definition_input', false);
-				}
-				if(file_exists($pluginPath . 'View' . DS . 'Elements' . DS . 'admin' . DS . 'definition_input.php')) {
-					$this->BcBaser->element($plugin . '.admin/definition_input');
-				}
+		$fieldTypes = (array) \Cake\Core\Configure::read('CuCustomField.fieldTypes');
+		$element = 'definition_input';
+		foreach ((array) $fieldTypes as $plugin => $value) {
+			if ($plugin === 'group') {
+				continue;
+			}
+			if (!\Cake\Core\Plugin::isLoaded((string) $plugin)) {
+				continue;
+			}
+
+			$templateElement = \Cake\Core\Plugin::templatePath((string) $plugin) . 'Admin' . DS . 'element' . DS . $element . '.php';
+			if (file_exists($templateElement)) {
+				$this->BcBaser->element($plugin . '.' . $element);
+				continue;
+			}
+
+			$pluginPath = \Cake\Core\Plugin::path((string) $plugin);
+			$legacyElement = $pluginPath . 'View' . DS . 'Elements' . DS . 'admin' . DS . $element . '.php';
+			$legacyTemplateElement = $pluginPath . 'template' . DS . 'Admin' . DS . 'element' . DS . $element . '.php';
+			if (file_exists($legacyElement)) {
+				$this->BcBaser->element($plugin . '.admin/' . $element);
+				continue;
+			}
+			if (file_exists($legacyTemplateElement)) {
+				$this->renderPhpElement($legacyTemplateElement);
 			}
 		}
+	}
+
+	/**
+	 * element PHPを直接読み込み表示する
+	 *
+	 * @param string $filePath
+	 * @return void
+	 */
+	private function renderPhpElement(string $filePath): void
+	{
+		$view = $this->getView();
+		extract($view->getVars());
+		include $filePath;
 	}
 
 	/**

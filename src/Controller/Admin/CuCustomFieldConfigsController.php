@@ -86,7 +86,9 @@ class CuCustomFieldConfigsController extends \CuCustomField\Controller\Admin\CuC
             ]
         ]);
         $conditions = $this->_createAdminIndexConditions($this->getRequest()->getData());
-        $query = $this->CuCustomFieldConfigs->find();
+        $query = $this->CuCustomFieldConfigs->find()
+            ->where($conditions)
+            ->contain(['CuCustomFieldDefinitions']);
         $this->set('datas', $this->paginate($query));
         $this->set('blogContentDatas', $this->blogContentDatas);
     }

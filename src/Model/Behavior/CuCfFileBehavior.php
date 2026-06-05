@@ -193,14 +193,20 @@ class CuCfFileBehavior extends Behavior
         }
         $contentId = $this->BlogPost->field('blog_content_id', ['BlogPost.id' => $relateId]);
         $definition = $model->getFieldDefinition($contentId, $key);
-        if(!$definition || $definition['field_type'] !== 'file') {
+        $definitionData = (array) ($definition['CuCustomFieldDefinitions'] ?? $definition);
+        if(!$definitionData || ($definitionData['field_type'] ?? null) !== 'file') {
             return;
         }
-        $beforeValue = $this->getBeforeValue($model, $relateId, $this->getBareFieldName($key), $definition['parent_id'], $loopRow);
+        $beforeValue = $this->getBeforeValue($model, $relateId, $this->getBareFieldName($key), $definitionData['parent_id'] ?? null, $loopRow);
         if(is_null($loopRow)) {
-            $targetRecord = $model->find('first', ['conditions' => ['relate_id' => $relateId, 'key' => $key], 'recursive' => -1]);
-            $targetRecord['CuCustomFieldValue']['value'] = '';
-            $model->save($targetRecord, ['callbacks' => false, 'validate' => false]);
+            $alias = method_exists($model, 'getAlias') ? $model->getAlias() : 'CuCustomFieldValues';
+            $model->updateAll(
+                ['value' => ''],
+                [
+                    $alias . '.relate_id' => $relateId,
+                    $alias . '.key' => $key,
+                ]
+            );
         }
         $this->deleteFile($beforeValue, $tmp);
     }
@@ -218,10 +224,11 @@ class CuCfFileBehavior extends Behavior
     public function checkAndSaveFile($model, $relateId, $key, $value, $loopRow = null, $tmp = false) {
         $contentId = $this->BlogPost->field('blog_content_id', ['BlogPost.id' => $relateId]);
         $definition = $model->getFieldDefinition($contentId, $key);
-        if(!$definition || $definition['field_type'] !== 'file') {
+        $definitionData = (array) ($definition['CuCustomFieldDefinitions'] ?? $definition);
+        if(!$definitionData || ($definitionData['field_type'] ?? null) !== 'file') {
             return $value;
         }
-        $beforeValue = $this->getBeforeValue($model, $relateId, $this->getBareFieldName($key), $definition['parent_id'], $loopRow);
+        $beforeValue = $this->getBeforeValue($model, $relateId, $this->getBareFieldName($key), $definitionData['parent_id'] ?? null, $loopRow);
         return $this->saveFile($value, $beforeValue, $tmp);
     }
 

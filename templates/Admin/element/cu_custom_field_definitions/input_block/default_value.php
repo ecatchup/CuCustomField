@@ -14,7 +14,7 @@
  * @var string $currentModelName
  */
 // <<<< カスタムフィールドの 初期値 wysiwygやtextareaの場合は、入力欄をtextareaに変更
-$type = $this->data['CuCustomFieldDefinition']['field_type'];
+$type = (string) $this->getRequest()->getData('CuCustomFieldDefinition.field_type');
 $areaTypeArray = [
 	'wysiwyg',
 	'textarea'
@@ -29,6 +29,7 @@ if (in_array($type, $areaTypeArray)) {
 } else {
 	$options = [
 		'type' => 'text',
+		'class' => 'bca-textbox__input',
 		'size' => 60,
 		'maxlength' => 255,
 		'counter' => true,

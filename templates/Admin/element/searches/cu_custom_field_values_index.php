@@ -11,7 +11,7 @@
 ?>
 
 
-<?php echo $this->BcForm->create('CuCustomFieldValue', array('url' => array('action' => 'index'))) ?>
+<?php echo $this->BcForm->create(null, array('url' => array('action' => 'index'))) ?>
 <p>
 	<span>
 		<?php echo $this->BcForm->label('PetitCustomField.name', 'カスタムネーム') ?>

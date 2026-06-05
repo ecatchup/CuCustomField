@@ -10,15 +10,16 @@
 
 
 $(function(){
-    var fieldType = $("#CuCustomFieldDefinitionFieldType");
+    var fieldType = $("#CuCustomFieldDefinitionFieldType, [name='data[CuCustomFieldDefinition][field_type]'], [name='CuCustomFieldDefinition[field_type]']").first();
+    var parentId = $("#CuCustomFieldDefinitionParentId, [name='data[CuCustomFieldDefinition][parent_id]'], [name='CuCustomFieldDefinition[parent_id]']").first();
 
     fieldType.change(switchRelated);
-    $("#CuCustomFieldDefinitionParentId").change(switchRelated);
+    parentId.change(switchRelated);
     switchRelated();
 
     function switchRelated() {
-        if(fieldType.val() === 'multiple') {
-            if(!$("#CuCustomFieldDefinitionParentId").val()) {
+        if(fieldType.val() === 'multiple' || fieldType.val() === 'multiCheckbox') {
+            if(!parentId.val()) {
                 $("#RowCuCfValidate").show('slow');
             } else {
                 $("#RowCuCfValidate").hide();

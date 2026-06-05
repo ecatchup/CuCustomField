@@ -23,7 +23,7 @@
 	</th>
 	<td class="bca-form-table__input">
 		<?php echo $this->BcForm->label('CuCustomFieldDefinition.auto_convert', '自動変換') ?>
-		<?php echo $this->BcForm->input('CuCustomFieldDefinition.auto_convert', ['type' => 'select', 'options' => $customFieldConfig['auto_convert']]) ?>
+		<?php echo $this->BcForm->input('CuCustomFieldDefinition.auto_convert', ['type' => 'select', 'class' => 'bca-select__select', 'options' => $customFieldConfig['auto_convert']]) ?>
 		<i class="bca-icon--question-circle btn help bca-help"></i>
 		<div class="helptext">
 			<ul>

@@ -9,44 +9,62 @@
  */
 
 $(function(){
-    $('.btn-add-loop').click(function(){
-        $(this).prop('disabled',true);//ボタンを無効化する
-        var srcFieldName = $(this).attr('data-src');
-        var count = $(this).attr('data-count');
-        var clone = $("#CufcLoopSrc" + srcFieldName).clone();
-        clone.find('input,select,textarea').each(function(){
-            console.log(count);
-            //console.log($(this).attr('name'));
-            $(this).attr('name', $(this).attr('name').replace('__loop-src__', count));
-            //console.log($(this).attr('name'));
-            console.log($(this).attr('id'));
-            $(this).attr('id', $(this).attr('id').replace('Loop-src', count));
-            console.log($(this).attr('id'));
-        });
-        // label for属性もループ番号に変更
-        clone.find('label').each(function(){
-            $(this).attr('for', $(this).attr('for').replace('Loop-src', count));
-        });
-        clone.attr('id', "CufcLoop" + srcFieldName + '-' + count);
-        clone.find('.btn-delete-loop').each(function(){
-            $(this).attr('data-delete-target', "CufcLoop" + srcFieldName + '-' + count);
-            $(this).click(deleteLoopBlock);
-        });
-        $("#loop-" + srcFieldName).append(clone);
-        clone.slideDown(150);
-        $(this).attr('data-count', Number(count) + 1);
-        $(this).prop('disabled',false);//ボタンを有効化する
-        return false;
-    });
-    $(".btn-delete-loop").click(deleteLoopBlock);
+    $(document).on('click', '.btn-add-loop', function(event){
+        event.preventDefault();
+        var $button = $(this);
+        $button.prop('disabled', true);
 
-    function deleteLoopBlock() {
-      if(!confirm('ループブロックを削除します。本当によろしいですか？')) {
-            return false;
+        var srcFieldName = String($button.attr('data-src') || '');
+        var count = parseInt($button.attr('data-count'), 10);
+        if (isNaN(count)) {
+            count = $('#loop-' + srcFieldName + ' .cucf-loop-block[id^="CucfLoop"]').length;
         }
-        $("#" + $(this).attr('data-delete-target')).slideUp(150, function(){
+
+        var $source = $('#CufcLoopSrc' + srcFieldName);
+        var $clone = $source.clone(false, false);
+        $clone.removeAttr('hidden').css('display', 'none');
+
+        $clone.find('input,select,textarea').each(function(){
+            var $field = $(this);
+            var name = $field.attr('name');
+            var id = $field.attr('id');
+            if (name) {
+                $field.attr('name', name.replace(/__loop-src__/g, String(count)));
+            }
+            if (id) {
+                $field.attr('id', id.replace(/Loop-src/g, String(count)));
+            }
+        });
+
+        $clone.find('label').each(function(){
+            var $label = $(this);
+            var forId = $label.attr('for');
+            if (forId) {
+                $label.attr('for', forId.replace(/Loop-src/g, String(count)));
+            }
+        });
+
+        var blockId = 'CucfLoop' + srcFieldName + '-' + count;
+        $clone.attr('id', blockId);
+        $clone.find('.btn-delete-loop').attr('data-delete-target', blockId);
+
+        $('#loop-' + srcFieldName).append($clone);
+        $clone.slideDown(150);
+        $button.attr('data-count', String(count + 1));
+        $button.prop('disabled', false);
+    });
+
+    $(document).on('click', '.btn-delete-loop', function(event) {
+        event.preventDefault();
+        if(!confirm('ループブロックを削除します。本当によろしいですか？')) {
+            return;
+        }
+        var target = $(this).attr('data-delete-target');
+        if (!target) {
+            return;
+        }
+        $('#' + target).slideUp(150, function(){
             $(this).remove();
         });
-        return false;
-    }
+    });
 });

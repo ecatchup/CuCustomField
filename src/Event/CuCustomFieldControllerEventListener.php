@@ -216,20 +216,38 @@ class CuCustomFieldControllerEventListener extends \BaserCore\Event\BcController
             }
         };
         // カスタムフィールド定義情報を取得
-        $definitions = $this->CuCustomFieldValueModel->getFieldDefinition($contentId);
+        $definitions = $this->CuCustomFieldValueModel->getFieldDefinition($contentId, '', true);
         if ($definitions) {
             // Joinで所得しているため階層構造に変更
             $definitionArrays = [];
             $loops = [];
             if (!empty($definitions)) {
                 foreach ($definitions as $definition) {
+                    $definitionData = [];
+                    if (is_object($definition) && isset($definition->CuCustomFieldDefinitions) && is_array($definition->CuCustomFieldDefinitions)) {
+                        $definitionData = $definition->CuCustomFieldDefinitions;
+                    } elseif (is_array($definition) && isset($definition['CuCustomFieldDefinitions']) && is_array($definition['CuCustomFieldDefinitions'])) {
+                        $definitionData = $definition['CuCustomFieldDefinitions'];
+                    }
+                    if (!$definitionData) {
+                        continue;
+                    }
                     // ループの field_name を配列に格納
-                    if ($definition->CuCustomFieldDefinitions['field_type'] == 'loop') $loops[] = $definition->CuCustomFieldDefinitions['field_name'];
+                    if (($definitionData['field_type'] ?? null) == 'loop') $loops[] = $definitionData['field_name'] ?? null;
                     // ループの配下のフィールド設定をループ配列に格納
-                    if ($definition->CuCustomFieldDefinitions['parent_id']) {
-                        $definitionArrays[$definition->CuCustomFieldDefinitions['parent_id']]->CuCustomFieldDefinitions['children'][] = $definition;
+                    if (!empty($definitionData['parent_id'])) {
+                        $parentId = $definitionData['parent_id'];
+                        if (!isset($definitionArrays[$parentId])) {
+                            $definitionArrays[$parentId] = ['CuCustomFieldDefinitions' => ['children' => []]];
+                        }
+                        if (!isset($definitionArrays[$parentId]['CuCustomFieldDefinitions']['children'])) {
+                            $definitionArrays[$parentId]['CuCustomFieldDefinitions']['children'] = [];
+                        }
+                        $definitionArrays[$parentId]['CuCustomFieldDefinitions']['children'][] = $definition;
                     } else {
-                        $definitionArrays[$definition->CuCustomFieldDefinitions['id']] = $definition;
+                        if (!empty($definitionData['id'])) {
+                            $definitionArrays[$definitionData['id']] = is_array($definition) ? $definition : ['CuCustomFieldDefinitions' => $definitionData];
+                        }
                     }
                 }
                 // Config情報に紐づく取得方法のため並び替えができない。
@@ -237,7 +255,10 @@ class CuCustomFieldControllerEventListener extends \BaserCore\Event\BcController
                 if (!empty($definitionArrays)) {
                     $definitions = [];
                     foreach ($definitionArrays as $definitionArray) {
-                        $definitions[$definitionArray->CuCustomFieldDefinitions['lft']] = $definitionArray;
+                        $definitionData = (array) ($definitionArray['CuCustomFieldDefinitions'] ?? []);
+                        if (isset($definitionData['lft'])) {
+                            $definitions[$definitionData['lft']] = $definitionArray;
+                        }
                     }
                     ksort($definitions);
                 }

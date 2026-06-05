@@ -229,8 +229,12 @@ class KeyValueBehavior extends Behavior {
 				if ($defaultOnEmpty && (string)$value === '' || $deleteIfDefault && (string)$value === (string)$this->defaultValues($Model, $section, $field)) {
 					return $this->resetSection($Model, $foreignKey, $section, $field);
 				}
+				$driver = $this->KeyValue->getConnection()->getDriver();
+				$wasAutoQuoting = $driver->isAutoQuotingEnabled();
+				$driver->enableAutoQuoting(true);
+
 				$tmp = $this->KeyValue->find('all')
-                    ->where([$foreignKeyField => $foreignKey, $keyField => $key])
+					->where([$foreignKeyField => $foreignKey, $keyField => $key])
                     ->select(['id'])
                     ->first();
 
@@ -248,25 +252,28 @@ class KeyValueBehavior extends Behavior {
 				$newDetail[$keyField] = $key;
 				$newDetail[$valueField] = $value;
 				$newDetail['model'] = $Model->getAlias();
-                if ($tmp) {
-                    $entity = $this->KeyValue->patchEntity($tmp, $newDetail);
+				if ($tmp) {
+					$entity = $this->KeyValue->patchEntity($tmp, $newDetail);
 				} else {
-                    $entity = $this->KeyValue->newEntity($newDetail);
-                    // $entityにmodelカラムが入らない
-                    $entity->model = $Model->getAlias();
-                    // $entityにcreatedカラムが入らない
-                    $entity->created = date('Y-m-d H:i:s');
-                }
-                // $entityにmodifiedカラムが入らない
-                $entity->modified = date('Y-m-d H:i:s');
-                $eventManager = $this->KeyValue->getEventManager();
-                $beforeSaveListeners = BcUtil::offEvent($eventManager, 'Model.beforeSave');
-                $afterSaveListeners = BcUtil::offEvent($eventManager, 'Model.afterSave');
+					$entity = $this->KeyValue->newEntity($newDetail);
+					// $entityにmodelカラムが入らない
+					$entity->model = $Model->getAlias();
+					// $entityにcreatedカラムが入らない
+					$entity->created = date('Y-m-d H:i:s');
+				}
+				// $entityにmodifiedカラムが入らない
+				$entity->modified = date('Y-m-d H:i:s');
+				$eventManager = $this->KeyValue->getEventManager();
+				$beforeSaveListeners = BcUtil::offEvent($eventManager, 'Model.beforeSave');
+				$afterSaveListeners = BcUtil::offEvent($eventManager, 'Model.afterSave');
 
-				$this->KeyValue->save($entity);
-
-                BcUtil::onEvent($eventManager, 'Model.beforeSave', $beforeSaveListeners);
-                BcUtil::onEvent($eventManager, 'Model.afterSave', $afterSaveListeners);
+				try {
+					$this->KeyValue->save($entity);
+				} finally {
+					BcUtil::onEvent($eventManager, 'Model.beforeSave', $beforeSaveListeners);
+					BcUtil::onEvent($eventManager, 'Model.afterSave', $afterSaveListeners);
+					$driver->enableAutoQuoting($wasAutoQuoting);
+				}
 			}
 		}
 		return true;
@@ -396,7 +403,15 @@ class KeyValueBehavior extends Behavior {
 		if (empty($conditions)) {
 			return $this->KeyValue->truncate();
 		}
-		return (bool)$this->KeyValue->deleteAll($conditions, false);
+
+		$driver = $this->KeyValue->getConnection()->getDriver();
+		$wasAutoQuoting = $driver->isAutoQuotingEnabled();
+		$driver->enableAutoQuoting(true);
+		try {
+			return (bool)$this->KeyValue->deleteAll($conditions, false);
+		} finally {
+			$driver->enableAutoQuoting($wasAutoQuoting);
+		}
 	}
 
     /**

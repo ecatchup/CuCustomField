@@ -219,28 +219,50 @@ class CuCustomFieldValuesTable extends CuCustomFieldAppModelsTable
 	 * フィールド定義を取得する
 	 * @param int/$relateId
 	 * @param string/$fieldName
+	 * @param bool $asObject true の場合 object 配列で返す（admin向け）
 	 * @return false|mixed
 	 */
-	public function getFieldDefinition(int $contentId, string $fieldName = '')
+	public function getFieldDefinition(int $contentId, string $fieldName = '', bool $asObject = false)
 	{
 		/* @var CuCustomFieldConfig $$CustomFieldConfig */
 		$CustomFieldConfig = \Cake\ORM\TableRegistry::getTableLocator()->get('CuCustomField.CuCustomFieldConfigs');
 		$CustomFieldDefinition = \Cake\ORM\TableRegistry::getTableLocator()->get('CuCustomField.CuCustomFieldDefinitions');
-		$config = $CustomFieldConfig->find()
+		$definitionAlias = $CustomFieldDefinition->getAlias();
+		$rows = $CustomFieldConfig->find()
             ->join([
                 'table' => $CustomFieldDefinition->getTable(),
-                'alias' => 'CuCustomFieldDefinitions',
+                'alias' => $definitionAlias,
                 'type' => 'inner',
                 'conditions' => [
-                    'CuCustomFieldDefinitions.config_id = CuCustomFieldConfigs.id'
+                    $definitionAlias . '.config_id = CuCustomFieldConfigs.id'
                 ]
             ])->where([
                 'CuCustomFieldConfigs.content_id' => $contentId,
-                'CuCustomFieldDefinitions.status' => true,
+                $definitionAlias . '.status' => true,
             ])
             ->select($CustomFieldDefinition)
+            ->enableHydration(false)
             ->all()
             ->toArray();
+
+		$config = [];
+		foreach ($rows as $row) {
+			$definition = [];
+			if (isset($row[$definitionAlias]) && is_array($row[$definitionAlias])) {
+				$definition = $row[$definitionAlias];
+			} else {
+				$prefix = $definitionAlias . '__';
+				foreach ($row as $key => $value) {
+					if (is_string($key) && str_starts_with($key, $prefix)) {
+						$definition[substr($key, strlen($prefix))] = $value;
+					}
+				}
+			}
+			if ($definition) {
+				$row['CuCustomFieldDefinitions'] = $definition;
+				$config[] = $row;
+			}
+		}
 
 		if (is_array($config) && empty($config)) {
 			return false;
@@ -250,12 +272,20 @@ class CuCustomFieldValuesTable extends CuCustomFieldAppModelsTable
 				list(, $fieldName) = explode('.', $fieldName);
 			}
 			foreach($config as $definition) {
-				if ($definition['CuCustomFieldDefinitions']['field_name'] === $fieldName) {
+				if (!empty($definition['CuCustomFieldDefinitions']['field_name']) && $definition['CuCustomFieldDefinitions']['field_name'] === $fieldName) {
+					if ($asObject) {
+						return (object) $definition;
+					}
 					return $definition;
 				}
 			}
 			return false;
 		} else {
+			if ($asObject) {
+				return array_map(static function ($row) {
+					return (object) $row;
+				}, $config);
+			}
 			return $config;
 		}
 	}

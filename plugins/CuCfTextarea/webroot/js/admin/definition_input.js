@@ -10,15 +10,16 @@
 
 
 $(function(){
-    var fieldType = $("#CuCustomFieldDefinitionFieldType");
+    var fieldType = $("#CuCustomFieldDefinitionFieldType, [name='data[CuCustomFieldDefinition][field_type]'], [name='CuCustomFieldDefinition[field_type]']").first();
+    var parentId = $("#CuCustomFieldDefinitionParentId, [name='data[CuCustomFieldDefinition][parent_id]'], [name='CuCustomFieldDefinition[parent_id]']").first();
 
     fieldType.change(switchRelated);
-    $("#CuCustomFieldDefinitionParentId").change(switchRelated);
+    parentId.change(switchRelated);
     switchRelated();
 
     function switchRelated() {
         if(fieldType.val() === 'textarea') {
-            if(!$("#CuCustomFieldDefinitionParentId").val()) {
+            if(!parentId.val()) {
                 $("#RowCuCfValidate").show('slow');
                 $("#RowCuCfAutoConvert").show('slow');
 

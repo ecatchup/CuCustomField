@@ -20,7 +20,7 @@
 		<?php echo $this->BcForm->label('CuCustomFieldDefinition.description', 'このフィールドの説明文') ?>
 	</th>
 	<td class="col-input bca-form-table__input">
-		<?php echo $this->BcForm->input('CuCustomFieldDefinition.description', ['type' => 'textarea', 'rows' => '2']) ?>
+		<?php echo $this->BcForm->input('CuCustomFieldDefinition.description', ['type' => 'textarea', 'class' => 'bca-textarea__textarea', 'rows' => '2']) ?>
 		<i class="bca-icon--question-circle btn help bca-help"></i>
 		<div id="helptextCuCustomFieldDefinitionDescription" class="helptext">
 			<ul>

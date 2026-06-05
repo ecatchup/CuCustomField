@@ -26,6 +26,38 @@ class CuCfRelatedTable extends AppTable {
 	public $useTable = false;
 
 	/**
+	 * 利用可能なテーブル一覧を取得
+	 *
+	 * @return array
+	 */
+	public function getTableList(): array
+	{
+		try {
+			$db = $this->getConnection();
+			$collection = $db->getSchemaCollection();
+			$tables = (array) $collection->listTables();
+			$prefix = (string) ($db->config()['prefix'] ?? '');
+
+			$result = [];
+			foreach ($tables as $table) {
+				$table = (string) $table;
+				if ($prefix !== '' && strpos($table, $prefix) === 0) {
+					$table = substr($table, strlen($prefix));
+				}
+				if ($table === '' || strpos($table, 'phinxlog') !== false) {
+					continue;
+				}
+				$result[$table] = $table;
+			}
+
+			asort($result);
+			return $result;
+		} catch (\Throwable $e) {
+			return [];
+		}
+	}
+
+	/**
 	 * テーブルの存在チェック
 	 *
 	 * @param string $table
