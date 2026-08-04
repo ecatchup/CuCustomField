@@ -82,11 +82,14 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
          $this->CuCustomFieldValues->addBehavior('CuCustomField.KeyValue');
 
          $this->CuCustomFieldConfigs = TableRegistry::getTableLocator()->get('CuCustomField.CuCustomFieldConfigs');
-         $this->CuCustomFieldConfigs->hasMany('CuCustomFieldDefinitions', [
-            'className' => 'CuCustomField.CuCustomFieldDefinitions',
-                'sort' => ['lft' => 'DESC']
-        ])
-            ->setForeignKey('config_id');
+         // ✅ 重複登録を防ぐため、既に登録されているかチェック
+         if (!$this->CuCustomFieldConfigs->hasAssociation('CuCustomFieldDefinitions')) {
+             $this->CuCustomFieldConfigs->hasMany('CuCustomFieldDefinitions', [
+                'className' => 'CuCustomField.CuCustomFieldDefinitions',
+                    'sort' => ['lft' => 'DESC']
+            ])
+                ->setForeignKey('config_id');
+         }
     }
     /**
      * Construct
@@ -96,13 +99,6 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
     {
         parent::__construct();
         $this->searchService = new \CuCustomField\Service\CuCustomFieldSearchService();
-
-        $cuCustomFieldConfigs = TableRegistry::getTableLocator()->get('CuCustomField.CuCustomFieldConfigs');
-        $cuCustomFieldConfigs->hasMany('CuCustomFieldDefinitions', [
-            'className' => 'CuCustomField.CuCustomFieldDefinitions',
-            'sort' => ['lft' => 'DESC']
-        ])
-            ->setForeignKey('config_id');
 
         $blogPosts = TableRegistry::getTableLocator()->get('BcBlog.BlogPosts');
         $blogPosts->hasMany('CuCustomFieldValues', ['className' => 'CuCustomField.CuCustomFieldValues'])
