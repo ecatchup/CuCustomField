@@ -183,6 +183,31 @@ class CuCustomFieldControllerEventListener extends \BaserCore\Event\BcController
 		}
 	}
 
+    /**
+     * 保存データを安全にunserializeする
+     * - 保存時（KeyValueBehavior::saveSection）はaddslashesしていないため、まず生データでunserializeを試みる
+     * - 過去にstripslashesを前提として保存されたデータのために、失敗時のみstripslashes版でも試みる
+     * - どちらも失敗した場合はWarningを出さず空配列を返す
+     *
+     * @param mixed $data
+     * @return mixed
+     */
+    private function safeUnserialize($data)
+    {
+        if (!is_string($data)) {
+            return $data;
+        }
+        $result = @unserialize($data);
+        if ($result !== false || $data === 'b:0;') {
+            return $result;
+        }
+        $result = @unserialize(stripslashes($data));
+        if ($result !== false || stripslashes($data) === 'b:0;') {
+            return $result;
+        }
+        return [];
+    }
+
     // ADMIN
     private function setupCustomFieldValueForAdmin(Event $event, EntityInterface $post)
     {
@@ -281,14 +306,19 @@ class CuCustomFieldControllerEventListener extends \BaserCore\Event\BcController
                     foreach ($datas as $field_name => $data) {
                         // ループフィールド内は unserializeする
                         if (!empty($loops) && in_array($field_name, $loops)) {
-                            $data = unserialize(stripslashes($data));
+                            // シリアライズされているかどうかの判定（未保存・不正データの場合はunserializeしない）
+                            if (is_string($data) && strpos($data, 'a:') === 0 && str_ends_with($data, '}') !== false) {
+                                $data = $this->safeUnserialize($data);
+                            } else {
+                                $data = [];
+                            }
                             // ループ内のフィールドもシリアライズされていれば unserializeする
                             $children = [];
                             if (!empty($data) && is_array($data)) {
                                 foreach ($data as $datakey => $dataValue) {
                                     // シリアライズされているかどうかの判定
                                     if (is_string($dataValue) && strpos($dataValue, 'a:') === 0 && str_ends_with($dataValue, '}') !== false) {
-                                        $children[$datakey] = unserialize(stripslashes($dataValue));
+                                        $children[$datakey] = $this->safeUnserialize($dataValue);
                                     } else {
                                         $children[$datakey] = $dataValue;
                                     }
@@ -299,7 +329,7 @@ class CuCustomFieldControllerEventListener extends \BaserCore\Event\BcController
                             // シリアライズされているかどうかの判定
                             if (is_string($data) && strpos($data, 'a:') === 0 && str_ends_with($data, '}') !== false) {
                                 //debug($data);
-                                $fieldData[$field_name] = unserialize(stripslashes($data));
+                                $fieldData[$field_name] = $this->safeUnserialize($data);
                             } else {
                                 $fieldData[$field_name] = $data;
                             }
