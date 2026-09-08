@@ -718,4 +718,26 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
 
         return $post;
     }
+
+    /**
+     * ループフィールドの子フィールドの値に、指定した値が含まれているレコードの relate_id 一覧を取得する（逆引き）
+     * 例）ループフィールド「staff」の子フィールドに投稿ID 14 が登録されている記事の relate_id 一覧を取得する
+     *     $this->CuCustomField->getRelateIdsByLoopValue('staff', 14)
+     *
+     * @param string $field ループフィールド名（例: 'staff'）
+     * @param int|string $value 検索する値（子フィールドに登録された値）
+     * @return array relate_id の配列
+     */
+    public function getRelateIdsByLoopValue($field, $value)
+    {
+        return $this->CuCustomFieldValueModel->find()
+            ->where([
+                'key' => 'CuCustomFieldValue.' . $field,
+                'value LIKE' => '%:"' . $value . '";}%',
+            ])
+            ->select(['relate_id'])
+            ->all()
+            ->extract('relate_id')
+            ->toArray();
+    }
 }
