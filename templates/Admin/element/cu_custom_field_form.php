@@ -58,6 +58,11 @@ $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', false);
   						<?php endif ?>
 
   						<?php if($fieldDefinitions['field_type'] === 'loop'): // ループフィールドここから ?>
+  							<?php
+                  // JSで行を追加すると FormProtection が未登録のフィールド名として拒否するため、
+                  // 親パスごとロックを解除し、追加された行の名前が何であっても許可する
+                  $this->BcAdminForm->unlockField("CuCustomFieldValue.{$fieldDefinitions['field_name']}");
+                  ?>
   							<!-- 表示 -->
   							<div id="loop-<?php echo $fieldDefinitions['field_name'] ?>" class="cucf-loop">
 
