@@ -141,6 +141,18 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
              in_array($request->getParam('action'), ['add', 'batch'])) {
              return;
          }
+
+         // Table::exists() 等、主キーを含まない限定的な select() を指定したクエリに contain すると、
+         // EagerLoader が外部キー（BlogPosts.id）を解決できず例外になるため、その場合は付与しない
+         $table = $event->getSubject();
+         $selectClause = $query->clause('select');
+         if ($selectClause
+             && !array_key_exists($table->getPrimaryKey(), $selectClause)
+             && !in_array($table->aliasField($table->getPrimaryKey()), $selectClause, true)
+         ) {
+             return;
+         }
+
          // ブログ記事の際にカスタムフィールドも併せて取得する
          $query->contain(['CuCustomFieldValues']);
 
