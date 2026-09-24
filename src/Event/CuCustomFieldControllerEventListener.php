@@ -87,6 +87,63 @@ class CuCustomFieldControllerEventListener extends \BaserCore\Event\BcController
 		$Controller->viewBuilder()->addHelpers(['CuCustomField.CuCustomField']);
 		$this->settingsCuCustomField = \Cake\Core\Configure::read('cuCustomField');
         $this->setUpModel();
+        $this->unlockFileFieldFormProtection($Controller);
+    }
+
+    /**
+     * file型カスタムフィールドの入力欄をFormProtectionの検証対象から除外する
+     *
+     * file型のinput要素はFormHelper側で正しくトークンに登録されず、
+     * ファイルの選択有無に関わらず「Unexpected field」として保存が
+     * 失敗するため、対象コンテンツのfile型フィールドのみをunlockedFields
+     * として個別に除外する（content[id]等の他のhiddenフィールドの
+     * 改竄検知には影響しない）。
+     *
+     * @param \Cake\Controller\Controller $Controller
+     * @return void
+     */
+    private function unlockFileFieldFormProtection($Controller)
+    {
+        if (!BcUtil::isAdminSystem()) {
+            return;
+        }
+        if ($Controller->getRequest()->getParam('controller') !== 'BlogPosts') {
+            return;
+        }
+        if (!in_array($Controller->getRequest()->getParam('action'), ['add', 'edit'], true)) {
+            return;
+        }
+        $blogContentId = $Controller->getRequest()->getParam('pass.0');
+        if (!$blogContentId) {
+            return;
+        }
+
+        $definitions = $this->CuCustomFieldValueModel->getFieldDefinition((int)$blogContentId);
+        if (!$definitions) {
+            return;
+        }
+
+        $unlockedFields = [];
+        foreach ($definitions as $definition) {
+            $definitionData = $definition['CuCustomFieldDefinitions'] ?? [];
+            if (($definitionData['field_type'] ?? null) !== 'file') {
+                continue;
+            }
+            $fieldName = $definitionData['field_name'] ?? null;
+            if (!$fieldName) {
+                continue;
+            }
+            $unlockedFields[] = "CuCustomFieldValue.{$fieldName}";
+        }
+        if (!$unlockedFields) {
+            return;
+        }
+
+        if (!BcUtil::is51()) {
+            $Controller->Security->setConfig('unlockedFields', $unlockedFields);
+        } else {
+            $Controller->FormProtection->setConfig('unlockedFields', $unlockedFields);
+        }
 	}
 
     /**
