@@ -110,7 +110,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 		if(isset($event->data[0]['customSearch']) && $event->data[0]['customSearch'] === false) {
 			$customSearch = false;
 		}
-		if ($request->query && $customSearch) {
+		if ($request && $request->query && $customSearch) {
 			// keyのリストを取得
 			$keyArray = $this->getKeyList();
 			$searchQuery = [];
