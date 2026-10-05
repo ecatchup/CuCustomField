@@ -137,7 +137,9 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
 
          $this->setUpModel();
 
-         if ($request->getParam('controller') === 'BlogPosts' &&
+         // CLI（コンソールコマンド）ではリクエストが無い。
+         // 判定できないだけで contain は付けてよいので、その場合は素通りさせる。
+         if ($request && $request->getParam('controller') === 'BlogPosts' &&
              in_array($request->getParam('action'), ['add', 'batch'])) {
              return;
          }
@@ -154,6 +156,11 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
          }
 
          // ブログ記事の際にカスタムフィールドも併せて取得する
+         // ★setUpModel() が効かない接続（DB移行時の一時テーブルなど）では
+         //   アソシエーションが張られていないので、付けずに素通りさせる
+         if (!$table->hasAssociation('CuCustomFieldValues')) {
+             return;
+         }
          $query->contain(['CuCustomFieldValues']);
 
         if (BcUtil::isAdminSystem()) {
@@ -181,7 +188,8 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
             return $query;
         }
 
-        $queryParams = (array) $request->getQueryParams();
+        // CLI（コンソールコマンド）ではリクエストが無く、絞り込みも行われない
+        $queryParams = $request ? (array) $request->getQueryParams() : [];
         if (!$queryParams) {
             return $query;
         }
@@ -273,6 +281,10 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
     {
         $Model = $event->getSubject();
         $request = Router::getRequest();
+        // CLI（コンソールコマンド）ではリクエストが無い
+        if (!$request) {
+            return;
+        }
         $data = $event->getData();
         $pass = $request->getParam('pass');
         // BlogContentIdを取得
