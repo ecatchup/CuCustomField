@@ -8,26 +8,35 @@
  * @package          CuCfPref.View.Helper
  * @license          MIT LICENSE
  */
+namespace CuCfPref\View\Helper;
 
-App::uses('CuCustomFieldAppHelper', 'CuCustomField.View/Helper');
+use CuCustomField\View\Helper\CuCustomFieldAppHelper;
+use BaserCore\View\Helper\BcAdminFormHelper;
+use BaserCore\View\Helper\BcTextHelper;
+
 /**
- * Class CuCfRadioHelper
+ * Class CuCfPrefHelper
  *
  * @property CuCustomFieldHelper $CuCustomField
+ * @property BcAdminFormHelper $BcAdminForm
  * @property BcTextHelper $BcText
  */
 class CuCfPrefHelper extends CuCustomFieldAppHelper {
 
-	/**
-	 * Helper
-	 * @var string[]
-	 */
-	public $helpers = ['BcText'];
+    /**
+     * Helper
+     * @var string[]
+     */
+    public array $helpers = [
+        'BaserCore.BcAdminForm' => ['templates' => 'BaserCore.bc_form'],
+        'BaserCore.BcText'
+    ];
 
 	/**
 	 * Input
 	 *
 	 * @param string $fieldName
+	 * @param array $definition
 	 * @param array $options
 	 * @return string
 	 */
@@ -36,7 +45,7 @@ class CuCfPrefHelper extends CuCustomFieldAppHelper {
 			'type' => 'select',
 			'options' => $this->BcText->prefList()
 		], $options);
-		return $this->CuCustomField->BcForm->input($fieldName, $options);
+		return $this->BcAdminForm->control($fieldName, $options);
 	}
 
 	/**
@@ -44,9 +53,13 @@ class CuCfPrefHelper extends CuCustomFieldAppHelper {
 	 *
 	 * @param mixed $fieldValue
 	 * @param array $fieldDefinition
+	 * @param array $options
 	 * @return mixed
 	 */
 	public function get($fieldValue, $fieldDefinition, $options) {
+		$options = array_merge([
+			'novalue' => ''
+		], $options);
 		$selector = $this->BcText->prefList();
 		return $this->arrayValue($fieldValue, $selector, $options['novalue']);
 	}
