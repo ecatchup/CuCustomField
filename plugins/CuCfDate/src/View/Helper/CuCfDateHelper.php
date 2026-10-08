@@ -62,7 +62,9 @@ class CuCfDateHelper extends CuCustomFieldAppHelper {
 		$options = array_merge([
 			'format' => 'Y/m/d',
 		], $options);
-		return $this->BcTime->format($options['format'], $fieldValue);
+		// 5系の BcTimeHelper::format() は format($date, $format)。
+		// 4系は format($format, $date) で引数が逆だった。
+		return $this->BcTime->format($fieldValue, $options['format']);
 	}
 
 }
