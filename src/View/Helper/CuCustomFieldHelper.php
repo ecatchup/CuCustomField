@@ -312,6 +312,21 @@ class CuCustomFieldHelper extends CuCustomFieldAppHelper
                 }
                 return $data;
             default:
+                // フィールドタイププラグインが get() を持っていればそちらへ委譲する。
+                // input() は同じ方式でプラグインへ委譲しているが、get() には
+                // その経路が無く、この switch に分岐を持たない radio / pref /
+                // date / datetime / checkbox / googlemaps が選択肢やフォーマットを
+                // 適用されないまま、生の保存値で出力されていた。
+                $fieldType = (string)($fieldDefinition['field_type'] ?? '');
+                if ($fieldType !== '') {
+                    $pluginName = 'CuCf' . Inflector::camelize($fieldType);
+                    if (\Cake\Core\Plugin::isLoaded($pluginName)) {
+                        $cuCfHelper = $this->getView()->helpers()->load("$pluginName.$pluginName");
+                        if (method_exists($cuCfHelper, 'get')) {
+                            return $cuCfHelper->get($fieldValue, $fieldDefinition, $options);
+                        }
+                    }
+                }
                 return $fieldValue;
         }
 	}
