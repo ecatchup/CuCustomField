@@ -209,7 +209,11 @@ class CuCfFileHelper extends Helper
             $options['id'] = 'cucustomfieldvalue-article-loop-src-'. $definition['field_name'];
         }
 
-        $output = $this->CuCustomField->BcForm->input($fieldName, $options);
+        // フォームを生成したヘルパー（BcAdminForm）でファイル入力を描画する。
+        // 別インスタンスの BcForm は FormProtection のトークンを持たないため、
+        // ここで描画するとファイル項目だけがトークンに登録されず、
+        // 保存時に Unexpected field となって 400 になる。
+        $output = $this->BcAdminForm->input($fieldName, $options);
 
         // ファイル
         //  保存値
