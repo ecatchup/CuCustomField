@@ -277,7 +277,7 @@ class CuCfFileBehavior extends Behavior
      * @param false $tmp
      * @return string|array
      */
-    public function saveCuCfFile(int $blogContentId, UploadedFile $value, string $beforeValue = null, $tmp = false)
+    public function saveCuCfFile(int $blogContentId, UploadedFile $value, ?string $beforeValue = null, $tmp = false)
     {
         if (empty($value)) {
             return '';
