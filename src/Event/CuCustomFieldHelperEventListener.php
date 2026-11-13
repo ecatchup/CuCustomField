@@ -63,32 +63,32 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 	public function bcFormTableBefore(\Cake\Event\Event $event)
 	{
 		if (!\BaserCore\Utility\BcUtil::isAdminSystem()) {
-			return true;
+			return;
 		}
 
 		$View = $event->getSubject();
 
 		if (!in_array($View->getRequest()->getParam('controller'), $this->targetController)) {
-			return true;
+			return;
 		}
 
 		if (!in_array($View->getRequest()->getParam('action'), $this->targetAction)) {
-			return true;
+			return;
 		}
 
 		$targetId = ['BlogPostForm'];
 		if (!in_array($event->getData()['id'], $targetId)) {
-			return true;
+			return;
 		}
 
         // BlogContentsの取得
         $blogContent = $View->get('blogContent');
         if (!isset($blogContent->cu_custom_field_config) || empty($blogContent->cu_custom_field_config)) {
-            return true;
+            return;
         }
 
         if (!$blogContent->cu_custom_field_config['status']) {
-            return true;
+            return;
         }
 
 		if ($blogContent->cu_custom_field_config['form_place'] === 'top') {
@@ -96,7 +96,7 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
             $this->isDisplay = true;
             $event->setData('out' , $event->getData('out') . $View->element('CuCustomField.cu_custom_field_form'));
 		}
-		return true;
+		return;
 	}
 
 	/**
@@ -109,35 +109,35 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 	public function bcFormTableAfter(\Cake\Event\Event $event)
 	{
 		if (!\BaserCore\Utility\BcUtil::isAdminSystem()) {
-			return true;
+			return;
 		}
 
 		$View = $event->getSubject();
 
 		if (!in_array($View->getRequest()->getParam('controller'), $this->targetController)) {
-			return true;
+			return;
 		}
 
 		if (!in_array($View->getRequest()->getParam('action'), $this->targetAction)) {
-			return true;
+			return;
 		}
 
 		$targetId = ['BlogPostForm'];
 		if (!in_array($event->getData()['id'], $targetId)) {
-			return true;
+			return;
 		}
         // BlogContentsの取得
         $blogContent = $View->get('blogContent');
 		if (!isset($blogContent->cu_custom_field_config) || empty($blogContent->cu_custom_field_config)) {
-			return true;
+			return;
 		}
 
 		if (!$blogContent->cu_custom_field_config['status']) {
-			return true;
+			return;
 		}
 
 		if ($this->isDisplay) {
-			return true;
+			return;
 		}
 
 		if ($blogContent->cu_custom_field_config['form_place'] === 'normal') {
@@ -145,7 +145,7 @@ class CuCustomFieldHelperEventListener extends BcHelperEventListener
 			$this->isDisplay = true;
             $event->setData('out' , $event->getData('out') . $View->element('CuCustomField.cu_custom_field_form'));
 		}
-        return true;
+        return;
 	}
 
 }
