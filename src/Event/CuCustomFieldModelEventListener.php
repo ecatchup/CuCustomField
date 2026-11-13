@@ -127,7 +127,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
      * 最近の投稿、ブログ記事前後移動を find する際に実行
      *
      * @param Event $event
-     * @return array
+     * @return void
      */
      public function bcBlogBlogPostsBeforeFind(Event $event)
      {
@@ -164,7 +164,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
          $query->contain(['CuCustomFieldValues']);
 
         if (BcUtil::isAdminSystem()) {
-            return $query;
+            return;
         }
 
          // 最近の投稿、ブログ記事前後移動を find する際に実行
@@ -185,13 +185,13 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
             $customSearch = false;
         }
         if (!$customSearch) {
-            return $query;
+            return;
         }
 
         // CLI（コンソールコマンド）ではリクエストが無く、絞り込みも行われない
         $queryParams = $request ? (array) $request->getQueryParams() : [];
         if (!$queryParams) {
-            return $query;
+            return;
         }
 
         $availableFieldNames = $this->searchService->getAvailableFieldNames();
@@ -199,7 +199,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
         if ($filters) {
             $this->searchService->applyToBlogPostsQuery($query, $filters);
         }
-        return $query;
+        return;
      }
 
     public function customSearchQuery($query, $get)
@@ -361,7 +361,7 @@ class CuCustomFieldModelEventListener extends BcModelEventListener
              }
              $this->findFlatteningMode = false;
          }
-            return $event->getData(0);
+            return;
         }
 
         // 公開側の処理
