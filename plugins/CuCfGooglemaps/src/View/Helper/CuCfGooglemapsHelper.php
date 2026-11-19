@@ -8,8 +8,11 @@
  * @package          CuCfGooglemaps.View.Helper
  * @license          MIT LICENSE
  */
+namespace CuCfGooglemaps\View\Helper;
 
-App::uses('CuCustomFieldAppHelper', 'CuCustomField.View/Helper');
+use CuCustomField\View\Helper\CuCustomFieldAppHelper;
+use BaserCore\View\Helper\BcTextHelper;
+
 /**
  * Class CuCfGooglemapsHelper
  *
@@ -22,7 +25,7 @@ class CuCfGooglemapsHelper extends CuCustomFieldAppHelper {
 	 * Helper
 	 * @var string[]
 	 */
-	public $helpers = ['BcText'];
+	public array $helpers = ['BaserCore.BcText'];
 
 	/**
 	 * Input

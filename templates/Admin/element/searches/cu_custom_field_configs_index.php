@@ -23,7 +23,7 @@
 	</span>
 </p>
 
-<?php if ($this->BcBaser->siteConfig['admin_theme'] == 'admin-third'): ?>
+<?php if (\BaserCore\Utility\BcUtil::getCurrentAdminTheme() === 'BcAdminThird'): ?>
 <div class="button bca-search__btns">
 	<div class="bca-search__btns-item">
 		<?php $this->BcBaser->link(__d('baser', '検索'), "javascript:void(0)", ['id' => 'BtnSearchSubmit', 'class' => 'bca-btn bca-btn-lg', 'data-bca-btn-size'=>"lg"]) ?>

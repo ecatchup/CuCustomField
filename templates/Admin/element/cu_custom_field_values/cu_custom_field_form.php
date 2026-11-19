@@ -14,7 +14,7 @@
  * @var array $definitions
  */
 $formPlace = $this->getRequest()->getData('CuCustomFieldConfig.form_place');
-$this->BcBaser->js('https://maps.google.com/maps/api/js?key=' . $this->BcBaser->siteConfig['google_maps_api_key'], false);
+$this->BcBaser->js('https://maps.google.com/maps/api/js?key=' . \BaserCore\Utility\BcSiteConfig::get('google_maps_api_key'), false);
 $this->BcBaser->js('CuCustomField.admin/google_maps', false);
 $this->BcBaser->js('CuCustomField.admin/cu_custom_field_values', false);
 $this->BcBaser->css('CuCustomField.admin/cu_custom_field_values', false);
