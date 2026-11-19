@@ -17,7 +17,7 @@
 
 
 <div class="petit-google-maps-form">
-<?php if (!empty($this->BcBaser->siteConfig['google_maps_api_key'])): ?>
+<?php if (!empty(\BaserCore\Utility\BcSiteConfig::get('google_maps_api_key'))): ?>
 	<div class="petit-google-maps" style="width:100%; height:450px;"></div>
 	<div style="margin-right: 5px;">
 		<?php echo $this->BcForm->input('google_maps_address', ['type' => 'text', 'name' => '', 'class' => 'bca-textbox__input petit-google_maps_address']) ?>
